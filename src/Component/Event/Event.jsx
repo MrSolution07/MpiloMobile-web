@@ -20,7 +20,7 @@ function Event() {
               </div>
 
               <div className="event-item-1">
-                <h4>From clinic to click —<br /> Mpilo brings care closer.</h4>
+                <h4>From clinic to click - <br /> Mpilo brings care closer.</h4>
                 <p>Get trusted medical advice, treatment plans, and follow-ups from the comfort of your home.</p>
               </div>
 

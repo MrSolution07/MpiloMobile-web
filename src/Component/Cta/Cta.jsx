@@ -64,7 +64,7 @@ function Cta() {
 
         <div className="row justify-content-center mt-5">
           <div className="col-md-12 text-center">
-            <Link to="/services" className="SkillUplms-btn mt-4">
+            <Link to="/services" className="SkillUplms-btn mt-4 rounded-med-2 ">
               Explore Services
             </Link>
           </div>

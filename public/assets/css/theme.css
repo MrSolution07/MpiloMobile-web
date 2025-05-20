@@ -16,6 +16,7 @@
  11. Course Details Page
  12. Back To Top
  13. Preloader
+ 14. Services Page
 */
 
 /*------------------------------------------------------
@@ -834,7 +835,7 @@
     position: absolute;
     width: 200px;
     height: 120px;
-    background-color: teal;
+    background-color: #6BA3BE;
     border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
     z-index: 0;
   }
@@ -1347,7 +1348,7 @@
   }
   
   .cta-section .sec-title span {
-    color: teal;
+    color: #6BA3BE;
   }
   
   .cta-text {
@@ -6329,3 +6330,23 @@ Profile Page
     transition: all 0.1s ease-out;
 }
 
+/* ----------------Services Page------------------ */
+
+.why-us-section p {
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+  
+  .why-us-section .fw-bold {
+    font-size: 1.75rem;
+  }
+  
+  .why-us-section .tag {
+    background-color: #f1f1f1;
+    padding: 8px 20px;
+    border-radius: 30px;
+    margin: 5px;
+    display: inline-block;
+    font-weight: 500;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  }

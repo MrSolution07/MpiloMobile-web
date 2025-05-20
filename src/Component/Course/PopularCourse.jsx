@@ -43,7 +43,7 @@ function PopularCourse({ course, heading }) {
 
 
               <div className="course-wrapper">
-                <CourseItemCard title="We are mobile" link="single-course"
+                <CourseItemCard title="We are mobile" link="#"
                 text="A primary mobile healthcare provider serving under-resourced communities in 3 African Countries.">
 
                   <svg
@@ -81,7 +81,7 @@ function PopularCourse({ course, heading }) {
                 </CourseItemCard>
                 <CourseItemCard
                   title="Founded in 2015"
-                  link="single-course"
+                  link="#"
                   text="Mpilo Mobile was founded in 2015, by Tumi Mabitsela, who was a Nelson Mandela Washington Fellow."
                 >
                   <svg
@@ -101,7 +101,7 @@ function PopularCourse({ course, heading }) {
                 </CourseItemCard>
                 <CourseItemCard
                   title="3 Countries"
-                  link="single-course"
+                  link="#"
                   text = "Our comprehensive primary healthcare services have been rolled out across 3 Countries in Africa"
                 >
                   <svg
@@ -119,7 +119,7 @@ function PopularCourse({ course, heading }) {
                     />
                   </svg>
                 </CourseItemCard>
-                <CourseItemCard title="Our tech" link="single-course"
+                <CourseItemCard title="Our tech" link="#"
                 text="Infrastructure, healthcare IT and point-of-care diagnostics to 3rd party clinics in the areas of operation."
                 >
                   <svg
@@ -139,7 +139,7 @@ function PopularCourse({ course, heading }) {
                 </CourseItemCard>
                 <CourseItemCard
                   title="Mulitiple Services"
-                  link="single-course"
+                  link="#"
                   text="Consultations, dispensary, rapid test at point-of-care, dentistry, optometry, dietetics & more"
                 >
                   <svg
@@ -159,7 +159,7 @@ function PopularCourse({ course, heading }) {
                 </CourseItemCard>
                 <CourseItemCard
                   title="Black Female-Owned"
-                  link="single-course"
+                  link="#"
                   text="We are a level 1 BEE Company, Black female owned, and employ people from the Community we serve"
                 >
                   <svg
