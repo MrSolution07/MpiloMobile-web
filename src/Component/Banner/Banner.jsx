@@ -5,7 +5,7 @@ function Banner({ title, background }) {
   return (
     <section
       className="page-banner"
-      style={{ backgroundImage: `url(${background})` }}
+      style={{ backgroundImage: `url(${background})`,backgroundSize: 'cover', backgroundPosition: 'center' }}
     >
       <div className="container">
         <div className="row">

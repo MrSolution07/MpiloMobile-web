@@ -56,24 +56,21 @@ function Contact() {
                   </div>
                   <div className="ab-social">
                     <h5>Follow Us</h5>
-                    <a className="fac" href="#">
+                    <a className="fac" href="https://www.facebook.com/MpiloMobile">
                       <i className="social_facebook"></i>
                     </a>
                     <a className="twi" href="#">
                       <i className="social_twitter"></i>
                     </a>
-                    <a className="you" href="#">
-                      <i className="social_youtube"></i>
-                    </a>
-                    <a className="lin" href="#">
-                      <i className="social_linkedin"></i>
+                    <a className="insta" href="https://www.instagram.com/mpilo_mobile/">
+                      <i className="social_instagram"></i>
                     </a>
                   </div>
                 </div>
               </div>
               <div className="col-md-8">
                 <div className="contact-form">
-                  <h4>Let’s Connect</h4>
+                  <h4>Let's Connect</h4>
                   <p>
                     Fill out your details
                   </p>

@@ -38,14 +38,15 @@ function Footer({ getStart }) {
 
                 </p>
                 <div className="ab-social">
-                  <a className="fac" >
+                  <a className="fac" href="https://www.facebook.com/MpiloMobile" >
                     <i className="social_facebook"></i>
                   </a>
                   <a className="twi" >
                     <i className="social_twitter"></i>
                   </a>
-                  <a className="you" >
-                    <i className="social_youtube"></i>
+              
+                   <a className="insta" href="https://www.instagram.com/mpilo_mobile/" >
+                    <i className="social_instagram"></i>
                   </a>
                   
                 </div>
@@ -60,10 +61,10 @@ function Footer({ getStart }) {
                   <Link to="/about-1">About Us</Link>
                 </li>         
                 <li>
-                  <Link to="#">Our Clients</Link>
+                  <Link to="/clients">Our Clients</Link>
                 </li>
                 <li>
-                  <Link to="#">Gallery</Link>
+                  <Link to="/gallery">Gallery</Link>
                 </li>
                 <li>
                   <Link to="/contact">Contact Us</Link>
@@ -76,14 +77,12 @@ function Footer({ getStart }) {
               <h3 className="widget-title">Services</h3>
               <ul>
                 <li>
-                  <Link to="/course-3">Our Services</Link>
+                  <Link to="/services">Our Services</Link>
                 </li>
                 <li>
-                  <Link to="#">Covid19 Services</Link>
+                  <Link to="/services">Covid19 Services</Link>
                 </li>
-                <li>
-                  <Link to="#">Digital Marketing</Link>
-                </li>                
+                           
               </ul>
             </aside>
           </div>

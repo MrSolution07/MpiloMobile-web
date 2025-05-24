@@ -107,9 +107,7 @@
 	.ab-thumb{
 		margin-right: 0;
 	}
-	.ab-content{
-		padding: 0;
-	}
+	
 	.back, .front{
 		padding-right: 30px;
 		padding-left: 30px;
@@ -117,10 +115,7 @@
 	.pack-details{
 		padding-left: 150px;
 	}
-	.bp-meta a{
-		margin-right: 12px;
-		font-size: 13px;
-	}
+	
 	.b-post-details{
 		padding-right: 20px;
 		padding-left: 20px;
@@ -149,13 +144,8 @@
 	.popular-course-section-2 .ab-thumb {
 	    margin-top: 70px;
 	}
-	.feature-course-item-2{
-		padding-right: 30px;
-		padding-left: 30px;
-	}
-	.funfact-item{
-		margin-right: 10px;
-	}
+
+	
 	.catecories-box,
 	.header-03 .search-box{
 		display: none;
@@ -213,32 +203,14 @@
 	.content-404 p{
 		margin-bottom: 30px;
 	}
-	.blog-sidebar{
-		margin: 0;
-	}
-	.blog-sidebar .widget{
-		padding-left: 20px;
-		padding-right: 20px;
-	}
+	
 	.comment-list .children{
 		padding-left: 50px;
 	}
-	.feature-course-item-4 .price-rate .course-price{
-		font-size: 18px;
-	}
-	.teacher-profile .ab-social a{
-		margin-bottom: 6px;
-	}
-	.result-table thead tr th,
-	.result-table tbody tr td{
-		padding-left: 20px;
-		padding-right: 15px;
-	}
-	.course-item-3 .price-rate{
-		width: calc(100% + 140px);
-    	left: -70px;
-    	padding: 18px 70px 15px;
-	}
+	
+	
+	
+	
 	.course-sidebar .widget.widget-filter,
 	.course-sidebar .widget{
 		padding-left: 20px;
@@ -289,9 +261,7 @@
 	.course-item-1:nth-child(3){
 		margin-right: 0;
 	}
-	.ab-content{
-		padding: 0;
-	}
+	
 	.shaf-filter li{
 		margin-left: 25px;
 	}
@@ -305,9 +275,7 @@
 	.pack-details p {
 	    margin-bottom: 25px;
 	}
-	.bp-meta a{
-		margin-right: 17px;
-	}
+	
 	.cta-wrapper{
 		padding-right: 20px;
 		padding-left: 20px;
@@ -368,17 +336,8 @@
 	.header-03 .search-box {
 	    margin-right: 22%;
 	}
-	.course-item-3 .price-rate{
-		width: calc(100% + 40px);
-    	left: -20px;
-    	padding: 18px 20px 15px;
-	}
-	.toolbar-wrapper-2 .search-box{
-		width: 220px;
-	}
-	.toolbar-wrapper-2 .sorting {
-	    right: 240px;
-	}
+	
+	
 	.hero-banner-2{
 		padding-bottom: 100px;
 	}
@@ -578,10 +537,7 @@
 		font-size: 24px;
 		line-height: 35px;
 	}
-	.funfact-item-3{
-		margin: 0 0 30px;
-		float: none;
-	}
+
 	.header-03{
 		padding: 0;
 	}
@@ -626,13 +582,8 @@
 		line-height: 30px;
 		margin-bottom: 20px;
 	}
-	.blog-sidebar{
-		margin: 0;
-	}
-	.blog-sidebar .widget{
-		padding-left: 20px;
-		padding-right: 20px;
-	}
+	
+	
 	.post-admin{
 		padding-left: 100px;
 		padding-right: 15px;
@@ -643,11 +594,7 @@
 	.post-admin img{
 		left: 15px;
 	}
-	.result-table thead tr th,
-	.result-table tbody tr td{
-		padding-left: 20px;
-		padding-right: 15px;
-	}
+	
 	.course-sidebar{
 		margin: 50px 0 0;
 	}
@@ -679,9 +626,7 @@
 	.pack-slider.slick-slider:after{
 		bottom: -39px;
 	}
-	.pack-meta{
-		margin-bottom: 18px;
-	}
+	
 	.pack-slider.slick-slider .package-item{
 		display: block !important;
 		margin-top: -30px;
@@ -700,10 +645,7 @@
 		display: inline-block;
 		margin-top: 30px;
 	}
-	.course-meta{
-		display: block;
-		justify-content: center;
-	}
+	
 	.categories {
 		border-left: none;
 		border-right: 0;
@@ -760,36 +702,11 @@
 	.curriculum-item h5 button:after{
 		right: 15px;
 	}
-	.course-tab-wrapper .tab-content{
-		padding-left: 20px;
-		padding-right: 20px;
-	}
-	.teacher-item-3{
-		padding-left: 0;
-	}
-	.teacher-item-3 .teacher-thumb{
-		position: relative;
-		width: 100%;
-		height: auto;
-	}
-	.toolbar-wrapper-2{
-		display: block;
-	}
-	.toolbar-wrapper-2 .sorting{
-		position: relative;
-		right: 0;
-		margin: 15px 0;
-	}
-	.result-table thead tr th{
-		font-size: 12px;
-		padding-left: 10px;
-		padding-right: 10px;
-	}
-	.result-table tbody tr td{
-		font-size: 12px;
-		padding-left: 10px;
-		padding-right: 10px;
-	}
+	
+	
+	
+	
+	
 	.post-tags{
 		display: block;
 	}
@@ -802,17 +719,12 @@
 	.single-p-banner .banner-title{
 		line-height: 40px;
 	}
-	.blog-sidebar{
-		margin: 50px 0 0;
-	}
+	
 	.b-post-details{
 		padding-left: 20px;
 		padding-right: 20px;
 	}
-	.bp-meta a{
-		margin-right: 15px;
-		font-size: 13px;
-	}
+	
 	.content-404 ul li{
 		display: block;
 		margin-top: 10px;
@@ -835,19 +747,8 @@
 	.countdown .countdown-section{
 		margin-bottom: 10px;
 	}
-	.course-item-3 .price-rate{
-		width: calc(100% + 40px);
-    	left: -20px;
-    	padding-left: 20px;
-		padding-right: 20px;
-		display: block;
-	    text-align: center;
-	    justify-content: center;
-	}
-	.course-item-3  .price-rate .course-price{
-		display: block;
-		justify-content: center;
-	}
+	
+	
 	.course-details{
 		padding-left: 20px;
 		padding-right: 20px;
@@ -858,9 +759,7 @@
 		width: 100%;
 		border-radius: 15px;
 	}
-	.course-item-3{
-		display: block;
-	}
+	
 	.feature-section{
 		margin-top: -60px;
 	}
@@ -963,22 +862,12 @@
 	.fact-wrapper{
 		display: block;
 	}
-	.funfact-item{
-		margin: 0 0 20px;
-	}
+	
 	.feature-course-section-2 .SkillUplms-btn-2{
 		float: left;
 		margin: -30px 0 50px;
 	}
-	.pricing-item,
-	.feature-course-item-2{
-		padding-left: 25px;
-		padding-right: 25px;
-	}
-	.testimonial-item,
-	.funfact-item-2{
-		margin-bottom: 30px;
-	}
+	
 	.client-logo{
 		margin: 50px 0 0;
 	}
@@ -1007,10 +896,7 @@
 	.course-filter{
 		margin: 0 0 53px;
 	}
-	.toolbar-wrapper{
-		display: block;
-		text-align: center;
-	}
+	
 	.cta-section-2 .sec-title{
 		font-size: 30px;
 		line-height: 44px;

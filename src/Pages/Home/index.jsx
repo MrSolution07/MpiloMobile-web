@@ -2,13 +2,9 @@ import { useEffect, useState } from "react";
 import Preloader from "../../Component/Preloader";
 import Header from "../../Component/Headers";
 import HomeHero from "../../Component/Heros/Home-hero";
-import PopularCourse from "../../Component/Course/PopularCourse";
 import Feature from "../../Component/Features/Feature";
-import Cta from "../../Component/Cta/Cta";
-import Video from "../../Component/Video/Video";
-import Event from "../../Component/Event/Event";
-import Package from "../../Component/Package/Package";
-import Blogs from "../../Component/Blogs/Blogs";
+import ServiceCards from "../../Component/ServiceCards/ServiceCards"; 
+import AppInfo from "../../Component/AppInfo/AppInfo";
 import Footer from "../../Component/Footer/Footer";
 import GotoTop from "../../Component/GotoTop";
 
@@ -26,13 +22,9 @@ function Home() {
       <>
         <Header logo="assets/images/mpiloLogo.png" joinBtn={true} />
         <HomeHero />
-        <PopularCourse course={true} heading={true} />
+        <ServiceCards service={true} heading={true} />
         <Feature />
-        {/* <Cta /> */}
-        {/* <Video /> */}
-        <Event /> 
-        {/* <Package />
-        <Blogs /> */}
+        <AppInfo /> 
         <Footer getStart={true} />
         <GotoTop />
       </>

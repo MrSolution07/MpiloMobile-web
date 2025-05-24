@@ -1,8 +1,4 @@
-//Join for free page or register 
-
 import "../NewStyle/style.css"
-
-
 import { Helmet } from 'react-helmet';
 import { useState } from "react";
 import axios from "axios";
@@ -38,7 +34,7 @@ const RegisterPage = () => {
               <div className="card-body" >
                 <div className="px-3">
                   <div className="auth-logo-box">
-                    <a href="" className="logo logo-admin">
+                    <a href="/" className="logo logo-admin">
                       <img src="../assets/images/mpiloLogo.png" height="55" alt="logo" className="auth-logo" />
                     </a>
                   </div>

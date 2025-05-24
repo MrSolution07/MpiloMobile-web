@@ -1,17 +1,16 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./Pages/Home";
-import Course3 from "./Pages/Course-3";
-import CourseSingle from "./Pages/CourseSingle";
+import Services from "./Pages/Services";
 import About1 from "./Pages/About-1";
-import Instructor from "./Pages/Instructor";
-import InstructorProfile from "./Pages/InstructorProfile";
-import Error from "./Pages/Error";
-import Blogs from "./Pages/Blogs";
-import SinglePost from "./Pages/SinglePost";
+import Clients from "./Pages/Clients";
+import Gallery from "./Pages/Gallery";
 import Contact from "./Pages/Contact";
 import Register from "./Component/JoinNow/Register";
 import LoginPage from "./Component/ProfileLogin/Login";
+import AdminLogin from "./Component/ProfileLogin/AdminLogin";
 import Forgotpsw from "./Component/ProfileLogin/Forgotpsw";
+import Error from "./Pages/Error";
+
 
 
 const router = createBrowserRouter([
@@ -23,6 +22,10 @@ const router = createBrowserRouter([
     path: "/LoginPage",
     element: <LoginPage />,
   },
+   {
+    path: "/adminLogin",
+    element: <AdminLogin />,
+  },
   {
     path: "/Forgotpsw",
     element: <Forgotpsw />,
@@ -32,33 +35,23 @@ const router = createBrowserRouter([
     element: <Register />,
   },
   {
-    path: "/course-3",
-    element: <Course3 />,
-  },
-  {
-    path: "/single-course",
-    element: <CourseSingle />,
+    path: "/services",
+    element: <Services />,
   },
   {
     path: "/about-1",
     element: <About1 />,
   },
   {
-    path: "/instructor",
-    element: <Instructor />,
+    path: "/clients",
+    element: <Clients />,
   },
   {
-    path: "/profile",
-    element: <InstructorProfile />,
+    path: "/gallery",
+    element: <Gallery />,
   },
-  {
-    path: "/blog",
-    element: <Blogs />,
-  },
-  {
-    path: "/single-post",
-    element: <SinglePost />,
-  },
+  
+
   {
     path: "/contact",
     element: <Contact />,

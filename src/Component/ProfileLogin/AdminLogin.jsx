@@ -1,7 +1,8 @@
-    import { Link } from 'react-router-dom'
-    import { RiAdminFill } from "react-icons/ri";
+import { Link } from 'react-router-dom'
+import { TbStethoscope } from "react-icons/tb";
+    
 
-    function Login() {
+    function AdminLogin() {
         return (
     <body className="account-body accountbg">
     <div className="container">
@@ -15,7 +16,7 @@
                             <a href="/" className="logo logo-admin"><img src="../assets/images/mpiloLogo.png" height="55" alt="logo" className="auth-logo" /></a>
                         </div>
                         <div className="text-center auth-logo-text">
-                            <h4 className="mt-0 mb-3 mt-5">Healthcare Practitioner Login</h4>
+                            <h4 className="mt-0 mb-3 mt-5">Administrator Login</h4>
                             <p className="text-muted mb-0">Sign in to continue to Mpilo Mobile</p>
                         </div>
                         <form className="form-horizontal auth-form my-4" action="index.html">
@@ -49,20 +50,16 @@
                                 </div>
                             </div>
                             <div className="form-group mb-0 row">
-                                <div className="col-12 mt-2">
-                                    
-                                        <a href='SkillUp/HTML/authentication/ProfilePage.html' ><button className="btn btn-gradient-primary btn-round btn-block waves-effect waves-light" id="btnLog" type="button">Log In <i className="fas fa-sign-in-alt ml-1"></i></button></a>
-                                    
+                                <div className="col-12 mt-2">                                    
+                                    <a href='SkillUp/HTML/authentication/ProfilePage.html'><button className="btn btn-gradient-primary btn-round btn-block waves-effect waves-light" id="btnLog" type="button">Log In <i className="fas fa-sign-in-alt ml-1"></i></button></a>                                   
                                 </div>
                             </div>
                         </form>
                     </div>
-                    <div className="m-3 text-center text-muted">
-                        <p className="">Don't have an account?<a href="/Register" className="text-primary ml-2">Register</a></p>
-                    </div>
+            
                     <div className='justify-content-center d-flex'>
-                      <Link to="/AdminLogin"> <button className="SkillUplms-btn" >
-                     <span className="admin-icon "><RiAdminFill /></span> I'm an Admin 
+                      <Link to="/LoginPage"><button className="SkillUplms-btn" >
+                     <span className="admin-icon "><TbStethoscope /></span> I'm a practitioner 
                     </button>
                     </Link>
                     </div>
@@ -79,4 +76,4 @@
     );
     }
 
-    export default Login;
+    export default AdminLogin;

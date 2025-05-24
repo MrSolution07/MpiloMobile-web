@@ -5,9 +5,6 @@ function App() {
     <>
       <Routers />
     </>
-
-    
-
   );
 }
 

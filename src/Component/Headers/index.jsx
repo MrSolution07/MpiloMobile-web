@@ -1,4 +1,3 @@
-//this is the main home 1 left the comments so that you can see how to use some options 
 import ProtoTypes from "prop-types";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -19,7 +18,6 @@ function Header({ className, logo, joinBtn, search }) {
         <div className="row">
           <div className="col-lg-12">
             <nav className="navbar navbar-expand-lg">
-              {/* logo Start */}
               <Link className="navbar-brand" to="/">
                 <img src={logo} alt="" />
                 <img
@@ -28,9 +26,7 @@ function Header({ className, logo, joinBtn, search }) {
                   alt=""
                 />
               </Link>
-              {/* logo End */}
 
-              {/* Moblie Btn Start  */}
               <button
                 className="navbar-toggler"
                 type="button"
@@ -38,9 +34,7 @@ function Header({ className, logo, joinBtn, search }) {
               >
                 <i className="fal fa-bars"></i>
               </button>
-              {/*  Moblie Btn End  */}
 
-              {/* Nav Menu Start  */}
               <div
                 className="collapse navbar-collapse"
                 style={{ display: activeMobileMenu && "block" }}
@@ -53,13 +47,13 @@ function Header({ className, logo, joinBtn, search }) {
                     <Link to="/about-1">About Us</Link> 
                   </li>
                   <li>
-                    <Link to="/course-3">Services</Link>
+                    <Link to="/services">Services</Link>
                   </li>
                   <li>
-                    <Link to="/instructor">Our Clients</Link>
+                    <Link to="/clients">Our Clients</Link>
                   </li>
                   <li>
-                    <Link to="/about-1">Gallery</Link>
+                    <Link to="/gallery">Gallery</Link>
                   </li>
                    
                   
@@ -68,24 +62,19 @@ function Header({ className, logo, joinBtn, search }) {
                   </li>
                 </ul>
               </div>
-              {/* Nav Menu End  */}
 
-              {/*  User Btn  */}
               {className !== "header-02" && (
                 <a href="/LoginPage" className="user-btn">
                   <i className="ti-user"></i>
                 </a>
               )}
-              {/*  User Btn  */}
 
-              {/* Join Btn  */}
               {joinBtn && (
                 <a href="/Register" className="join-btn">
                   Register
                 </a>
               )}
 
-              {/* Join Btn  we have to put the link to the login page here */}
               {search && (
                 <form className="search-box" method="post" action="#">
                   <input
