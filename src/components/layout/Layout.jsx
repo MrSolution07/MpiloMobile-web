@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
+import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 
-function Layout({ children }) {
+function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -52,7 +53,7 @@ function Layout({ children }) {
         <Header toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
 
         <main className="flex-1 bg-gray-50 p-4 md:p-6 overflow-x-hidden overflow-y-auto">
-          {children}
+          <Outlet />
         </main>
       </div>
 
