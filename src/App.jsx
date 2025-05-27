@@ -1,4 +1,8 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Toaster } from "./components/admin/ui/toaster";
+import { Toaster as Sonner } from "./components/admin/ui/sonner";
+import { TooltipProvider } from "./components/admin/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Main site pages
 import {
@@ -14,13 +18,24 @@ import {
 import { Register, Login, AdminLogin, ForgotPassword } from "./components/auth";
 
 // Dashboard layout and pages
-import { Layout } from "./components/layout";
+import { Layout, AdminLayout } from "./components/layout";
 import { Dashboard } from "./components/dashboard";
 import { AppointmentsList } from "./components/appointments";
 import { MessagesList } from "./components/messages";
 import { PatientsList, PatientDetails } from "./components/patients";
 import { TriageList } from "./components/triage";
 import { MedicalRecordsList } from "./components/records";
+
+// Admin dashboard pages
+import {
+  AdminDashboard,
+  AdminPatients,
+  AdminDoctors,
+  AdminRecords,
+  AdminNotFound,
+} from "./pages/admin";
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   // Main website routes
@@ -101,12 +116,52 @@ const router = createBrowserRouter([
     ],
   },
 
+  // Admin dashboard
+  {
+    path: "/admin",
+    element: <AdminLayout />,
+    children: [
+      {
+        path: "",
+        element: <AdminDashboard />,
+      },
+      {
+        path: "patients",
+        element: <AdminPatients />,
+      },
+      {
+        path: "doctors",
+        element: <AdminDoctors />,
+      },
+      // {
+      //   path: "messages",
+      //   element: <AdminMessages />,
+      // },
+      {
+        path: "records",
+        element: <AdminRecords />,
+      },
+      {
+        path: "*",
+        element: <AdminNotFound />,
+      },
+    ],
+  },
+
   // Catch-all
   { path: "*", element: <Error /> },
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <RouterProvider router={router} />
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
 }
 
 export default App;
