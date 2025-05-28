@@ -46,9 +46,11 @@ const AdminSidebar = () => {
     <div className="flex flex-col bg-white border-r w-64 h-screen">
       <div className="px-4 py-5">
         <div className="flex items-center">
-          <div className="flex justify-center items-center bg-[#274D60] rounded-full w-8 h-8">
-            <span className="font-bold text-white text-lg">M</span>
-          </div>
+          <img
+            src="./assets/images/mpiloLogo.png"
+            alt="Mpilo Mobile Logo"
+            className="w-8 h-8 rounded-full object-cover"
+          />
           <span className="ml-2 font-bold text-[#274D60] text-xl">
             Mpilo Mobile
           </span>
