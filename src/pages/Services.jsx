@@ -10,7 +10,7 @@ function Services() {
 
   useEffect(() => {
     setIsLoading(false);
-  }, [isLoading]);
+  }, []);
 
   if (isLoading) return <Preloader />;
 
@@ -18,104 +18,66 @@ function Services() {
     <>
       <Header logo="assets/images/mpiloLogo.png" joinBtn={true} />
       <Banner title="Services" background="assets/images/banner4.webp" />
-      <section className="py-5 text-black why-us-section">
-        <div className="container">
-          <div className="row">
-            <div className="mb-4 text-center col-12">
-              <h2 className="text-danger fw-bold">Why Us?</h2>
+
+      <section className="py-16 bg-gray-50 text-gray-800">
+        <div className="container mx-auto px-4">
+          {/* Why Us Section */}
+          <div className="text-center mb-12 max-w-3xl mx-auto">
+            <h2 className="text-3xl font-bold text-[#274D60] mb-4">Why Us?</h2>
+            <p className="mb-4">
+              Our services cover a wide range of healthcare, including general
+              health, optometry, dentistry, dietetics, and specialist medicine
+              like ENT, cardio-metabolic & infectious diseases.
+            </p>
+            <p className="mb-4">
+              Mpilo Mobile uses tele-health infrastructure for remote consultations
+              and aftercare, reducing costs by up to <strong>50%</strong> compared
+              to traditional health facilities.
+            </p>
+            <p>
+              We track clinic performance with top-tier analytics tools to improve
+              patient care.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-3 mb-16">
+            {["General Health", "Nutrition", "Vision", "Dental", "Cardio - Metabolic", "Optometry", "Dentistry", "ENT", "Respiratory"].map((tag, i) => (
+              <span
+                key={i}
+                className="bg-white border border-gray-300 px-4 py-2 rounded-full shadow-sm text-sm font-medium"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-10 items-center mb-20">
+            <div className="overflow-hidden rounded-xl shadow-lg">
+              <img
+                src="assets/images/covid-services.jpg"
+                alt="COVID-19 Workplace Services"
+                className="w-full h-full object-cover"
+              />
             </div>
 
-            <div className="mb-5 col-md-10 offset-md-1">
-              <p className="text-center">
-                Our services cover a wide range of healthcare, including general
-                health, optometry, dentistry, dietetics; specialist medicine
-                such as ENT, cardio-metabolic & infectious diseases; and more.
-                Mpilo Mobile leverages tele-health infrastructure to deliver
-                medical consultations remotely and aftercare.
-              </p>
-              <p className="text-center">
-                Our healthcare delivery model delivers quality patient care at
-                up to <strong>50% reduced cost</strong> compared to traditional
-                health facilities, and we use artificial intelligence (AI) for
-                triage & medical consultation purposes.
-              </p>
-              <p className="text-center">
-                Mpilo Mobile tracks the performance of our clinics and uses this
-                insight to improve patient care with best-in-class data capture
-                and analytics tools.
-              </p>
-            </div>
-
-            <div className="mb-4 text-center col-12">
-              <h3 className="text-danger fw-bold">Services</h3>
-            </div>
-
-            <div
-              className="d-flex flex-wrap justify-content-center gap-3 mb-5 col-md-10 offset-md-1"
-              style={{ gap: "1rem 2rem" }}
-            >
-              {[
-                "General Health",
-                "Nutrition",
-                "Vision",
-                "Dental",
-                "Cardio - Metabolic",
-                "Optometry",
-                "Dentistry",
-                "ENT",
-                "Respiratory",
-              ].map((tag, i) => (
-                <div
-                  key={i}
-                  className="bg-light shadow-sm px-4 py-2 border rounded-pill fw-medium"
-                >
-                  {tag}
-                </div>
-              ))}
-            </div>
-
-            <div className="mb-5 col-lg-12">
-              <div className="align-items-center row g-5">
-                <div className="col-md-6">
-                  <div className="shadow-lg rounded-4 overflow-hidden">
-                    <img
-                      src="assets/images/covid-services.jpg"
-                      alt="COVID-19 Workplace Services"
-                      className="w-100 img-fluid"
-                      style={{ objectFit: "cover", height: "100%" }}
-                    />
-                  </div>
-                </div>
-
-                <div className="col-md-6">
-                  <h4 className="mb-3 fw-bold">COVID-19 Workplace Solutions</h4>
-                  <ul className="ps-3 list-unstyled">
-                    <li className="mb-2">
-                      • Full Screening & Testing of Employees
-                    </li>
-                    <li className="mb-2">• 96hr Results Turnaround</li>
-                    <li className="mb-2">• COVID-19 Training for All Staff</li>
-                    <li className="mb-2">
-                      • Hygiene Protocols Based on DoL Guidelines
-                    </li>
-                    <li className="mb-2">
-                      • Employee Monitoring Tools (Manual & Digital)
-                    </li>
-                    <li className="mb-2">
-                      • Workplace Readiness Report & Audit
-                    </li>
-                    <li className="mb-2">
-                      • Hand & Personal Hygiene Practices
-                    </li>
-                  </ul>
-                </div>
-              </div>
+            <div>
+              <h3 className="text-2xl font-bold text-[#274D60] mb-4">
+                COVID-19 Workplace Solutions
+              </h3>
+              <ul className="list-disc list-inside text-gray-700 space-y-2">
+                <li>Full Screening & Testing of Employees</li>
+                <li>96hr Results Turnaround</li>
+                <li>COVID-19 Training for All Staff</li>
+                <li>Hygiene Protocols Based on DoL Guidelines</li>
+                <li>Employee Monitoring Tools (Manual & Digital)</li>
+                <li>Workplace Readiness Report & Audit</li>
+                <li>Hand & Personal Hygiene Practices</li>
+              </ul>
             </div>
           </div>
         </div>
       </section>
 
-      <div className="mb-80">"</div>
       <Footer getStart={true} />
       <GotoTop />
     </>

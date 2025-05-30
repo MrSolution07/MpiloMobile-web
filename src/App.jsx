@@ -16,11 +16,11 @@ import { Register, Login, AdminLogin, ForgotPassword } from "./components/auth";
 // Dashboard layout and pages
 import { Layout } from "./components/layout";
 import { Dashboard } from "./components/dashboard";
-import { AppointmentsList } from "./components/appointments";
+import { AppointmentsList,NewAppointment } from "./components/appointments";
 import { MessagesList } from "./components/messages";
-import { PatientsList, PatientDetails } from "./components/patients";
-import { TriageList } from "./components/triage";
-import { MedicalRecordsList } from "./components/records";
+import { PatientsList, PatientDetails,AddPatient } from "./components/patients";
+import { TriageList, NewTriage } from "./components/triage";
+import { MedicalRecordsList, NewRecord } from "./components/records";
 
 const router = createBrowserRouter([
   // Main website routes
@@ -79,6 +79,10 @@ const router = createBrowserRouter([
         element: <AppointmentsList />,
       },
       {
+        path: "newappointment",
+        element: <NewAppointment />,
+      },
+      {
         path: "messages",
         element: <MessagesList />,
       },
@@ -91,12 +95,24 @@ const router = createBrowserRouter([
         element: <PatientDetails />,
       },
       {
+        path: "addpatient",
+        element: <AddPatient />,
+      },
+      {
         path: "triage",
         element: <TriageList />,
       },
       {
+        path: "newtriage",
+        element: <NewTriage />,
+      },
+      {
         path: "records",
         element: <MedicalRecordsList />,
+      },
+      {
+        path: "newrecord",
+        element: <NewRecord />,
       },
     ],
   },

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
 import { API_URL } from "../../constants";
+import { FaLock, FaPhone, FaEnvelope, FaUnlockAlt, FaSignInAlt } from "react-icons/fa";
 
 function Register() {
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -13,166 +13,121 @@ function Register() {
     e.preventDefault();
     axios
       .post(`${API_URL}/register`, {
-        username: username,
-        email: email,
-        password: password,
-        confirmPassword: confirmPassword,
-        mobileNumber: mobileNumber,
+        email,
+        password,
+        confirmPassword,
+        mobileNumber,
       })
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      .then((response) => console.log(response))
+      .catch((err) => console.log(err));
   };
 
   return (
-    <div className="container" id="page">
-      <div className="row vh-100">
-        <div className="align-self-center col-12">
-          <div className="auth-page">
-            <div className="shadow-lg card auth-card" id="regpage">
-              <div className="card-body">
-                <div className="px-3">
-                  <div className="auth-logo-box">
-                    <a href="/" className="logo logo-admin">
-                      <img
-                        src="../assets/images/mpiloLogo.png"
-                        height="55"
-                        alt="logo"
-                        className="auth-logo"
-                      />
-                    </a>
-                  </div>
-                  <div className="text-center auth-logo-text">
-                    <h4 className="name">Mpilo Mobile</h4>
-                    <p className="text-muted">Register your account now.</p>
-                  </div>
-                  <form
-                    className="my-4 form-horizontal auth-form"
-                    action="index.html"
-                    onSubmit={handleSubmit}
-                  >
-                    <div className="form-group">
-                      <label htmlFor="username">Username</label>
-                      <div className="input-group mb-3">
-                        <span className="auth-form-icon">
-                          <i className="dripicons-user"></i>
-                        </span>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="username"
-                          placeholder="Enter username"
-                          onChange={(e) => setUsername(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor="useremail">Email</label>
-                      <div className="input-group mb-3">
-                        <span className="auth-form-icon">
-                          <i className="dripicons-mail"></i>
-                        </span>
-                        <input
-                          type="email"
-                          className="form-control"
-                          id="useremail"
-                          placeholder="Enter Email"
-                          onChange={(e) => setEmail(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor="userpassword">Password</label>
-                      <div className="input-group mb-3">
-                        <span className="auth-form-icon">
-                          <i className="dripicons-lock"></i>
-                        </span>
-                        <input
-                          type="password"
-                          className="form-control"
-                          id="userpassword"
-                          placeholder="Enter password"
-                          onChange={(e) => setPassword(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor="confirmPassword">Confirm Password</label>
-                      <div className="input-group mb-3">
-                        <span className="auth-form-icon">
-                          <i className="dripicons-lock-open"></i>
-                        </span>
-                        <input
-                          type="password"
-                          className="form-control"
-                          id="confirmPassword"
-                          placeholder="Confirm Password"
-                          onChange={(e) => setConfirmPassword(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor="mobileNumber">Mobile Number</label>
-                      <div className="input-group mb-3">
-                        <span className="auth-form-icon">
-                          <i className="dripicons-phone"></i>
-                        </span>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="mobileNumber"
-                          placeholder="Enter Mobile Number"
-                          onChange={(e) => setMobileNumber(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                    <div className="form-group mt-4 row">
-                      <div className="col-sm-12">
-                        <div className="custom-control custom-switch switch-success">
-                          <input
-                            type="checkbox"
-                            className="custom-control-input"
-                            id="customSwitchSuccess"
-                          />
-                          <label
-                            className="text-muted custom-control-label"
-                            htmlFor="customSwitchSuccess"
-                          >
-                            By registering you agree to the{" "}
-                            <a href="#" className="text-primary">
-                              Terms of Use
-                            </a>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="form-group mb-0 row">
-                      <div className="mt-2 col-12">
-                        <button
-                          className="btn-block btn btn-gradient-primary btn-round waves-effect waves-light"
-                          type="submit"
-                          id="btnReg"
-                        >
-                          Register <i className="ml-1 fas fa-sign-in-alt"></i>
-                        </button>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-                <div className="m-3 text-muted text-center">
-                  <p className="">
-                    Already have an account ?{" "}
-                    <a href="/login" className="ml-2 text-primary">
-                      Log in
-                    </a>
-                  </p>
-                </div>
-              </div>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+      <div className="bg-white shadow-lg h-full rounded-lg w-full max-w-md p-8">
+        <div className="flex justify-center mb-4">
+          <a href="/">
+            <img
+              src="../assets/images/mpiloLogo.png"
+              alt="Mpilo Logo"
+              className="h-12"
+            />
+          </a>
+        </div>
+
+        <div className="text-center mb-6">
+          <h2 className="text-xl font-semibold text-gray-800">Mpilo Mobile</h2>
+          <p className="text-sm text-gray-500">Register your account now.</p>
+        </div>
+
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              Email
+            </label>
+            <div className="flex items-center border rounded-md px-3 mt-1">
+              <FaEnvelope className="text-gray-400 mr-2" />
+              <input
+                type="email"
+                id="email"
+                placeholder="Enter email"
+                className="w-full py-2 outline-none text-sm"
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
           </div>
+
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
+            <div className="flex items-center border rounded-md px-3 mt-1">
+              <FaLock className="text-gray-400 mr-2" />
+              <input
+                type="password"
+                id="password"
+                placeholder="Enter password"
+                className="w-full py-2 outline-none text-sm"
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+              Confirm Password
+            </label>
+            <div className="flex items-center border rounded-md px-3 mt-1">
+              <FaUnlockAlt className="text-gray-400 mr-2" />
+              <input
+                type="password"
+                id="confirmPassword"
+                placeholder="Confirm password"
+                className="w-full py-2 outline-none text-sm"
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="mobileNumber" className="block text-sm font-medium text-gray-700">
+              Mobile Number
+            </label>
+            <div className="flex items-center border rounded-md px-3 mt-1">
+              <FaPhone className="text-gray-400 mr-2" />
+              <input
+                type="text"
+                id="mobileNumber"
+                placeholder="Enter mobile number"
+                className="w-full py-2 outline-none text-sm"
+                onChange={(e) => setMobileNumber(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <input type="checkbox" id="customSwitchSuccess" className="mt-0.5" />
+            <label htmlFor="customSwitchSuccess" className="flex items-center">
+              By registering you agree to the{" "}
+              <a href="#" className="ml-1 text-primary hover:underline">
+                Terms of Use
+              </a>
+            </label>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-[#274D60] text-white py-2 rounded-md hover:opacity-90 transition flex items-center justify-center gap-2"
+          >
+            Register <FaSignInAlt />
+          </button>
+        </form>
+
+        <div className="text-center mt-6 text-sm text-gray-600">
+          Already have an account?
+          <a href="/login" className="ml-2 text-primary font-medium hover:underline">
+            Log in
+          </a>
         </div>
       </div>
     </div>

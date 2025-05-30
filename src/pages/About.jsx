@@ -20,7 +20,7 @@ function About() {
       <Header logo="assets/images/mpiloLogo.png" joinBtn={true} />
       <Banner title="About Us" background="assets/images/aboutBanner.jpg" />
       <Cta />
-      <Footer />
+      <Footer getStart={true}/>
       <GotoTop />
     </>
   );

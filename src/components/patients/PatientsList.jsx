@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import { Search, Plus, Filter, UserX } from "lucide-react";
 import {
   Card,
@@ -25,19 +25,15 @@ const PatientsList = () => {
   const [sortField, setSortField] = useState("name");
   const [sortDirection, setSortDirection] = useState("asc");
 
-  // Handle sort
   const handleSort = (field) => {
     if (sortField === field) {
-      // Toggle direction if same field
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
-      // Set new field and default to ascending
       setSortField(field);
       setSortDirection("asc");
     }
   };
 
-  // Filter patients
   const filteredPatients = mockPatients.filter((patient) => {
     const matchesSearch =
       patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -50,7 +46,6 @@ const PatientsList = () => {
     return matchesSearch && matchesStatus;
   });
 
-  // Sort patients
   const sortedPatients = [...filteredPatients].sort((a, b) => {
     let comparison = 0;
 
@@ -95,6 +90,7 @@ const PatientsList = () => {
             Filter
           </Button>
 
+          <Link to = "/dashboard/addpatient">
           <Button
             variant="primary"
             size="sm"
@@ -102,6 +98,7 @@ const PatientsList = () => {
           >
             Add Patient
           </Button>
+          </Link>
         </div>
       </div>
 

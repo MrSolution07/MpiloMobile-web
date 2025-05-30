@@ -1,77 +1,60 @@
 function ForgotPassword() {
   return (
-    <body className="account-body accountbg">
-      <div className="container">
-        <div className="row vh-100">
-          <div className="align-self-center col-12">
-            <div className="auth-page">
-              <div className="shadow-lg card auth-card" id="pwreset">
-                <div className="card-body">
-                  <div className="px-3">
-                    <div className="auth-logo-box">
-                      <a href="#" className="logo logo-admin">
-                        <img
-                          src="../assets/images/logo.png"
-                          height="55"
-                          alt="logo"
-                          className="auth-logo"
-                        />
-                      </a>
-                    </div>
-                    <div className="text-center auth-logo-text">
-                      <h4 className="mt-5 mb-3">
-                        Reset Password For Mpilo Mobile
-                      </h4>
-                      <p className="mb-0 text-muted">
-                        Enter your Email and instructions will be sent to you!
-                      </p>
-                    </div>
-                    <form
-                      className="my-4 form-horizontal auth-form"
-                      action="index.html"
-                    >
-                      <div className="form-group">
-                        <label htmlFor="useremail">Email</label>
-                        <div className="input-group mb-3">
-                          <span className="auth-form-icon">
-                            <i className="dripicons-mail"></i>
-                          </span>
-                          <input
-                            type="email"
-                            className="form-control"
-                            id="useremail"
-                            placeholder="Enter Email"
-                          />
-                        </div>
-                      </div>
-                      <div className="form-group mb-0 row">
-                        <div className="mt-2 col-12">
-                          <button
-                            className="btn-block btn btn-gradient-primary btn-round waves-effect waves-light"
-                            id="btnReset"
-                            type="button"
-                          >
-                            Reset <i className="ml-1 fas fa-sign-in-alt"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                  <div className="m-3 text-muted text-center">
-                    <p className="">
-                      Remember It ?{" "}
-                      <a href="/login" className="ml-2 text-primary">
-                        Sign in
-                      </a>
-                    </p>
-                  </div>
-                </div>
-              </div>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="bg-white shadow-lg rounded-lg w-full max-w-md p-8">
+        <div className="flex justify-center mb-6">
+          <a href="/">
+            <img
+              src="../assets/images/mpiloLogo.png"
+              alt="Mpilo Logo"
+              className="h-12" 
+            />
+          </a>
+        </div>
+
+        <div className="text-center mb-6">
+          <h2 className="text-xl font-semibold text-gray-800">
+            Reset Password For Mpilo Mobile
+          </h2>
+          <p className="text-sm text-gray-500 mt-1">
+            Enter your Email and instructions will be sent to you!
+          </p>
+        </div>
+
+        <form className="space-y-4">
+          <div>
+            <label htmlFor="useremail" className="block text-sm font-medium text-gray-700">
+              Email
+            </label>
+            <div className="flex items-center border rounded-md px-3 mt-1">
+              <i className="dripicons-mail text-gray-400 mr-2"></i>
+              <input
+                type="email"
+                id="useremail"
+                placeholder="Enter Email"
+                className="w-full py-2 outline-none text-sm"
+              />
             </div>
           </div>
+
+          <button
+            type="button"
+            className="w-full bg-[#274D60] text-white py-2 rounded-md mt-2 hover:opacity-90 transition"
+          >
+            Reset <i className="fas fa-sign-in-alt ml-2"></i>
+          </button>
+        </form>
+
+        <div className="text-center mt-6 text-sm">
+          <p className="text-gray-500">
+            Remember it?
+            <a href="/login" className="ml-2 text-primary font-medium hover:underline">
+              Sign in
+            </a>
+          </p>
         </div>
       </div>
-    </body>
+    </div>
   );
 }
 

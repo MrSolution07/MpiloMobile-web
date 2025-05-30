@@ -1,122 +1,103 @@
 import { Link } from "react-router-dom";
 import { TbStethoscope } from "react-icons/tb";
+import { FaEnvelope, FaLock, FaSignInAlt } from "react-icons/fa";
 
 function AdminLogin() {
   return (
-    <body className="account-body accountbg">
-      <div className="container">
-        <div className="row vh-100">
-          <div className="align-self-center col-12">
-            <div className="auth-page">
-              <div className="shadow-lg card auth-card" id="logpage">
-                <div className="card-body">
-                  <div className="px-3">
-                    <div className="auth-logo-box">
-                      <a href="/" className="logo logo-admin">
-                        <img
-                          src="../assets/images/mpiloLogo.png"
-                          height="55"
-                          alt="logo"
-                          className="auth-logo"
-                        />
-                      </a>
-                    </div>
-                    <div className="text-center auth-logo-text">
-                      <h4 className="mt-5 mb-3">Administrator Login</h4>
-                      <p className="mb-0 text-muted">
-                        Sign in to continue to Mpilo Mobile
-                      </p>
-                    </div>
-                    <form
-                      className="my-4 form-horizontal auth-form"
-                      action="index.html"
-                    >
-                      <div className="form-group">
-                        <label htmlFor="username">Username</label>
-                        <div className="input-group mb-3">
-                          <span className="auth-form-icon">
-                            <i className="dripicons-user"></i>
-                          </span>
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="username"
-                            placeholder="Enter username"
-                          />
-                        </div>
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="userpassword">Password</label>
-                        <div className="input-group mb-3">
-                          <span className="auth-form-icon">
-                            <i className="dripicons-lock"></i>
-                          </span>
-                          <input
-                            type="password"
-                            className="form-control"
-                            id="userpassword"
-                            placeholder="Enter password"
-                          />
-                        </div>
-                      </div>
-                      <div className="form-group mt-4 row">
-                        <div className="col-sm-6">
-                          <div className="custom-control custom-switch switch-success">
-                            <input
-                              type="checkbox"
-                              className="custom-control-input"
-                              id="customSwitchSuccess"
-                            />
-                            <label
-                              className="text-muted custom-control-label"
-                              htmlFor="customSwitchSuccess"
-                            >
-                              Remember me
-                            </label>
-                          </div>
-                        </div>
-                        <div className="text-right col-sm-6">
-                          <a
-                            href="/forgot-password"
-                            className="font-13 text-muted"
-                          >
-                            <i className="dripicons-lock"></i> Forgot password?
-                          </a>
-                        </div>
-                      </div>
-                      <div className="form-group mb-0 row">
-                        <div className="mt-2 col-12">
-                          <a href="SkillUp/HTML/authentication/ProfilePage.html">
-                            <button
-                              className="btn-block btn btn-gradient-primary btn-round waves-effect waves-light"
-                              id="btnLog"
-                              type="button"
-                            >
-                              Log In <i className="ml-1 fas fa-sign-in-alt"></i>
-                            </button>
-                          </a>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="bg-white shadow-lg rounded-lg w-full max-w-md p-8">
+        <div className="flex justify-center mb-6">
+          <a href="/">
+            <img
+              src="../assets/images/mpiloLogo.png"
+              alt="Mpilo Logo"
+              className="h-12"
+            />
+          </a>
+        </div>
 
-                  <div className="d-flex justify-content-center">
-                    <Link to="/LoginPage">
-                      <button className="SkillUplms-btn">
-                        <span className="admin-icon">
-                          <TbStethoscope />
-                        </span>{" "}
-                        I'm a practitioner
-                      </button>
-                    </Link>
-                  </div>
-                </div>
-              </div>
+        <div className="text-center mb-6">
+          <h2 className="text-xl font-semibold text-gray-800">
+            Administrator Login
+          </h2>
+          <p className="text-sm text-gray-500">
+            Sign in to continue to Mpilo Mobile
+          </p>
+        </div>
+
+        <form className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              Email
+            </label>
+            <div className="flex items-center border rounded-md px-3 mt-1">
+              <FaEnvelope className="text-gray-400 mr-2" />
+              <input
+                type="email"
+                id="email"
+                placeholder="Enter email"
+                className="w-full py-2 outline-none text-sm"
+              />
             </div>
           </div>
+
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
+            <div className="flex items-center border rounded-md px-3 mt-1">
+              <FaLock className="text-gray-400 mr-2" />
+              <input
+                type="password"
+                id="password"
+                placeholder="Enter password"
+                className="w-full py-2 outline-none text-sm"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-between items-center text-sm mt-2">
+            <label className="flex items-center text-gray-600">
+              <input type="checkbox" className="form-checkbox text-[#274D60] mr-2" />
+              Remember me
+            </label>
+            <a href="/forgot-password" className="text-primary hover:underline">
+              Forgot password?
+            </a>
+          </div>
+
+          <button
+            type="button"
+            className="w-full bg-[#274D60] text-white py-2 rounded-md mt-4 hover:opacity-90 transition flex items-center justify-center gap-2"
+          >
+            Log In <FaSignInAlt />
+          </button>
+        </form>
+
+        <div className="flex justify-center mt-6">
+          <Link to="/Login">
+            <button
+              className="flex items-center gap-2 px-4 py-2 border rounded-md text-[#274D60] border-[#274D60] hover:bg-[#274D60] hover:text-white transition"
+            >
+              <TbStethoscope size={18} />
+              I'm a practitioner
+            </button>
+          </Link>
+        </div>
+
+        <div className="text-center mt-6 text-sm">
+          <p className="text-gray-500">
+            Don't have an account?
+            <Link
+              to="/Register"
+              className="ml-1 px-1 py-1 rounded-md bg-[#274D60] text-primary font-medium hover:opacity-90"
+            >
+              Register
+            </Link>
+          </p>
         </div>
       </div>
-    </body>
+    </div>
   );
 }
 

@@ -3,7 +3,7 @@ import { Bell, Search, Menu, X } from "lucide-react";
 import { Avatar } from "../ui";
 import { currentUser } from "../../data";
 
-function Header({ toggleSidebar, isSidebarOpen }) {
+function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -20,7 +20,7 @@ function Header({ toggleSidebar, isSidebarOpen }) {
   };
 
   return (
-    <header className="top-0 z-30 sticky bg-white shadow-sm border-gray-200 border-b">
+    <header className="top-0 z-30 bg-white shadow-sm border-gray-200 border-b">
       <div className="flex justify-between items-center px-4 h-16">
         <div className="flex items-center">
           <button
@@ -40,7 +40,6 @@ function Header({ toggleSidebar, isSidebarOpen }) {
               isSearchActive ? "hidden md:flex" : "flex"
             }`}
           >
-            <h1 className="font-semibold text-gray-800 text-xl">MpiloMobile</h1>
           </div>
         </div>
 
@@ -191,4 +190,4 @@ function Header({ toggleSidebar, isSidebarOpen }) {
   );
 }
 
-export default Header;
+export default HeaderDashboard;

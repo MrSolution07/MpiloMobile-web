@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
-import Header from "./Header";
+import HeaderDashboard from "./HeaderDashboard";
 import Sidebar from "./Sidebar";
 
 function Layout() {
@@ -50,7 +50,7 @@ function Layout() {
       </div>
 
       <div className="flex flex-col flex-1 overflow-hidden">
-        <Header toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
+        <HeaderDashboard toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
 
         <main className="flex-1 bg-gray-50 p-4 md:p-6 overflow-x-hidden overflow-y-auto">
           <Outlet />

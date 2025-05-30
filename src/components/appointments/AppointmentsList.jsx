@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Calendar, Filter, Search, Plus } from "lucide-react";
 import {
   Card,
@@ -18,19 +19,17 @@ import {
 } from "../../utils";
 
 function AppointmentsList() {
-  const [view, setView] = useState("list"); // 'list' or 'calendar'
+  const [view, setView] = useState("list"); 
   const [filterOpen, setFilterOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
 
-  // Get unique appointment types for filter
   const appointmentTypes = [
     "all",
     ...new Set(mockAppointments.map((app) => app.type)),
   ];
 
-  // Filter appointments
   const filteredAppointments = mockAppointments.filter((appointment) => {
     const matchesSearch =
       appointment.patientName
@@ -46,10 +45,8 @@ function AppointmentsList() {
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  // Group appointments by date
   const groupedAppointments = groupAppointmentsByDate(filteredAppointments);
 
-  // Get patient details
   const getPatientDetails = (patientId) => {
     return mockPatients.find((patient) => patient.id === patientId);
   };
@@ -95,6 +92,7 @@ function AppointmentsList() {
             </button>
           </div>
 
+          <Link to="/dashboard/newappointment" >
           <Button
             variant="primary"
             size="sm"
@@ -102,10 +100,10 @@ function AppointmentsList() {
           >
             New Appointment
           </Button>
+          </Link>
         </div>
       </div>
 
-      {/* Search and filters */}
       <div className="flex flex-col space-y-4">
         <div className="relative">
           <div className="left-0 absolute inset-y-0 flex items-center pl-3 pointer-events-none">
@@ -159,7 +157,6 @@ function AppointmentsList() {
         )}
       </div>
 
-      {/* List View */}
       {view === "list" && (
         <div className="space-y-6">
           {Object.keys(groupedAppointments).length > 0 ? (
@@ -270,7 +267,6 @@ function AppointmentsList() {
         </div>
       )}
 
-      {/* Calendar View (placeholder) */}
       {view === "calendar" && (
         <Card>
           <CardContent className="p-6">

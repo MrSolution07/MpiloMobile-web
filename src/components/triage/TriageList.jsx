@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   AlertTriangle,
   Filter,
@@ -89,6 +90,7 @@ const TriageList = () => {
             Filter
           </Button>
 
+          <Link to = "/dashboard/newtriage">
           <Button
             variant="primary"
             size="sm"
@@ -96,6 +98,7 @@ const TriageList = () => {
           >
             New Triage Case
           </Button>
+          </Link>
         </div>
       </div>
 

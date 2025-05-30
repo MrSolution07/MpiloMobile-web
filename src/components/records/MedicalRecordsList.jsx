@@ -7,6 +7,7 @@ import {
   Calendar,
   FilePlus,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Card, CardContent, Button, Badge, Avatar } from "../ui";
 import { mockMedicalRecords, mockPatients } from "../../data";
 import { formatDate } from "../../utils";
@@ -66,6 +67,7 @@ const MedicalRecordsList = () => {
             Filter
           </Button>
 
+          <Link to = "/dashboard/newrecord">
           <Button
             variant="primary"
             size="sm"
@@ -73,6 +75,7 @@ const MedicalRecordsList = () => {
           >
             New Record
           </Button>
+          </Link>
         </div>
       </div>
 
