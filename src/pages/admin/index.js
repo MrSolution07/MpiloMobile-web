@@ -4,3 +4,4 @@ export { default as AdminDoctors } from "./AdminDoctors";
 export { default as AdminNotFound } from "./AdminNotFound";
 export { default as AdminPatients } from "./AdminPatients";
 export { default as AdminRecords } from "./AdminRecords";
+export { default as AdminAddPatient } from "./AdminAddPatient";

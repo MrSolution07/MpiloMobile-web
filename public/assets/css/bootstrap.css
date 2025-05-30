@@ -262,6 +262,7 @@ button,
 [type="reset"],
 [type="submit"] {
   -webkit-appearance: button;
+  appearance: button;
 }
 
 button:not(:disabled),
@@ -290,6 +291,7 @@ input[type="time"],
 input[type="datetime-local"],
 input[type="month"] {
   -webkit-appearance: listbox;
+  appearance: listbox;
 }
 
 textarea {
@@ -328,6 +330,7 @@ progress {
 [type="search"] {
   outline-offset: -2px;
   -webkit-appearance: none;
+  appearance: none;
 }
 
 [type="search"]::-webkit-search-decoration {
@@ -8342,14 +8345,14 @@ button.bg-dark:focus {
   padding-bottom: 1rem !important;
 }
 
-.pl-3,
+/* .pl-3,
 .px-3 {
   padding-left: 1rem !important;
-}
+} */
 
-.p-4 {
+/* .p-4 {
   padding: 1.5rem !important;
-}
+} */
 
 .pt-4,
 .py-4 {
@@ -10037,9 +10040,9 @@ button.bg-dark:focus {
   font-style: italic !important;
 }
 
-.text-white {
+/* .text-white {
   color: #fff !important;
-}
+} */
 
 .text-primary {
   color: #007bff !important;
