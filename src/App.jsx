@@ -33,7 +33,8 @@ import {
   AdminDoctors,
   AdminRecords,
   AdminNotFound,
-  AdminAddPatient
+  AdminAddPatient,
+  Routes
 } from "./pages/admin";
 
 const queryClient = new QueryClient();
@@ -165,6 +166,10 @@ const router = createBrowserRouter([
       {
         path: "adminaddpatient",
         element: <AdminAddPatient />,
+      },
+      {
+        path: "routes",
+        element: <Routes />,
       }
     ],
   },
