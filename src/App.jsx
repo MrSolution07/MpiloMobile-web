@@ -34,6 +34,8 @@ import {
   AdminRecords,
   AdminNotFound,
   AdminAddPatient,
+  AdminAddDoctor,
+  AdminAddRecord,
   Routes
 } from "./pages/admin";
 
@@ -170,6 +172,18 @@ const router = createBrowserRouter([
       {
         path: "routes",
         element: <Routes />,
+      },
+      {
+        path: "adminadddoctor",
+        element: <AdminAddDoctor />,
+      },
+      {
+        path: "adminaddpatient",
+        element: <AdminAddPatient />,
+      },
+      {
+        path: "adminaddrecord",
+        element: <AdminAddRecord />,
       }
     ],
   },
