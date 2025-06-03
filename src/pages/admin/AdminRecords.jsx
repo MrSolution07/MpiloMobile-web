@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FileText, Download, Share2, Search, Filter, Upload, Edit, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "../../hooks/useToast";
 const Button = ({ className = "", variant = "default", size = "default", children, ...props }) => {
   const baseStyles = "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
   const variants = {
@@ -94,12 +93,43 @@ const TabsTrigger = ({ value: triggerValue, onValueChange, activeValue, classNam
   </button>
 );
 
+const Table = ({ className = "", children, ...props }) => (
+  <div className="relative w-full overflow-auto">
+    <table className={`w-full caption-bottom text-sm ${className}`} {...props}>
+      {children}
+    </table>
+  </div>
+);
+const TableHeader = ({ className = "", children, ...props }) => (
+  <thead className={`[&_tr]:border-b ${className}`} {...props}>
+    {children}
+  </thead>
+);
+const TableBody = ({ className = "", children, ...props }) => (
+  <tbody className={`[&_tr:last-child]:border-0 ${className}`} {...props}>
+    {children}
+  </tbody>
+);
+const TableRow = ({ className = "", children, ...props }) => (
+  <tr className={`border-b transition-colors hover:bg-gray-50 data-[state=selected]:bg-gray-50 ${className}`} {...props}>
+    {children}
+  </tr>
+);
+const TableHead = ({ className = "", children, ...props }) => (
+  <th className={`h-12 px-4 text-left align-middle font-medium text-gray-500 [&:has([role=checkbox])]:pr-0 ${className}`} {...props}>
+    {children}
+  </th>
+);
+const TableCell = ({ className = "", children, ...props }) => (
+  <td className={`p-4 align-middle [&:has([role=checkbox])]:pr-0 ${className}`} {...props}>
+    {children}
+  </td>
+);
+
 const Records = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("all");
   const [search, setSearch] = useState("");
-  const [editingRecord, setEditingRecord] = useState(null);
 
   const initialRecords = [
     {
@@ -144,19 +174,7 @@ const Records = () => {
     },
   ];
 
-  const [records, setRecords] = useState([]);
-
-  // Load records from localStorage on component mount
-  useEffect(() => {
-    const savedRecords = localStorage.getItem('records');
-    if (savedRecords) {
-      setRecords(JSON.parse(savedRecords));
-    } else {
-      // If no saved records, use initial data and save it
-      setRecords(initialRecords);
-      localStorage.setItem('records', JSON.stringify(initialRecords));
-    }
-  }, []);
+  const [records] = useState(initialRecords);
 
   const filteredRecords = records.filter(record => {
     if (activeTab === "pending" && !record.status.toLowerCase().startsWith("pending")) return false;
@@ -175,35 +193,6 @@ const Records = () => {
 
   const handleNewRecord = () => {
     navigate('/admin/adminaddrecord');
-  };
-
-  const handleEditRecord = (record) => {
-    setEditingRecord(record);
-  };
-
-  const handleUpdateRecord = (updatedRecord) => {
-    const updatedRecords = records.map(record => 
-      record.id === updatedRecord.id ? updatedRecord : record
-    );
-    setRecords(updatedRecords);
-    localStorage.setItem('records', JSON.stringify(updatedRecords));
-    setEditingRecord(null);
-    toast({
-      title: "Record Updated",
-      description: "The record has been successfully updated.",
-    });
-  };
-
-  const handleDeleteRecord = (recordId) => {
-    if (window.confirm('Are you sure you want to delete this record?')) {
-      const updatedRecords = records.filter(record => record.id !== recordId);
-      setRecords(updatedRecords);
-      localStorage.setItem('records', JSON.stringify(updatedRecords));
-      toast({
-        title: "Record Deleted",
-        description: "The record has been successfully deleted.",
-      });
-    }
   };
 
   return (
@@ -257,14 +246,6 @@ const Records = () => {
         </Tabs>
       </div>
 
-      {editingRecord && (
-        <EditRecordModal 
-          record={editingRecord} 
-          onUpdate={handleUpdateRecord}
-          onCancel={() => setEditingRecord(null)}
-        />
-      )}
-
       <Card>
         <CardHeader className="pb-3">
           <CardTitle>Patient Records</CardTitle>
@@ -287,195 +268,69 @@ const Records = () => {
           </div>
 
           <div className="overflow-auto rounded-md border">
-            <div className="min-w-[800px]">
-              <div className="grid grid-cols-12 border-b bg-gray-50 px-4 py-3 text-sm font-medium">
-                <div className="col-span-3">Patient / Record</div>
-                <div className="col-span-2">Department</div>
-                <div className="col-span-2">Doctor</div>
-                <div className="col-span-2">Date</div>
-                <div className="col-span-2">Status</div>
-                <div className="col-span-1 text-right">Actions</div>
-              </div>
-
-              {filteredRecords.map((record) => (
-                <div key={record.id} className="grid grid-cols-12 border-b px-4 py-4 hover:bg-gray-50">
-                  <div className="col-span-3">
-                    <div className="flex items-start">
-                      <div className="mr-3 rounded-md bg-[#274D60]/10 p-2 text-[#274D60]">
-                        <FileText className="h-5 w-5" />
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Patient</TableHead>
+                  <TableHead>Record Type</TableHead>
+                  <TableHead>Department</TableHead>
+                  <TableHead>Doctor</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredRecords.map((record) => (
+                  <TableRow key={record.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <FileText className="h-5 w-5 text-[#274D60]" />
+                        <div>
+                          <div className="font-medium">{record.patientName}</div>
+                          <div className="text-xs text-gray-500">ID: {record.patientId}</div>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium">{record.patientName}</p>
-                        <p className="text-xs text-gray-500">{record.recordType}</p>
-                        <p className="text-xs text-gray-500">ID: {record.patientId}</p>
+                    </TableCell>
+                    <TableCell>{record.recordType}</TableCell>
+                    <TableCell>{record.department}</TableCell>
+                    <TableCell>{record.doctor}</TableCell>
+                    <TableCell>{record.date}</TableCell>
+                    <TableCell>
+                      <span className={record.status === "Completed" ? "status-active" : "status-pending"}>
+                        {record.status}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button variant="ghost" size="icon">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                          <Download className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                          <Share2 className="h-4 w-4" />
+                        </Button>
                       </div>
-                    </div>
-                  </div>
-                  <div className="col-span-2 flex items-center">{record.department}</div>
-                  <div className="col-span-2 flex items-center">{record.doctor}</div>
-                  <div className="col-span-2 flex items-center">{record.date}</div>
-                  <div className="col-span-2 flex items-center">
-                    <span className={record.status === "Completed" ? "status-active" : "status-pending"}>
-                      {record.status}
-                    </span>
-                  </div>
-                  <div className="col-span-1 flex items-center justify-end gap-1">
-                    <Button variant="ghost" size="icon" onClick={() => handleEditRecord(record)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleDeleteRecord(record.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon">
-                      <Download className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon">
-                      <Share2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-
-              {filteredRecords.length === 0 && (
-                <div className="py-8 text-center text-gray-500">
-                  No records found matching the current filters
-                </div>
-              )}
-            </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {filteredRecords.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center text-gray-500 py-8">
+                      No records found matching the current filters
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
-};
-
-const EditRecordModal = ({ record, onUpdate, onCancel }) => {
-  const [formData, setFormData] = useState(record);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onUpdate(formData);
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <h2 className="text-xl font-semibold mb-4">Edit Record</h2>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Patient Name</label>
-              <Input
-                name="patientName"
-                value={formData.patientName}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Patient ID</label>
-              <Input
-                name="patientId"
-                value={formData.patientId}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Record Type</label>
-              <select
-                name="recordType"
-                value={formData.recordType}
-                onChange={handleInputChange}
-                className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#274D60]"
-                required
-              >
-                <option value="Lab Results">Lab Results</option>
-                <option value="X-Ray">X-Ray</option>
-                <option value="MRI Scan">MRI Scan</option>
-                <option value="Prescription">Prescription</option>
-                <option value="Consultation">Consultation</option>
-                <option value="Surgery">Surgery</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Department</label>
-              <select
-                name="department"
-                value={formData.department}
-                onChange={handleInputChange}
-                className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#274D60]"
-                required
-              >
-                <option value="Cardiology">Cardiology</option>
-                <option value="Neurology">Neurology</option>
-                <option value="Orthopedics">Orthopedics</option>
-                <option value="Pediatrics">Pediatrics</option>
-                <option value="General Medicine">General Medicine</option>
-                <option value="Emergency">Emergency</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Doctor</label>
-              <Input
-                name="doctor"
-                value={formData.doctor}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Date</label>
-              <Input
-                name="date"
-                type="date"
-                value={formData.date}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Status</label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleInputChange}
-              className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#274D60]"
-              required
-            >
-              <option value="Completed">Completed</option>
-              <option value="Pending Review">Pending Review</option>
-              <option value="In Progress">In Progress</option>
-            </select>
-          </div>
-
-          <div className="flex gap-4 pt-4">
-            <Button type="submit" className="flex-1">
-              Update Record
-            </Button>
-            <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
-              Cancel
-            </Button>
-          </div>
-        </form>
-      </div>
     </div>
   );
 };

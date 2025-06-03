@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Search, Plus, Filter, Edit, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { Search, Plus, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "../../hooks/useToast";
 
 const Button = ({ className = "", variant = "default", size = "default", children, ...props }) => {
   const baseStyles = "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
@@ -85,56 +84,55 @@ const TableCell = ({ className = "", children, ...props }) => (
   </td>
 );
 
+const Edit = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" {...props}>
+    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+  </svg>
+);
+const Trash2 = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" {...props}>
+    <polyline points="3 6 5 6 21 6" />
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+    <line x1="10" y1="11" x2="10" y2="17" />
+    <line x1="14" y1="11" x2="14" y2="17" />
+  </svg>
+);
+
+const initialPatients = [
+  {
+    id: "ZA001",
+    name: "Sipho Nkosi",
+    age: 29,
+    gender: "Male",
+    contact: "+27 82 123 4567",
+    email: "sipho.nkosi@example.co.za",
+    status: "Active",
+  },
+  {
+    id: "ZA002",
+    name: "Thandi Mokoena",
+    age: 34,
+    gender: "Female",
+    contact: "+27 83 234 5678",
+    email: "thandi.mokoena@example.co.za",
+    status: "Inactive",
+  },
+  {
+    id: "ZA003",
+    name: "Johan van der Merwe",
+    age: 45,
+    gender: "Male",
+    contact: "+27 84 345 6789",
+    email: "johan.vdm@example.co.za",
+    status: "Pending",
+  },
+];
+
 const Patients = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [search, setSearch] = useState("");
-  const [editingPatient, setEditingPatient] = useState(null);
-
-  // Initial patients data
-  const initialPatients = [
-    {
-      id: "ZA001",
-      name: "Sipho Nkosi",
-      age: 29,
-      gender: "Male",
-      contact: "+27 82 123 4567",
-      email: "sipho.nkosi@example.co.za",
-      status: "Active",
-    },
-    {
-      id: "ZA002",
-      name: "Thandi Mokoena",
-      age: 34,
-      gender: "Female",
-      contact: "+27 83 234 5678",
-      email: "thandi.mokoena@example.co.za",
-      status: "Inactive",
-    },
-    {
-      id: "ZA003",
-      name: "Johan van der Merwe",
-      age: 45,
-      gender: "Male",
-      contact: "+27 84 345 6789",
-      email: "johan.vdm@example.co.za",
-      status: "Pending",
-    },
-  ];
-
-  const [patients, setPatients] = useState([]);
-
-  // Load patients from localStorage on component mount
-  useEffect(() => {
-    const savedPatients = localStorage.getItem('patients');
-    if (savedPatients) {
-      setPatients(JSON.parse(savedPatients));
-    } else {
-      // If no saved patients, use initial data and save it
-      setPatients(initialPatients);
-      localStorage.setItem('patients', JSON.stringify(initialPatients));
-    }
-  }, []);
+  const [patients] = useState(initialPatients);
 
   // Filter patients based on search
   const filteredPatients = search
@@ -149,35 +147,6 @@ const Patients = () => {
 
   const handleAddPatient = () => {
     navigate('/admin/adminaddpatient');
-  };
-
-  const handleEditPatient = (patient) => {
-    setEditingPatient(patient);
-  };
-
-  const handleUpdatePatient = (updatedPatient) => {
-    const updatedPatients = patients.map(patient => 
-      patient.id === updatedPatient.id ? updatedPatient : patient
-    );
-    setPatients(updatedPatients);
-    localStorage.setItem('patients', JSON.stringify(updatedPatients));
-    setEditingPatient(null);
-    toast({
-      title: "Patient Updated",
-      description: "The patient information has been successfully updated.",
-    });
-  };
-
-  const handleDeletePatient = (patientId) => {
-    if (window.confirm('Are you sure you want to delete this patient?')) {
-      const updatedPatients = patients.filter(patient => patient.id !== patientId);
-      setPatients(updatedPatients);
-      localStorage.setItem('patients', JSON.stringify(updatedPatients));
-      toast({
-        title: "Patient Deleted",
-        description: "The patient has been successfully deleted.",
-      });
-    }
   };
 
   return (
@@ -232,14 +201,6 @@ const Patients = () => {
           <Plus className="mr-2 h-4 w-4" /> Add Patient
         </Button>
       </div>
-
-      {editingPatient && (
-        <EditPatientModal 
-          patient={editingPatient} 
-          onUpdate={handleUpdatePatient}
-          onCancel={() => setEditingPatient(null)}
-        />
-      )}
 
       <Card>
         <CardContent className="p-6">
@@ -298,10 +259,10 @@ const Patients = () => {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => handleEditPatient(patient)}>
+                        <Button variant="ghost" size="icon">
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDeletePatient(patient.id)}>
+                        <Button variant="ghost" size="icon">
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -313,116 +274,6 @@ const Patients = () => {
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
-};
-
-const EditPatientModal = ({ patient, onUpdate, onCancel }) => {
-  const [formData, setFormData] = useState(patient);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onUpdate(formData);
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
-        <h2 className="text-xl font-semibold mb-4">Edit Patient</h2>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Name</label>
-              <Input
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Age</label>
-              <Input
-                name="age"
-                type="number"
-                value={formData.age}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Gender</label>
-              <select
-                name="gender"
-                value={formData.gender}
-                onChange={handleInputChange}
-                className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#274D60]"
-                required
-              >
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Status</label>
-              <select
-                name="status"
-                value={formData.status}
-                onChange={handleInputChange}
-                className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#274D60]"
-                required
-              >
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-                <option value="Pending">Pending</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Contact</label>
-            <Input
-              name="contact"
-              value={formData.contact}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
-            <Input
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-
-          <div className="flex gap-4 pt-4">
-            <Button type="submit" className="flex-1">
-              Update Patient
-            </Button>
-            <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
-              Cancel
-            </Button>
-          </div>
-        </form>
-      </div>
     </div>
   );
 };

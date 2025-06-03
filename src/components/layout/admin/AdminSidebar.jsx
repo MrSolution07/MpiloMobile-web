@@ -28,7 +28,7 @@ const AdminSidebar = () => {
     {
       title: "Messages",
       icon: MessageSquare,
-      path: "/admin/messages",
+      path: "/admin/adminmessages",
     },
     {
       title: "Records",
