@@ -19,12 +19,14 @@ import { Register, Login, AdminLogin, ForgotPassword } from "./components/auth";
 
 // Dashboard layout and pages
 import { Layout, AdminLayout } from "./components/layout";
-import { Dashboard } from "./components/dashboard";
+import { Dashboard } from "./components/DoctorDashboard";
 import { AppointmentsList,NewAppointment } from "./components/appointments";
 import { MessagesList } from "./components/messages";
 import { PatientsList, PatientDetails,AddPatient } from "./components/patients";
 import { TriageList, NewTriage } from "./components/triage";
 import { MedicalRecordsList, NewRecord } from "./components/records";
+import { DoctorSettings } from "./components/settings";
+import {DoctorProfile} from "./components/profile";
 
 // Admin dashboard pages
 import {
@@ -133,6 +135,15 @@ const router = createBrowserRouter([
         path: "newrecord",
         element: <NewRecord />,
       },
+      {
+        path:"settings",
+        element: <DoctorSettings/>
+      },
+      {
+        path: "profile",
+        element: <DoctorProfile />,
+      },
+
     ],
   },
 

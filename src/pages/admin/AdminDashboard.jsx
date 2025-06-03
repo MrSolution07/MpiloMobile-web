@@ -161,7 +161,7 @@ const AdminDashboard = () => {
         }
       `}</style>
 
-      <h1 className="mb-6 font-bold text-3xl">Dashboard</h1>
+      <h1 className="mb-6 font-bold text-3xl text-black">Dashboard</h1>
 
       {/* Stats Section */}
       <div className="gap-6 grid sm:grid-cols-2 lg:grid-cols-4">

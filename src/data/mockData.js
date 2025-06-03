@@ -4,7 +4,7 @@ export const currentUser = {
   role: 'doctor',
   department: 'Family Medicine',
   email: 'sarah.johnson@mediclinic.com',
-  avatar: 'https://images.pexels.com/photos/5452293/pexels-photo-5452293.jpeg?auto=compress&cs=tinysrgb&w=300'
+  avatar: 'https://i.pravatar.cc/150?img=5'
 };
 
 export const mockPatients = [

@@ -55,7 +55,7 @@ const AdminSidebar = () => {
             Mpilo Mobile
           </span>
         </div>
-        <div className="mt-1 text-gray-500 text-xs">Admin Dashboard</div>
+        {/* <div className="mt-1 text-gray-500 text-xs">Admin Dashboard</div> */}
       </div>
 
       <nav className="flex-1 px-4 py-4">

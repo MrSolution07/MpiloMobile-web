@@ -45,6 +45,7 @@ function Sidebar({ isSidebarOpen }) {
       path: "/dashboard/records",
       icon: <FileText className="w-5 h-5" />,
     },
+    
   ];
 
   return (
@@ -55,8 +56,18 @@ function Sidebar({ isSidebarOpen }) {
         lg:translate-x-0 transition-transform duration-300 ease-in-out
       `}
     >
-      <div className="flex justify-center items-center border-gray-200 border-b h-16">
-        <h1 className="font-bold text-blue-700 text-xl">MpiloMobile</h1>
+       <div className="px-4 py-5">
+        <div className="flex items-center">
+          <img
+            src="./assets/images/mpiloLogo.png"
+            alt="Mpilo Mobile Logo"
+            className="w-8 h-8 rounded-full object-cover"
+          />
+          <span className="ml-2 font-bold text-[#274D60] text-xl">
+            Mpilo Mobile
+          </span>
+        </div>
+        {/* <div className="mt-1 text-gray-500 text-xs">Admin Dashboard</div> */}
       </div>
 
       <div className="flex-1 overflow-y-auto">
