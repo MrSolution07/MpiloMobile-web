@@ -1,58 +1,8 @@
-
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const AdminAddPatients = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    name: "",
-    age: "",
-    gender: "",
-    contact: "",
-    email: "",
-    address: "",
-    medicalHistory: ""
-  });
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    // Generate a new patient ID
-    const newId = `ZA${String(Date.now()).slice(-3).padStart(3, '0')}`;
-    
-    // Create new patient object
-    const newPatient = {
-      id: newId,
-      name: formData.name,
-      age: parseInt(formData.age),
-      gender: formData.gender,
-      contact: formData.contact,
-      email: formData.email,
-      address: formData.address,
-      medicalHistory: formData.medicalHistory,
-      status: "Active"
-    };
-
-    // Get existing patients from localStorage or use empty array
-    const existingPatients = JSON.parse(localStorage.getItem('patients') || '[]');
-    
-    // Add new patient
-    const updatedPatients = [...existingPatients, newPatient];
-    
-    // Save to localStorage
-    localStorage.setItem('patients', JSON.stringify(updatedPatients));
-    
-    // Navigate back to patients page
-    navigate('/patients');
-  };
 
   const handleCancel = () => {
     navigate('/admin/patients');
@@ -79,7 +29,7 @@ const AdminAddPatients = () => {
       <div className="max-w-2xl">
         <div className="rounded-lg border bg-white text-gray-900 shadow-sm">
           <div className="p-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form className="space-y-6">
               <div className="space-y-2">
                 <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="name">
                   Full Name *
@@ -89,8 +39,6 @@ const AdminAddPatients = () => {
                   name="name"
                   type="text"
                   required
-                  value={formData.name}
-                  onChange={handleInputChange}
                   className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#274D60] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder="John Doe"
                 />
@@ -106,8 +54,6 @@ const AdminAddPatients = () => {
                     name="age"
                     type="number"
                     required
-                    value={formData.age}
-                    onChange={handleInputChange}
                     className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#274D60] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     placeholder="25"
                   />
@@ -121,8 +67,6 @@ const AdminAddPatients = () => {
                     id="gender"
                     name="gender"
                     required
-                    value={formData.gender}
-                    onChange={handleInputChange}
                     className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#274D60] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <option value="">Select Gender</option>
@@ -142,8 +86,6 @@ const AdminAddPatients = () => {
                   name="contact"
                   type="tel"
                   required
-                  value={formData.contact}
-                  onChange={handleInputChange}
                   className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#274D60] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder="+27 82 123 4567"
                 />
@@ -158,8 +100,6 @@ const AdminAddPatients = () => {
                   name="email"
                   type="email"
                   required
-                  value={formData.email}
-                  onChange={handleInputChange}
                   className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#274D60] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder="patient@example.co.za"
                 />
@@ -173,8 +113,6 @@ const AdminAddPatients = () => {
                   id="address"
                   name="address"
                   type="text"
-                  value={formData.address}
-                  onChange={handleInputChange}
                   className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#274D60] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder="123 Main Street, Cape Town"
                 />
@@ -187,8 +125,6 @@ const AdminAddPatients = () => {
                 <textarea
                   id="medicalHistory"
                   name="medicalHistory"
-                  value={formData.medicalHistory}
-                  onChange={handleInputChange}
                   className="flex min-h-[80px] w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#274D60] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder="Enter medical history, allergies, or other relevant information..."
                 />

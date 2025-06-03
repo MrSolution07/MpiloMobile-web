@@ -36,6 +36,7 @@ import {
   AdminAddPatient,
   AdminAddDoctor,
   AdminAddRecord,
+  AdminMessages,
   Routes
 } from "./pages/admin";
 
@@ -153,10 +154,10 @@ const router = createBrowserRouter([
         path: "doctors",
         element: <AdminDoctors />,
       },
-      // {
-      //   path: "messages",
-      //   element: <AdminMessages />,
-      // },
+      {
+        path: "adminmessages",
+        element: <AdminMessages />,
+      },
       {
         path: "records",
         element: <AdminRecords />,

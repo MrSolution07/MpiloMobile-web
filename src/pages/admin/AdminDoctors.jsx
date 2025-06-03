@@ -1,8 +1,6 @@
-
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { UserCheck, Search, Plus, Filter, Edit, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "../../hooks/useToast";
 const Button = ({ className = "", variant = "default", size = "default", children, ...props }) => {
   const baseStyles = "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
   const variants = {
@@ -67,9 +65,7 @@ const CardDescription = ({ className = "", children, ...props }) => (
 
 const Doctors = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [search, setSearch] = useState("");
-  const [editingDoctor, setEditingDoctor] = useState(null);
 
   const initialDoctors = [
     {
@@ -101,17 +97,7 @@ const Doctors = () => {
     },
   ];
 
-  const [doctors, setDoctors] = useState([]);
-
-  useEffect(() => {
-    const savedDoctors = localStorage.getItem('doctors');
-    if (savedDoctors) {
-      setDoctors(JSON.parse(savedDoctors));
-    } else {
-      setDoctors(initialDoctors);
-      localStorage.setItem('doctors', JSON.stringify(initialDoctors));
-    }
-  }, []);
+  const [doctors] = useState(initialDoctors);
 
   const filteredDoctors = search
     ? doctors.filter(
@@ -124,36 +110,7 @@ const Doctors = () => {
     : doctors;
 
   const handleAddDoctor = () => {
-    navigate('/doctors/add');
-  };
-
-  const handleEditDoctor = (doctor) => {
-    setEditingDoctor(doctor);
-  };
-
-  const handleUpdateDoctor = (updatedDoctor) => {
-    const updatedDoctors = doctors.map(doctor => 
-      doctor.id === updatedDoctor.id ? updatedDoctor : doctor
-    );
-    setDoctors(updatedDoctors);
-    localStorage.setItem('doctors', JSON.stringify(updatedDoctors));
-    setEditingDoctor(null);
-    toast({
-      title: "Doctor Updated",
-      description: "The doctor information has been successfully updated.",
-    });
-  };
-
-  const handleDeleteDoctor = (doctorId) => {
-    if (window.confirm('Are you sure you want to delete this doctor?')) {
-      const updatedDoctors = doctors.filter(doctor => doctor.id !== doctorId);
-      setDoctors(updatedDoctors);
-      localStorage.setItem('doctors', JSON.stringify(updatedDoctors));
-      toast({
-        title: "Doctor Deleted",
-        description: "The doctor has been successfully deleted.",
-      });
-    }
+    navigate('/admin/adminadddoctor');
   };
 
   return (
@@ -209,14 +166,6 @@ const Doctors = () => {
         </Button>
       </div>
 
-      {editingDoctor && (
-        <EditDoctorModal 
-          doctor={editingDoctor} 
-          onUpdate={handleUpdateDoctor}
-          onCancel={() => setEditingDoctor(null)}
-        />
-      )}
-
       <Card>
         <CardHeader className="pb-3">
           <CardTitle>Medical Staff</CardTitle>
@@ -253,10 +202,10 @@ const Doctors = () => {
                       </div>
                     </div>
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => handleEditDoctor(doctor)}>
+                      <Button variant="ghost" size="icon">
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleDeleteDoctor(doctor.id)}>
+                      <Button variant="ghost" size="icon">
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -294,120 +243,6 @@ const Doctors = () => {
           )}
         </CardContent>
       </Card>
-    </div>
-  );
-};
-
-const EditDoctorModal = ({ doctor, onUpdate, onCancel }) => {
-  const [formData, setFormData] = useState(doctor);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onUpdate(formData);
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
-        <h2 className="text-xl font-semibold mb-4">Edit Doctor</h2>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Name</label>
-            <Input
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Specialty</label>
-              <select
-                name="specialty"
-                value={formData.specialty}
-                onChange={handleInputChange}
-                className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#274D60]"
-                required
-              >
-                <option value="Cardiology">Cardiology</option>
-                <option value="Neurology">Neurology</option>
-                <option value="Orthopedics">Orthopedics</option>
-                <option value="Pediatrics">Pediatrics</option>
-                <option value="General Medicine">General Medicine</option>
-                <option value="Emergency">Emergency</option>
-                <option value="Surgery">Surgery</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Experience</label>
-              <Input
-                name="experience"
-                value={formData.experience}
-                onChange={handleInputChange}
-                placeholder="e.g., 10 years"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Contact</label>
-              <Input
-                name="contact"
-                value={formData.contact}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Status</label>
-              <select
-                name="status"
-                value={formData.status}
-                onChange={handleInputChange}
-                className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#274D60]"
-                required
-              >
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-                <option value="On Leave">On Leave</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
-            <Input
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-
-          <div className="flex gap-4 pt-4">
-            <Button type="submit" className="flex-1">
-              Update Doctor
-            </Button>
-            <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
-              Cancel
-            </Button>
-          </div>
-        </form>
-      </div>
     </div>
   );
 };
