@@ -127,11 +127,7 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
                       </p>
                     </div>
                   </div>
-                  <div className="px-4 py-2 border-gray-100 border-t text-center">
-                    <button className="font-medium text-blue-600 hover:text-blue-800 text-sm">
-                      View all notifications
-                    </button>
-                  </div>
+                 
                 </div>
               )}
             </div>
@@ -162,19 +158,19 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
                   </div>
                   <div className="py-1">
                     <a
-                      href="#"
+                      href="/dashboard/profile"
                       className="block hover:bg-gray-100 px-4 py-2 text-gray-700 text-sm"
                     >
                       Your Profile
                     </a>
                     <a
-                      href="#"
+                      href="/dashboard/settings"
                       className="block hover:bg-gray-100 px-4 py-2 text-gray-700 text-sm"
                     >
                       Settings
                     </a>
                     <a
-                      href="#"
+                      href="/Login"
                       className="block hover:bg-gray-100 px-4 py-2 text-gray-700 text-sm"
                     >
                       Sign out

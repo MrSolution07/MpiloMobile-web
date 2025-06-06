@@ -1,19 +1,22 @@
 import { useState } from "react";
 import { Search, Plus, Filter } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Button = ({ className = "", variant = "default", size = "default", children, ...props }) => {
   const baseStyles = "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
   const variants = {
     default: "bg-[#274D60] text-white hover:bg-[#1A3A4A]",
     outline: "border border-gray-300 bg-white hover:bg-gray-50 hover:text-gray-900",
+    ghost: "hover:bg-gray-100 hover:text-gray-900",
+    destructive: "bg-red-600 text-white hover:bg-red-700",
   };
   const sizes = {
     default: "h-10 px-4 py-2",
     sm: "h-9 rounded-md px-3",
     lg: "h-11 rounded-md px-8",
+    icon: "h-10 w-10",
   };
-
+  
   return (
     <button
       className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
@@ -81,39 +84,55 @@ const TableCell = ({ className = "", children, ...props }) => (
   </td>
 );
 
-const AdminPatients = () => {
-  const [search, setSearch] = useState("");
+const Edit = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" {...props}>
+    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+  </svg>
+);
+const Trash2 = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" {...props}>
+    <polyline points="3 6 5 6 21 6" />
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+    <line x1="10" y1="11" x2="10" y2="17" />
+    <line x1="14" y1="11" x2="14" y2="17" />
+  </svg>
+);
 
-  // Mock patient data
-  const patients = [
-    {
-      id: "ZA001",
-      name: "Sipho Nkosi",
-      age: 29,
-      gender: "Male",
-      contact: "+27 82 123 4567",
-      email: "sipho.nkosi@example.co.za",
-      status: "Active",
-    },
-    {
-      id: "ZA002",
-      name: "Thandi Mokoena",
-      age: 34,
-      gender: "Female",
-      contact: "+27 83 234 5678",
-      email: "thandi.mokoena@example.co.za",
-      status: "Inactive",
-    },
-    {
-      id: "ZA003",
-      name: "Johan van der Merwe",
-      age: 45,
-      gender: "Male",
-      contact: "+27 84 345 6789",
-      email: "johan.vdm@example.co.za",
-      status: "Pending",
-    },
-  ];
+const initialPatients = [
+  {
+    id: "ZA001",
+    name: "Sipho Nkosi",
+    age: 29,
+    gender: "Male",
+    contact: "+27 82 123 4567",
+    email: "sipho.nkosi@example.co.za",
+    status: "Active",
+  },
+  {
+    id: "ZA002",
+    name: "Thandi Mokoena",
+    age: 34,
+    gender: "Female",
+    contact: "+27 83 234 5678",
+    email: "thandi.mokoena@example.co.za",
+    status: "Inactive",
+  },
+  {
+    id: "ZA003",
+    name: "Johan van der Merwe",
+    age: 45,
+    gender: "Male",
+    contact: "+27 84 345 6789",
+    email: "johan.vdm@example.co.za",
+    status: "Pending",
+  },
+];
+
+const Patients = () => {
+  const navigate = useNavigate();
+  const [search, setSearch] = useState("");
+  const [patients] = useState(initialPatients);
 
   // Filter patients based on search
   const filteredPatients = search
@@ -126,18 +145,22 @@ const AdminPatients = () => {
       )
     : patients;
 
+  const handleAddPatient = () => {
+    navigate('/admin/adminaddpatient');
+  };
+
   return (
     <div className="animate-fade-in">
       <style jsx>{`
         .animate-fade-in {
           animation: fade-in 0.3s ease-in-out;
         }
-
+        
         @keyframes fade-in {
           from { opacity: 0; }
           to { opacity: 1; }
         }
-
+        
         .status-active {
           display: inline-flex;
           align-items: center;
@@ -148,7 +171,7 @@ const AdminPatients = () => {
           background-color: #dcfce7;
           color: #166534;
         }
-
+        
         .status-inactive {
           display: inline-flex;
           align-items: center;
@@ -159,7 +182,7 @@ const AdminPatients = () => {
           background-color: #fee2e2;
           color: #991b1b;
         }
-
+        
         .status-pending {
           display: inline-flex;
           align-items: center;
@@ -172,21 +195,19 @@ const AdminPatients = () => {
         }
       `}</style>
 
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="font-bold text-3xl">Patients</h1>
-        <Link to="/admin/adminaddpatient" className="inline-flex items-center">
-          <Button variant="default" size="sm">
-            <Plus className="mr-2 w-4 h-4" /> Add Patient
-          </Button>
-        </Link>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Patients</h1>
+        <Button onClick={handleAddPatient}>
+          <Plus className="mr-2 h-4 w-4" /> Add Patient
+        </Button>
       </div>
 
       <Card>
         <CardContent className="p-6">
           {/* Search and filter bar */}
-          <div className="flex sm:flex-row flex-col gap-4 mb-6">
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row">
             <div className="relative flex-1">
-              <Search className="top-3 left-3 absolute w-4 h-4 text-gray-500" />
+              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
               <Input
                 placeholder="Search patients..."
                 className="pl-9"
@@ -195,12 +216,12 @@ const AdminPatients = () => {
               />
             </div>
             <Button variant="outline" className="flex gap-2">
-              <Filter className="w-4 h-4" /> Filter
+              <Filter className="h-4 w-4" /> Filter
             </Button>
           </div>
 
           {/* Patients table */}
-          <div className="border rounded-md overflow-auto">
+          <div className="overflow-auto rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -211,11 +232,12 @@ const AdminPatients = () => {
                   <TableHead>Contact</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredPatients.map((patient) => (
-                  <TableRow key={patient.id} className="hover:bg-gray-50 cursor-pointer">
+                  <TableRow key={patient.id} className="cursor-pointer hover:bg-gray-50">
                     <TableCell className="font-medium">{patient.id}</TableCell>
                     <TableCell>{patient.name}</TableCell>
                     <TableCell>{patient.age}</TableCell>
@@ -235,6 +257,16 @@ const AdminPatients = () => {
                         {patient.status}
                       </span>
                     </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button variant="ghost" size="icon">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -246,4 +278,4 @@ const AdminPatients = () => {
   );
 };
 
-export default AdminPatients;
+export default Patients;

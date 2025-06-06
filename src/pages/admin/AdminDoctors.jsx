@@ -1,18 +1,21 @@
 import { useState } from "react";
-import { Search, Plus } from "lucide-react";
-
+import { UserCheck, Search, Plus, Filter, Edit, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 const Button = ({ className = "", variant = "default", size = "default", children, ...props }) => {
   const baseStyles = "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
   const variants = {
     default: "bg-[#274D60] text-white hover:bg-[#1A3A4A]",
     outline: "border border-gray-300 bg-white hover:bg-gray-50 hover:text-gray-900",
+    ghost: "hover:bg-gray-100 hover:text-gray-900",
+    destructive: "bg-red-600 text-white hover:bg-red-700",
   };
   const sizes = {
     default: "h-10 px-4 py-2",
     sm: "h-9 rounded-md px-3",
     lg: "h-11 rounded-md px-8",
+    icon: "h-10 w-10",
   };
-
+  
   return (
     <button
       className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
@@ -42,60 +45,73 @@ const CardContent = ({ className = "", children, ...props }) => (
   </div>
 );
 
-const AdminDoctors = () => {
-  // South African doctors data
-  const doctors = [
+const CardHeader = ({ className = "", children, ...props }) => (
+  <div className={`flex flex-col space-y-1.5 p-6 ${className}`} {...props}>
+    {children}
+  </div>
+);
+
+const CardTitle = ({ className = "", children, ...props }) => (
+  <h3 className={`text-2xl font-semibold leading-none tracking-tight ${className}`} {...props}>
+    {children}
+  </h3>
+);
+
+const CardDescription = ({ className = "", children, ...props }) => (
+  <p className={`text-sm text-gray-500 ${className}`} {...props}>
+    {children}
+  </p>
+);
+
+const Doctors = () => {
+  const navigate = useNavigate();
+  const [search, setSearch] = useState("");
+
+  const initialDoctors = [
     {
-      id: "DR001",
-      name: "Dr. Noni Mokoena",
+      id: "DOC001",
+      name: "Dr. Thandiwe Nkosi",
       specialty: "Cardiology",
-      experience: "18 years",
-      contact: "+27 82 123 4567",
-      email: "noni.mokoena@mpilo.co.za",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Noni",
-    },
-    {
-      id: "DR002",
-      name: "Dr. Naledi Khumalo",
-      specialty: "Pediatrics",
-      experience: "10 years",
-      contact: "+27 83 234 5678",
-      email: "naledi.khumalo@mpilo.co.za",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Naledi",
-    },
-    {
-      id: "DR003",
-      name: "Dr. Pieter van der Merwe",
-      specialty: "Orthopedics",
+      contact: "+27 82 987 6543",
+      email: "thandiwe.nkosi@hospital.co.za",
       experience: "15 years",
-      contact: "+27 84 345 6789",
-      email: "pieter.vdmerwe@mpilo.co.za",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Pieter",
+      status: "Active",
+    },
+    {
+      id: "DOC002",
+      name: "Dr. Kagiso Mthembu",
+      specialty: "Neurology",
+      contact: "+27 83 876 5432",
+      email: "kagiso.mthembu@hospital.co.za",
+      experience: "12 years",
+      status: "Active",
+    },
+    {
+      id: "DOC003",
+      name: "Dr. Zanele Khumalo",
+      specialty: "General Medicine",
+      contact: "+27 84 765 4321",
+      email: "zanele.khumalo@hospital.co.za",
+      experience: "8 years",
+      status: "On Leave",
     },
   ];
 
-  // Modal state
-  const [selectedDoctor, setSelectedDoctor] = useState(null);
-  const [showProfileModal, setShowProfileModal] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [doctors] = useState(initialDoctors);
 
-  const openProfile = (doctor) => {
-    setSelectedDoctor(doctor);
-    setShowProfileModal(true);
+  const filteredDoctors = search
+    ? doctors.filter(
+        (doctor) =>
+          doctor.name.toLowerCase().includes(search.toLowerCase()) ||
+          doctor.specialty.toLowerCase().includes(search.toLowerCase()) ||
+          doctor.contact.includes(search) ||
+          doctor.email.toLowerCase().includes(search.toLowerCase())
+      )
+    : doctors;
+
+  const handleAddDoctor = () => {
+    navigate('/admin/adminadddoctor');
   };
-
-  const closeProfile = () => {
-    setShowProfileModal(false);
-    setSelectedDoctor(null);
-  };
-
-  const filteredDoctors = doctors.filter((doctor) => {
-    const term = searchTerm.toLowerCase();
-    return (
-      doctor.name.toLowerCase().includes(term) ||
-      doctor.specialty.toLowerCase().includes(term)
-    );
-  });
 
   return (
     <div className="animate-fade-in">
@@ -103,114 +119,132 @@ const AdminDoctors = () => {
         .animate-fade-in {
           animation: fade-in 0.3s ease-in-out;
         }
-
+        
         @keyframes fade-in {
           from { opacity: 0; }
           to { opacity: 1; }
         }
-
-        .card-hover {
-          transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        
+        .status-active {
+          display: inline-flex;
+          align-items: center;
+          border-radius: 9999px;
+          padding: 0.25rem 0.5rem;
+          font-size: 0.75rem;
+          font-weight: 500;
+          background-color: #dcfce7;
+          color: #166534;
         }
-
-        .card-hover:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        
+        .status-inactive {
+          display: inline-flex;
+          align-items: center;
+          border-radius: 9999px;
+          padding: 0.25rem 0.5rem;
+          font-size: 0.75rem;
+          font-weight: 500;
+          background-color: #fee2e2;
+          color: #991b1b;
+        }
+        
+        .status-leave {
+          display: inline-flex;
+          align-items: center;
+          border-radius: 9999px;
+          padding: 0.25rem 0.5rem;
+          font-size: 0.75rem;
+          font-weight: 500;
+          background-color: #fef3c7;
+          color: #92400e;
         }
       `}</style>
 
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="font-bold text-3xl">Doctors</h1>
-        <Button>
-          <Plus className="mr-2 w-4 h-4" /> Add Doctor
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Doctors</h1>
+        <Button onClick={handleAddDoctor}>
+          <Plus className="mr-2 h-4 w-4" /> Add Doctor
         </Button>
       </div>
 
-      {/* Search bar */}
-      <div className="relative mb-6">
-        <Search className="top-3 left-3 absolute w-4 h-4 text-gray-500" />
-        <Input
-          placeholder="Search doctors by name, specialty..."
-          className="pl-9"
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-        />
-      </div>
-
-      {/* Doctors grid */}
-      <div className="gap-6 grid sm:grid-cols-2 lg:grid-cols-3">
-        {filteredDoctors.map((doctor) => (
-          <Card key={doctor.id} className="overflow-hidden card-hover">
-            <CardContent className="p-0">
-              <div className="bg-[#274D60] p-4 text-white">
-                <div className="flex justify-between items-center">
-                  <h3 className="font-bold">{doctor.name}</h3>
-                  <span className="bg-white/20 px-2 py-1 rounded-full text-xs">{doctor.id}</span>
-                </div>
-                <p className="text-white/80 text-sm">{doctor.specialty}</p>
-              </div>
-              <div className="p-4">
-                <div className="flex items-center">
-                  <div className="flex justify-center items-center bg-gray-100 mr-4 rounded-full w-16 h-16 overflow-hidden">
-                    <img src={doctor.avatar} alt={doctor.name} className="w-full h-full object-cover" />
-                  </div>
-                  <div>
-                    <p className="text-sm">
-                      <span className="text-gray-500">Experience:</span> {doctor.experience}
-                    </p>
-                    <p className="text-sm">
-                      <span className="text-gray-500">Contact:</span> {doctor.contact}
-                    </p>
-                  </div>
-                </div>
-                <p className="mt-3 text-sm">
-                  <span className="text-gray-500">Email:</span> {doctor.email}
-                </p>
-                <div className="flex gap-2 mt-4">
-                  <Button variant="outline" size="sm" className="flex-1" onClick={() => openProfile(doctor)}>
-                    Profile
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Profile Modal */}
-      {showProfileModal && selectedDoctor && (
-        <div className="z-50 fixed inset-0 flex justify-center items-center bg-black/40">
-          <div className="relative bg-white shadow-lg p-6 rounded-lg w-full max-w-md animate-fade-in">
-            <button
-              className="top-2 right-2 absolute text-gray-500 hover:text-gray-700 text-xl"
-              onClick={closeProfile}
-              aria-label="Close"
-            >
-              &times;
-            </button>
-            <div className="flex flex-col items-center">
-              <img
-                src={selectedDoctor.avatar}
-                alt={selectedDoctor.name}
-                className="mb-4 border-[#274D60] border-4 rounded-full w-24 h-24 object-cover"
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle>Medical Staff</CardTitle>
+          <CardDescription>Manage doctors and medical staff in your facility</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+              <Input
+                placeholder="Search doctors..."
+                className="pl-9"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
-              <h2 className="mb-1 font-bold text-2xl">{selectedDoctor.name}</h2>
-              <span className="bg-[#274D60]/10 mb-2 px-3 py-1 rounded-full text-[#274D60] text-xs">
-                {selectedDoctor.specialty}
-              </span>
-              <div className="mb-2 text-gray-700 text-sm">
-                <p><span className="font-medium">Experience:</span> {selectedDoctor.experience}</p>
-                <p><span className="font-medium">Contact:</span> {selectedDoctor.contact}</p>
-                <p><span className="font-medium">Email:</span> {selectedDoctor.email}</p>
-                <p><span className="font-medium">Doctor ID:</span> {selectedDoctor.id}</p>
-              </div>
-              <Button onClick={closeProfile} className="mt-4 w-full">Close</Button>
             </div>
+            <Button variant="outline" className="flex gap-2">
+              <Filter className="h-4 w-4" /> Filter
+            </Button>
           </div>
-        </div>
-      )}
+
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {filteredDoctors.map((doctor) => (
+              <Card key={doctor.id} className="hover:shadow-md transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center">
+                      <div className="rounded-full bg-[#274D60]/10 p-3 text-[#274D60] mr-3">
+                        <UserCheck className="h-6 w-6" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-lg">{doctor.name}</h3>
+                        <p className="text-sm text-gray-500">{doctor.specialty}</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-1">
+                      <Button variant="ghost" size="icon">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2 text-sm">
+                    <p><span className="font-medium">Contact:</span> {doctor.contact}</p>
+                    <p><span className="font-medium">Email:</span> {doctor.email}</p>
+                    <p><span className="font-medium">Experience:</span> {doctor.experience}</p>
+                  </div>
+                  
+                  <div className="mt-4 flex items-center justify-between">
+                    <span
+                      className={
+                        doctor.status === "Active"
+                          ? "status-active"
+                          : doctor.status === "Inactive"
+                          ? "status-inactive"
+                          : "status-leave"
+                      }
+                    >
+                      {doctor.status}
+                    </span>
+                    <span className="text-xs text-gray-500">ID: {doctor.id}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {filteredDoctors.length === 0 && (
+            <div className="py-8 text-center text-gray-500">
+              No doctors found matching the current search
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
 
-export default AdminDoctors;
+export default Doctors;

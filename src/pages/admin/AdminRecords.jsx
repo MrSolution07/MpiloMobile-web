@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { FileText, Download, Share2, Search, Filter, Upload } from "lucide-react";
-
+import { FileText, Download, Share2, Search, Filter, Upload, Edit, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 const Button = ({ className = "", variant = "default", size = "default", children, ...props }) => {
   const baseStyles = "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
   const variants = {
     default: "bg-[#274D60] text-white hover:bg-[#1A3A4A]",
     outline: "border border-gray-300 bg-white hover:bg-gray-50 hover:text-gray-900",
     ghost: "hover:bg-gray-100 hover:text-gray-900",
+    destructive: "bg-red-600 text-white hover:bg-red-700",
   };
   const sizes = {
     default: "h-10 px-4 py-2",
@@ -92,11 +93,45 @@ const TabsTrigger = ({ value: triggerValue, onValueChange, activeValue, classNam
   </button>
 );
 
-const AdminRecords = () => {
+const Table = ({ className = "", children, ...props }) => (
+  <div className="relative w-full overflow-auto">
+    <table className={`w-full caption-bottom text-sm ${className}`} {...props}>
+      {children}
+    </table>
+  </div>
+);
+const TableHeader = ({ className = "", children, ...props }) => (
+  <thead className={`[&_tr]:border-b ${className}`} {...props}>
+    {children}
+  </thead>
+);
+const TableBody = ({ className = "", children, ...props }) => (
+  <tbody className={`[&_tr:last-child]:border-0 ${className}`} {...props}>
+    {children}
+  </tbody>
+);
+const TableRow = ({ className = "", children, ...props }) => (
+  <tr className={`border-b transition-colors hover:bg-gray-50 data-[state=selected]:bg-gray-50 ${className}`} {...props}>
+    {children}
+  </tr>
+);
+const TableHead = ({ className = "", children, ...props }) => (
+  <th className={`h-12 px-4 text-left align-middle font-medium text-gray-500 [&:has([role=checkbox])]:pr-0 ${className}`} {...props}>
+    {children}
+  </th>
+);
+const TableCell = ({ className = "", children, ...props }) => (
+  <td className={`p-4 align-middle [&:has([role=checkbox])]:pr-0 ${className}`} {...props}>
+    {children}
+  </td>
+);
+
+const Records = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("all");
   const [search, setSearch] = useState("");
 
-  const records = [
+  const initialRecords = [
     {
       id: "REC001",
       patientName: "Sipho Dlamini",
@@ -139,6 +174,8 @@ const AdminRecords = () => {
     },
   ];
 
+  const [records] = useState(initialRecords);
+
   const filteredRecords = records.filter(record => {
     if (activeTab === "pending" && !record.status.toLowerCase().startsWith("pending")) return false;
     if (activeTab === "completed" && record.status !== "Completed") return false;
@@ -153,6 +190,10 @@ const AdminRecords = () => {
     }
     return true;
   });
+
+  const handleNewRecord = () => {
+    navigate('/admin/adminaddrecord');
+  };
 
   return (
     <div className="animate-fade-in">
@@ -186,14 +227,11 @@ const AdminRecords = () => {
         }
       `}</style>
 
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="font-bold text-3xl">Medical Records</h1>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Medical Records</h1>
         <div className="flex gap-2">
-          <Button variant="outline" className="flex items-center gap-2">
-            <Upload className="w-4 h-4" /> Upload Records
-          </Button>
-          <Button>
-            <FileText className="mr-2 w-4 h-4" /> New Record
+          <Button onClick={handleNewRecord}>
+            <FileText className="mr-2 h-4 w-4" /> New Record
           </Button>
         </div>
       </div>
@@ -214,9 +252,9 @@ const AdminRecords = () => {
           <CardDescription>Browse and manage all patient medical records in your facility</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex sm:flex-row flex-col gap-4 mb-6">
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row">
             <div className="relative flex-1">
-              <Search className="top-3 left-3 absolute w-4 h-4 text-gray-500" />
+              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
               <Input
                 placeholder="Search records by patient name, ID, or type..."
                 className="pl-9"
@@ -225,56 +263,71 @@ const AdminRecords = () => {
               />
             </div>
             <Button variant="outline" className="flex items-center gap-2">
-              <Filter className="w-4 h-4" /> Filter
+              <Filter className="h-4 w-4" /> Filter
             </Button>
           </div>
 
-          <div className="border rounded-md overflow-auto">
-            <div className="min-w-[800px]">
-              <div className="grid grid-cols-12 bg-gray-50 px-4 py-3 border-b font-medium text-sm">
-                <div className="col-span-3">Patient / Record</div>
-                <div className="col-span-2">Department</div>
-                <div className="col-span-2">Doctor</div>
-                <div className="col-span-2">Date</div>
-                <div className="col-span-2">Status</div>
-                <div className="col-span-1 text-right">Actions</div>
-              </div>
-
-              {filteredRecords.map((record) => (
-                <div key={record.id} className="grid grid-cols-12 hover:bg-gray-50 px-4 py-4 border-b">
-                  <div className="col-span-3">
-                    <div className="flex items-start">
-                      <div className="bg-[#274D60]/10 mr-3 p-2 rounded-md text-[#274D60]">
-                        <FileText className="w-5 h-5" />
+          <div className="overflow-auto rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Patient</TableHead>
+                  <TableHead>Record Type</TableHead>
+                  <TableHead>Department</TableHead>
+                  <TableHead>Doctor</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredRecords.map((record) => (
+                  <TableRow key={record.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <FileText className="h-5 w-5 text-[#274D60]" />
+                        <div>
+                          <div className="font-medium">{record.patientName}</div>
+                          <div className="text-xs text-gray-500">ID: {record.patientId}</div>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium">{record.patientName}</p>
-                        <p className="text-gray-500 text-xs">{record.recordType}</p>
-                        <p className="text-gray-500 text-xs">ID: {record.patientId}</p>
+                    </TableCell>
+                    <TableCell>{record.recordType}</TableCell>
+                    <TableCell>{record.department}</TableCell>
+                    <TableCell>{record.doctor}</TableCell>
+                    <TableCell>{record.date}</TableCell>
+                    <TableCell>
+                      <span className={record.status === "Completed" ? "status-active" : "status-pending"}>
+                        {record.status}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button variant="ghost" size="icon">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                          <Download className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                          <Share2 className="h-4 w-4" />
+                        </Button>
                       </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center col-span-2">{record.department}</div>
-                  <div className="flex items-center col-span-2">{record.doctor}</div>
-                  <div className="flex items-center col-span-2">{record.date}</div>
-                  <div className="flex items-center col-span-2">
-                    <span className={record.status === "Completed" ? "status-active" : "status-pending"}>
-                      {record.status}
-                    </span>
-                  </div>
-                  <div className="flex justify-end items-center col-span-1">
-                    <Button variant="ghost" size="icon"><Download className="w-4 h-4" /></Button>
-                    <Button variant="ghost" size="icon"><Share2 className="w-4 h-4" /></Button>
-                  </div>
-                </div>
-              ))}
-
-              {filteredRecords.length === 0 && (
-                <div className="py-8 text-gray-500 text-center">
-                  No records found matching the current filters
-                </div>
-              )}
-            </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {filteredRecords.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center text-gray-500 py-8">
+                      No records found matching the current filters
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
           </div>
         </CardContent>
       </Card>
@@ -282,4 +335,4 @@ const AdminRecords = () => {
   );
 };
 
-export default AdminRecords;
+export default Records;

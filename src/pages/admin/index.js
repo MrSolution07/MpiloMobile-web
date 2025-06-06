@@ -1,8 +1,10 @@
 export { default as AdminDashboard } from "./AdminDashboard";
 export { default as AdminDoctors } from "./AdminDoctors";
-// export { default as AdminMessages } from "./AdminMessages";
+export { default as AdminAddDoctor } from "./AdminAddDoctor";
+export { default as AdminMessages } from "./AdminMessages";
 export { default as AdminNotFound } from "./AdminNotFound";
 export { default as AdminPatients } from "./AdminPatients";
 export { default as AdminRecords } from "./AdminRecords";
 export { default as AdminAddPatient } from "./AdminAddPatient";
+export { default as AdminAddRecord } from "./AdminAddRecord";
 export {default as Routes} from "./Routes";

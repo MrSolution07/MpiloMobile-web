@@ -75,12 +75,14 @@ function Login() {
           </div>
 
           {/* Login Button */}
+          <Link to="/Dashboard">
           <button
             type="submit"
             className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#274D60] to-[#274D60] text-white py-2 rounded-md hover:opacity-90 transition"
           >
             Log In <FaSignInAlt />
           </button>
+          </Link>
         </form>
 
         {/* Register & Admin */}
