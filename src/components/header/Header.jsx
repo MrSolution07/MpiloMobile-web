@@ -42,22 +42,22 @@ function Header({ className, logo, joinBtn, search }) {
 
           <div className="hidden lg:flex items-center space-x-4">
             {className !== "header-02" && (
-              <a
-                href="/login"
+              <Link
+                to="/login"
                 className="rounded p-2"
                 style={{ backgroundColor: "#D7261E", color: "#fff" }}
               >
                 <i className="ti-user text-xl"></i>
-              </a>
+              </Link>
             )}
             {joinBtn && (
-              <a
-                href="/register"
+              <Link
+                to="/register"
                 className="text-white px-4 py-2 rounded text-sm font-semibold hover:opacity-90"
                 style={{ backgroundColor: "rgba(0, 128, 128, 0.603)" }}
               >
                 Register
-              </a>
+              </Link>
             )}
             {search && (
               <form className="relative" method="post" action="#">
@@ -88,22 +88,22 @@ function Header({ className, logo, joinBtn, search }) {
 
             <div className="flex items-center justify-start space-x-4 mt-4">
               {className !== "header-02" && (
-                <a
-                  href="/login"
+                <Link
+                  to="/login"
                   className="rounded-full p-2"
                   style={{ backgroundColor: "#D7261E", color: "#fff" }}
                 >
                   <i className="ti-user text-xl"></i>
-                </a>
+                </Link>
               )}
               {joinBtn && (
-                <a
-                  href="/register"
+                <Link
+                  to="/register"
                   className="text-white px-4 py-2 rounded text-sm font-semibold hover:opacity-90"
                   style={{ backgroundColor: "rgba(0, 128, 128, 0.603)" }}
                 >
                   Register
-                </a>
+                </Link>
               )}
             </div>
           </div>
