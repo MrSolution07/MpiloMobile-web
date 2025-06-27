@@ -56,7 +56,7 @@ function ServiceCards({ service, heading }) {
               </p>
             </div>
 
-            <a
+            <div className="flex justify-center"><a
               href="/about"
               className="relative z-10 inline-flex items-center text-white bg-black px-6 py-3 rounded-full hover:bg-gray-800 transition"
             >
@@ -65,10 +65,10 @@ function ServiceCards({ service, heading }) {
                 <IoIosArrowRoundForward className="text-xl" />
               </span>
             </a>
+            </div>
           </div>
         )}
 
-        {/* Service Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
           <ServiceCard
             title="We are mobile"

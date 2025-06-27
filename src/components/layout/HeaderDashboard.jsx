@@ -20,169 +20,121 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
   };
 
   return (
-    <header className="top-0 z-30 bg-white shadow-sm border-gray-200 border-b">
-      <div className="flex justify-between items-center px-4 h-16">
-        <div className="flex items-center">
+    <header className="top-0 z-30 bg-white shadow-sm border-b border-gray-200 w-full">
+  <div className="flex items-center justify-between px-4 py-2 sm:h-16 w-full flex-wrap gap-4">
+    <div className="flex items-center gap-2">
+      <button
+        onClick={toggleSidebar}
+        className="lg:hidden hover:bg-gray-100 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600 hover:text-gray-900"
+        aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
+      >
+        {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+      </button>
+
+      {!isSearchActive && (
+        <button
+          onClick={() => setIsSearchActive(true)}
+          className="sm:hidden hover:bg-gray-100 p-2 rounded-full text-gray-600 hover:text-gray-900"
+          aria-label="Search"
+        >
+          <Search className="w-5 h-5" />
+        </button>
+      )}
+    </div>
+
+    <div className={`flex-1 ${isSearchActive ? "flex" : "hidden sm:flex"} justify-center`}>
+      <div className="relative w-full max-w-md">
+        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <Search className="w-5 h-5 text-gray-400" />
+        </div>
+        <input
+          type="text"
+          placeholder="Search patients, appointments..."
+          className="bg-gray-100 focus:bg-white py-2 pr-10 pl-10 border-none rounded-lg focus:ring-2 focus:ring-blue-500 w-full text-gray-700"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        {isSearchActive && (
           <button
-            onClick={toggleSidebar}
-            className="lg:hidden hover:bg-gray-100 mr-2 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-gray-600 hover:text-gray-900"
-            aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
+            onClick={() => setIsSearchActive(false)}
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
           >
-            {isSidebarOpen ? (
-              <X className="w-5 h-5" />
-            ) : (
-              <Menu className="w-5 h-5" />
-            )}
+            <X className="w-5 h-5" />
           </button>
-
-          <div
-            className={`ml-0 lg:ml-4 ${
-              isSearchActive ? "hidden md:flex" : "flex"
-            }`}
-          >
-          </div>
-        </div>
-
-        <div className="flex flex-1 justify-end md:justify-between items-center">
-          <div
-            className={`relative ${
-              isSearchActive
-                ? "flex-1 max-w-2xl mx-auto"
-                : "hidden md:block w-64"
-            }`}
-          >
-            <div className="relative">
-              <div className="left-0 absolute inset-y-0 flex items-center pl-3 pointer-events-none">
-                <Search className="w-5 h-5 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Search patients, appointments..."
-                className="bg-gray-100 focus:bg-white py-2 pr-4 pl-10 border-none rounded-lg focus:ring-2 focus:ring-blue-500 w-full text-gray-700"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              {isSearchActive && (
-                <button
-                  onClick={() => setIsSearchActive(false)}
-                  className="right-0 absolute inset-y-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              )}
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-3 ml-4">
-            {!isSearchActive && (
-              <button
-                onClick={() => setIsSearchActive(true)}
-                className="md:hidden hover:bg-gray-100 p-2 rounded-full text-gray-600 hover:text-gray-900"
-                aria-label="Search"
-              >
-                <Search className="w-5 h-5" />
-              </button>
-            )}
-
-            <div className="relative">
-              <button
-                onClick={toggleNotifications}
-                className="relative hover:bg-gray-100 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-gray-600 hover:text-gray-900"
-                aria-label="Notifications"
-              >
-                <Bell className="w-5 h-5" />
-                <span className="block top-0 right-0 absolute bg-red-500 rounded-full ring-2 ring-white w-2 h-2"></span>
-              </button>
-
-              {isNotificationsOpen && (
-                <div className="right-0 absolute bg-white shadow-lg mt-2 border border-gray-200 rounded-lg w-80">
-                  <div className="px-4 py-2 border-gray-100 border-b">
-                    <h3 className="font-semibold text-gray-900 text-sm">
-                      Notifications
-                    </h3>
-                  </div>
-                  <div className="max-h-96 overflow-y-auto">
-                    <div className="bg-blue-50 px-4 py-3 border-gray-100 border-b">
-                      <p className="font-medium text-gray-900 text-sm">
-                        Michael Rodriguez sent an urgent message
-                      </p>
-                      <p className="mt-1 text-gray-500 text-xs">
-                        10 minutes ago
-                      </p>
-                    </div>
-                    <div className="px-4 py-3 border-gray-100 border-b">
-                      <p className="font-medium text-gray-900 text-sm">
-                        New triage case: Jennifer Lee
-                      </p>
-                      <p className="mt-1 text-gray-500 text-xs">
-                        30 minutes ago
-                      </p>
-                    </div>
-                    <div className="px-4 py-3 border-gray-100 border-b">
-                      <p className="font-medium text-gray-900 text-sm">
-                        Your next appointment starts in 15 minutes
-                      </p>
-                      <p className="mt-1 text-gray-500 text-xs">
-                        45 minutes ago
-                      </p>
-                    </div>
-                  </div>
-                 
-                </div>
-              )}
-            </div>
-
-            <div className="relative">
-              <button
-                onClick={toggleProfileDropdown}
-                className="flex items-center rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                aria-label="User menu"
-              >
-                <Avatar
-                  src={currentUser.avatar}
-                  alt={currentUser.name}
-                  size="sm"
-                  status="online"
-                />
-              </button>
-
-              {isProfileDropdownOpen && (
-                <div className="right-0 absolute bg-white shadow-lg mt-2 border border-gray-200 rounded-lg w-48">
-                  <div className="px-4 py-3 border-gray-100 border-b">
-                    <p className="font-semibold text-gray-900 text-sm">
-                      {currentUser.name}
-                    </p>
-                    <p className="mt-1 text-gray-500 text-xs">
-                      {currentUser.email}
-                    </p>
-                  </div>
-                  <div className="py-1">
-                    <a
-                      href="/dashboard/profile"
-                      className="block hover:bg-gray-100 px-4 py-2 text-gray-700 text-sm"
-                    >
-                      Your Profile
-                    </a>
-                    <a
-                      href="/dashboard/settings"
-                      className="block hover:bg-gray-100 px-4 py-2 text-gray-700 text-sm"
-                    >
-                      Settings
-                    </a>
-                    <a
-                      href="/Login"
-                      className="block hover:bg-gray-100 px-4 py-2 text-gray-700 text-sm"
-                    >
-                      Sign out
-                    </a>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        )}
       </div>
-    </header>
+    </div>
+
+    <div className="flex items-center gap-4">
+      <div className="relative">
+        <button
+          onClick={toggleNotifications}
+          className="hover:bg-gray-100 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600 hover:text-gray-900"
+          aria-label="Notifications"
+        >
+          <Bell className="w-5 h-5" />
+          <span className="absolute top-0 right-0 bg-red-500 rounded-full ring-2 ring-white w-2 h-2" />
+        </button>
+
+        {isNotificationsOpen && (
+          <div className="absolute right-0 mt-2 bg-white shadow-lg border border-gray-200 rounded-lg w-80 z-40">
+            <div className="px-4 py-2 border-b border-gray-100">
+              <h3 className="font-semibold text-gray-900 text-sm">Notifications</h3>
+            </div>
+            <div className="max-h-96 overflow-y-auto">
+              
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="relative">
+        <button
+          onClick={toggleProfileDropdown}
+          className="flex items-center rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          aria-label="User menu"
+        >
+          <Avatar
+            src={currentUser.avatar}
+            alt={currentUser.name}
+            size="sm"
+            status="online"
+          />
+        </button>
+
+        {isProfileDropdownOpen && (
+          <div className="absolute right-0 mt-2 bg-white shadow-lg border border-gray-200 rounded-lg w-48 z-40">
+            <div className="px-4 py-3 border-b border-gray-100">
+              <p className="font-semibold text-sm text-gray-900">{currentUser.name}</p>
+              <p className="text-xs mt-1 text-gray-500">{currentUser.email}</p>
+            </div>
+            <div className="py-1">
+              <a
+                href="/dashboard/profile"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Your Profile
+              </a>
+              <a
+                href="/dashboard/settings"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Settings
+              </a>
+              <a
+                href="/Login"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Sign out
+              </a>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</header>
+
   );
 }
 

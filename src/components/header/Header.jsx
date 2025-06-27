@@ -54,7 +54,7 @@ function Header({ className, logo, joinBtn, search }) {
               <a
                 href="/register"
                 className="text-white px-4 py-2 rounded text-sm font-semibold hover:opacity-90"
-                style={{ backgroundColor: "rgba(0, 128, 128, 0.603)" }}
+                style={{ backgroundColor: "rgba(0, 128, 128, 0.603)" , color: "#fff"}}
               >
                 Register
               </a>
@@ -100,7 +100,7 @@ function Header({ className, logo, joinBtn, search }) {
                 <a
                   href="/register"
                   className="text-white px-4 py-2 rounded text-sm font-semibold hover:opacity-90"
-                  style={{ backgroundColor: "rgba(0, 128, 128, 0.603)" }}
+                  style={{ backgroundColor: "rgba(0, 128, 128, 0.603)",color: "#fff" }}
                 >
                   Register
                 </a>
