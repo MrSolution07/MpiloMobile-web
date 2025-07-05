@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
@@ -6,80 +6,96 @@ import {
   MessageSquare,
   FileText,
   MapPin,
+  Settings,
 } from "lucide-react";
 
-const AdminSidebar = () => {
-  const navigation = [
-    {
-      title: "Dashboard",
-      icon: LayoutDashboard,
-      path: "/admin",
-    },
-    {
-      title: "Patients",
-      icon: Users,
-      path: "/admin/patients",
-    },
-    {
-      title: "Doctors",
-      icon: UserRound,
-      path: "/admin/doctors",
-    },
-    {
-      title: "Messages",
-      icon: MessageSquare,
-      path: "/admin/adminmessages",
-    },
-    {
-      title: "Records",
-      icon: FileText,
-      path: "/admin/records",
-    },
-    {
-      title: "Routes",
-      icon: MapPin,
-      path: "/admin/routes",
-    },
+function AdminSidebar({ isSidebarOpen, toggleSidebar }) {
+  const location = useLocation();
+
+  const navItems = [
+    { name: "Dashboard", path: "/admin", icon: <LayoutDashboard className="w-5 h-5" /> },
+    { name: "Patients", path: "/admin/patients", icon: <Users className="w-5 h-5" /> },
+    { name: "Doctors", path: "/admin/doctors", icon: <UserRound className="w-5 h-5" /> },
+    { name: "Messages", path: "/admin/adminmessages", icon: <MessageSquare className="w-5 h-5" />, badge: 2 },
+    { name: "Records", path: "/admin/records", icon: <FileText className="w-5 h-5" /> },
+    { name: "Routes", path: "/admin/routes", icon: <MapPin className="w-5 h-5" /> },
   ];
 
   return (
-    <div className="flex flex-col bg-white border-r w-64 h-screen">
+    <aside
+      className={`
+        fixed lg:static top-0 left-0 h-full w-64 z-30 bg-white shadow-md border-r border-gray-200
+        transform transition-transform duration-300 ease-in-out
+        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+        lg:translate-x-0
+      `}
+    >
       <div className="px-4 py-5">
         <div className="flex items-center">
-          <img
+         <img
             src="./assets/images/mpiloLogo.png"
             alt="Mpilo Mobile Logo"
             className="w-8 h-8 rounded-full object-cover"
           />
-          <span className="ml-2 font-bold text-[#274D60] text-xl">
-            Mpilo Mobile
-          </span>
+          <span className="ml-2 font-bold text-[#274D60] text-xl">Mpilo Mobile</span>
         </div>
-        {/* <div className="mt-1 text-gray-500 text-xs">Admin Dashboard</div> */}
       </div>
 
-      <nav className="flex-1 px-4 py-4">
-        <div className="space-y-2">
-          {navigation.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive
-                    ? "bg-[#274D60] text-white"
-                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                }`
-              }
-            >
-              <item.icon size={18} />
-              <span>{item.title}</span>
-            </NavLink>
-          ))}
-        </div>
-      </nav>
-    </div>
+      <div className="flex-1 overflow-y-auto">
+        <nav className="px-2 py-4">
+          <ul className="space-y-1">
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <li key={item.name}>
+                  <Link
+                    to={item.path}
+                    className={`
+                      flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors group
+                      ${
+                        isActive
+                          ? "bg-blue-50 text-blue-700"
+                          : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                      }
+                    `}
+                    onClick={() => toggleSidebar && toggleSidebar()}
+                  >
+                    <div className="flex items-center">
+                      <span
+                        className={
+                          isActive
+                            ? "text-blue-600"
+                            : "text-gray-500 group-hover:text-gray-700"
+                        }
+                      >
+                        {item.icon}
+                      </span>
+                      <span className="ml-3 font-medium">{item.name}</span>
+                    </div>
+                    {item.badge && (
+                      <span className="inline-flex items-center bg-blue-100 px-2 py-0.5 rounded-full font-medium text-blue-800 text-xs">
+                        {item.badge}
+                      </span>
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      </div>
+
+      <div className="p-4 border-t border-gray-200">
+        <Link
+          to="/admin/adminsettings"
+          className="flex items-center hover:bg-gray-100 px-3 py-2.5 rounded-lg text-gray-700 hover:text-gray-900"
+        >
+          <Settings className="w-5 h-5 text-gray-500" />
+          <span className="ml-3 font-medium">Settings</span>
+        </Link>
+      </div>
+    </aside>
   );
-};
+}
 
 export default AdminSidebar;

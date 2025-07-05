@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Bell, Search, Menu, X } from "lucide-react";
-import { Avatar } from "../ui";
-import { currentUser } from "../../data";
+import { Avatar } from "../../ui";
+import { currentUser } from "../../../data";
 
 function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
   const [isSearchActive, setIsSearchActive] = useState(false);
@@ -110,19 +110,19 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
             </div>
             <div className="py-1">
               <a
-                href="/dashboard/profile"
+                href="/admin/adminprofile"
                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
                 Your Profile
               </a>
               <a
-                href="/dashboard/settings"
+                href="/admin/adminsettings"
                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
                 Settings
               </a>
               <a
-                href="/Login"
+                href="/adminlogin"
                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
                 Sign out

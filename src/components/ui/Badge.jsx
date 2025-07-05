@@ -1,6 +1,10 @@
 const Badge = ({ text, variant = "neutral", size = "medium" }) => {
-  const baseClasses =
-    "inline-flex items-center justify-center font-medium rounded-full";
+  const baseClasses = `
+    inline-flex items-center justify-center
+    font-medium rounded-full
+    whitespace-nowrap break-words
+    text-center
+  `;
 
   const variantClasses = {
     primary: "bg-blue-100 text-blue-800",
@@ -13,8 +17,8 @@ const Badge = ({ text, variant = "neutral", size = "medium" }) => {
 
   const sizeClasses = {
     small: "text-xs px-2 py-0.5",
-    medium: "text-xs px-2.5 py-1",
-    large: "text-sm px-3 py-1.5",
+    medium: "text-sm px-3 py-1",
+    large: "text-base px-4 py-1.5",
   };
 
   const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]}`;
