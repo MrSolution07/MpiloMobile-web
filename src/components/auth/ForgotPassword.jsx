@@ -52,9 +52,9 @@ function ForgotPassword() {
         <div className="text-center mt-6 text-sm">
           <p className="text-gray-500">
             Remember it?
-            <a href="/login" className="ml-2 text-primary font-medium hover:underline">
+            <Link to="/login" className="ml-2 text-primary font-medium hover:underline">
               Sign in
-            </a>
+            </Link>
           </p>
         </div>
       </div>
