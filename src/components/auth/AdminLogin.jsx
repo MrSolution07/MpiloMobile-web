@@ -1,11 +1,36 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { TbStethoscope } from "react-icons/tb";
 import { FaEnvelope, FaLock, FaSignInAlt } from "react-icons/fa";
+import { useAuth } from "../../context";
+import { useState } from "react";
 
 function AdminLogin() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      setLoading(true);
+      await login(email.trim().toLowerCase(), password);
+      navigate("/admin");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white shadow-lg rounded-lg w-full max-w-md p-8">
+    <div className="flex justify-center items-center bg-gray-100 min-h-screen">
+      <div className="bg-white shadow-lg p-8 rounded-lg w-full max-w-md">
         <div className="flex justify-center mb-6">
           <Link to="/">
             <img
@@ -16,83 +41,100 @@ function AdminLogin() {
           </Link>
         </div>
 
-        <div className="text-center mb-6">
-          <h2 className="text-xl font-semibold text-gray-800">
+        <div className="mb-6 text-center">
+          <h2 className="font-semibold text-gray-800 text-xl">
             Administrator Login
           </h2>
-          <p className="text-sm text-gray-500">
+          <p className="text-gray-500 text-sm">
             Sign in to continue to Mpilo Mobile
           </p>
         </div>
 
         <form className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block font-medium text-gray-700 text-sm"
+            >
               Email
             </label>
-            <div className="flex items-center border rounded-md px-3 mt-1">
-              <FaEnvelope className="text-gray-400 mr-2" />
+            <div className="flex items-center mt-1 px-3 border rounded-md">
+              <FaEnvelope className="mr-2 text-gray-400" />
               <input
                 type="email"
                 id="email"
                 placeholder="Enter email"
-                className="w-full py-2 outline-none text-sm"
+                className="py-2 outline-none w-full text-sm"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block font-medium text-gray-700 text-sm"
+            >
               Password
             </label>
-            <div className="flex items-center border rounded-md px-3 mt-1">
-              <FaLock className="text-gray-400 mr-2" />
+            <div className="flex items-center mt-1 px-3 border rounded-md">
+              <FaLock className="mr-2 text-gray-400" />
               <input
                 type="password"
                 id="password"
                 placeholder="Enter password"
-                className="w-full py-2 outline-none text-sm"
+                className="py-2 outline-none w-full text-sm"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
               />
             </div>
           </div>
 
-          <div className="flex justify-between items-center text-sm mt-2">
+          <div className="flex justify-between items-center mt-2 text-sm">
             <label className="flex items-center text-gray-600">
-              <input type="checkbox" className="form-checkbox text-[#274D60] mr-2" />
+              <input
+                type="checkbox"
+                className="mr-2 text-[#274D60] form-checkbox"
+              />
               Remember me
             </label>
-            <Link to="/forgot-password" className="text-primary hover:underline">
+            <Link
+              to="/forgot-password"
+              className="text-primary hover:underline"
+            >
               Forgot password?
             </Link>
           </div>
 
-          <Link to="/admin">
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+
           <button
-            type="button"
-            className="w-full bg-[#274D60] text-white py-2 rounded-md mt-4 hover:opacity-90 transition flex items-center justify-center gap-2"
+            type="submit"
+            disabled={loading}
+            className="flex justify-center items-center gap-2 bg-[#274D60] hover:opacity-90 mt-4 py-2 rounded-md w-full text-white transition"
           >
-            Log In <FaSignInAlt />
+            {loading ? "Logging in..." : "Log In"} <FaSignInAlt />
           </button>
-          </Link>
         </form>
 
         <div className="flex justify-center mt-6">
           <Link to="/Login">
-            <button
-              className="flex items-center gap-2 px-4 py-2 border rounded-md text-[#274D60] border-[#274D60] hover:bg-[#274D60] hover:text-white transition"
-            >
+            <button className="flex items-center gap-2 hover:bg-[#274D60] px-4 py-2 border border-[#274D60] rounded-md text-[#274D60] hover:text-white transition">
               <TbStethoscope size={18} />
               I'm a practitioner
             </button>
           </Link>
         </div>
 
-        <div className="text-center mt-6 text-sm">
+        <div className="mt-6 text-sm text-center">
           <p className="text-gray-500">
             Don't have an account?
             <Link
               to="/Register"
-              className="ml-1 px-1 py-1 rounded-md bg-[#274D60] text-primary font-medium hover:opacity-90"
+              className="bg-[#274D60] hover:opacity-90 ml-1 px-1 py-1 rounded-md font-medium text-primary"
             >
               Register
             </Link>

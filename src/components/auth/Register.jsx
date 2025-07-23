@@ -1,34 +1,50 @@
 import { useState } from "react";
-import axios from "axios";
-import { API_URL } from "../../constants";
-import { Link } from "react-router-dom";
-import { FaLock, FaPhone, FaEnvelope, FaUnlockAlt, FaSignInAlt } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context";
+import {
+  FaLock,
+  FaPhone,
+  FaEnvelope,
+  FaUnlockAlt,
+  FaSignInAlt,
+} from "react-icons/fa";
 
 function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const { register } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    axios
-      .post(`${API_URL}/register`, {
-        email,
-        password,
-        confirmPassword,
-        mobileNumber,
-      })
-      .then((response) => console.log(response))
-      .catch((err) => console.log(err));
+    setError("");
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await register(email.trim().toLowerCase(), password);
+      navigate("/login");
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-      <div className="bg-white shadow-lg h-full rounded-lg w-full max-w-md p-8">
+    <div className="flex justify-center items-center bg-gray-100 px-4 min-h-screen">
+      <div className="bg-white shadow-lg p-8 rounded-lg w-full max-w-md h-full">
         <div className="flex justify-center mb-4">
-          <Link 
-            to="/">
+          <Link to="/">
             <img
               src="../assets/images/mpiloLogo.png"
               alt="Mpilo Logo"
@@ -37,78 +53,96 @@ function Register() {
           </Link>
         </div>
 
-        <div className="text-center mb-6">
-          <h2 className="text-xl font-semibold text-gray-800">Mpilo Mobile</h2>
-          <p className="text-sm text-gray-500">Register your account now.</p>
+        <div className="mb-6 text-center">
+          <h2 className="font-semibold text-gray-800 text-xl">Mpilo Mobile</h2>
+          <p className="text-gray-500 text-sm">Register your account now.</p>
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block font-medium text-gray-700 text-sm"
+            >
               Email
             </label>
-            <div className="flex items-center border rounded-md px-3 mt-1">
-              <FaEnvelope className="text-gray-400 mr-2" />
+            <div className="flex items-center mt-1 px-3 border rounded-md">
+              <FaEnvelope className="mr-2 text-gray-400" />
               <input
                 type="email"
                 id="email"
                 placeholder="Enter email"
-                className="w-full py-2 outline-none text-sm"
+                className="py-2 outline-none w-full text-sm"
                 onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block font-medium text-gray-700 text-sm"
+            >
               Password
             </label>
-            <div className="flex items-center border rounded-md px-3 mt-1">
-              <FaLock className="text-gray-400 mr-2" />
+            <div className="flex items-center mt-1 px-3 border rounded-md">
+              <FaLock className="mr-2 text-gray-400" />
               <input
                 type="password"
                 id="password"
                 placeholder="Enter password"
-                className="w-full py-2 outline-none text-sm"
+                className="py-2 outline-none w-full text-sm"
                 onChange={(e) => setPassword(e.target.value)}
+                required
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="confirmPassword"
+              className="block font-medium text-gray-700 text-sm"
+            >
               Confirm Password
             </label>
-            <div className="flex items-center border rounded-md px-3 mt-1">
-              <FaUnlockAlt className="text-gray-400 mr-2" />
+            <div className="flex items-center mt-1 px-3 border rounded-md">
+              <FaUnlockAlt className="mr-2 text-gray-400" />
               <input
                 type="password"
                 id="confirmPassword"
                 placeholder="Confirm password"
-                className="w-full py-2 outline-none text-sm"
+                className="py-2 outline-none w-full text-sm"
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="mobileNumber" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="mobileNumber"
+              className="block font-medium text-gray-700 text-sm"
+            >
               Mobile Number
             </label>
-            <div className="flex items-center border rounded-md px-3 mt-1">
-              <FaPhone className="text-gray-400 mr-2" />
+            <div className="flex items-center mt-1 px-3 border rounded-md">
+              <FaPhone className="mr-2 text-gray-400" />
               <input
                 type="text"
                 id="mobileNumber"
                 placeholder="Enter mobile number"
-                className="w-full py-2 outline-none text-sm"
+                className="py-2 outline-none w-full text-sm"
                 onChange={(e) => setMobileNumber(e.target.value)}
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <input type="checkbox" id="customSwitchSuccess" className="mt-0.5" />
+          <div className="flex items-center gap-2 text-gray-600 text-sm">
+            <input
+              type="checkbox"
+              id="customSwitchSuccess"
+              className="mt-0.5"
+            />
             <label htmlFor="customSwitchSuccess" className="flex items-center">
               By registering you agree to the{" "}
               <Link to="#" className="ml-1 text-primary hover:underline">
@@ -117,17 +151,23 @@ function Register() {
             </label>
           </div>
 
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+
           <button
             type="submit"
-            className="w-full bg-[#274D60] text-white py-2 rounded-md hover:opacity-90 transition flex items-center justify-center gap-2"
+            disabled={loading}
+            className="flex justify-center items-center gap-2 bg-[#274D60] hover:opacity-90 py-2 rounded-md w-full text-white transition"
           >
-            Register <FaSignInAlt />
+            {loading ? "Registering..." : "Register"} <FaSignInAlt />
           </button>
         </form>
 
-        <div className="text-center mt-6 text-sm text-gray-600">
+        <div className="mt-6 text-gray-600 text-sm text-center">
           Already have an account?
-          <Link to="/login" className="ml-2 text-primary font-medium hover:underline">
+          <Link
+            to="/login"
+            className="ml-2 font-medium text-primary hover:underline"
+          >
             Log in
           </Link>
         </div>
