@@ -50,7 +50,7 @@ function AdminLogin() {
           </p>
         </div>
 
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label
               htmlFor="email"
