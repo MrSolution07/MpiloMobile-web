@@ -10,11 +10,10 @@ function Layout() {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  // Close sidebar when clicking outside on mobile
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
-        setIsSidebarOpen(false); // For large screens, sidebar is always visible
+        setIsSidebarOpen(false);
       }
     };
 
@@ -52,15 +51,16 @@ function Layout() {
       <div className="flex flex-col flex-1 overflow-hidden">
         <HeaderDashboard toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
 
-        <main className="flex-1 bg-gray-50 p-4 md:p-6 overflow-x-hidden overflow-y-auto">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-white w-full max-w-full">
+        <div className="w-full max-w-full flex flex-col gap-4">
           <Outlet />
-        </main>
+        </div>
+      </main>
       </div>
 
-      {/* Overlay for mobile */}
       {isSidebarOpen && (
         <div
-          className="lg:hidden z-10 fixed inset-0 bg-gray-900 bg-opacity-50"
+          className="lg:hidden z-10 fixed inset-0 bg-opacity-50"
           onClick={() => setIsSidebarOpen(false)}
         ></div>
       )}
