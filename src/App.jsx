@@ -41,6 +41,7 @@ import {
   AdminMessages,
   AdminSettings,
   AdminProfile,
+  AdminInventory,
   Routes
 } from "./pages/admin";
 
@@ -146,6 +147,9 @@ const router = createBrowserRouter([
         path: "profile",
         element: <DoctorProfile />,
       },
+      { path: "inventory",
+        element: <AdminInventory />,
+      },
 
     ],
   },
@@ -206,6 +210,10 @@ const router = createBrowserRouter([
       {
         path: "adminprofile",
         element: <AdminProfile />,
+      },
+
+      { path: "inventory",
+        element: <AdminInventory />,
       },
     ],
   },
