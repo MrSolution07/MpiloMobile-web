@@ -1,15 +1,19 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+
 function ForgotPassword() {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       <div className="bg-white shadow-lg rounded-lg w-full max-w-md p-8">
         <div className="flex justify-center mb-6">
-          <a href="/">
+          <Link to="/">
             <img
               src="../assets/images/mpiloLogo.png"
               alt="Mpilo Logo"
               className="h-12" 
             />
-          </a>
+          </Link>
         </div>
 
         <div className="text-center mb-6">
@@ -48,9 +52,9 @@ function ForgotPassword() {
         <div className="text-center mt-6 text-sm">
           <p className="text-gray-500">
             Remember it?
-            <a href="/login" className="ml-2 text-primary font-medium hover:underline">
+            <Link to="/login" className="ml-2 text-primary font-medium hover:underline">
               Sign in
-            </a>
+            </Link>
           </p>
         </div>
       </div>

@@ -7,6 +7,7 @@ import {
   AlertTriangle,
   FileText,
   Settings,
+  Package,
 } from "lucide-react";
 
 function Sidebar({ isSidebarOpen, toggleSidebar }) {
@@ -19,6 +20,7 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
     { name: "Patients", path: "/dashboard/patients", icon: <Users className="w-5 h-5" /> },
     { name: "Triage", path: "/dashboard/triage", icon: <AlertTriangle className="w-5 h-5" />, badge: 4 },
     { name: "Medical Records", path: "/dashboard/records", icon: <FileText className="w-5 h-5" /> },
+    { name: "Inventory", path: "/dashboard/inventory", icon: <Package className="w-5 h-5" />, badge: 3 },
   ];
 
   return (

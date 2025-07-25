@@ -7,13 +7,13 @@ function AdminLogin() {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       <div className="bg-white shadow-lg rounded-lg w-full max-w-md p-8">
         <div className="flex justify-center mb-6">
-          <a href="/">
+          <Link to="/">
             <img
               src="../assets/images/mpiloLogo.png"
               alt="Mpilo Logo"
               className="h-12"
             />
-          </a>
+          </Link>
         </div>
 
         <div className="text-center mb-6">
@@ -61,9 +61,9 @@ function AdminLogin() {
               <input type="checkbox" className="form-checkbox text-[#274D60] mr-2" />
               Remember me
             </label>
-            <a href="/forgot-password" className="text-primary hover:underline">
+            <Link to="/forgot-password" className="text-primary hover:underline">
               Forgot password?
-            </a>
+            </Link>
           </div>
 
           <Link to="/admin">

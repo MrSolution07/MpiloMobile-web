@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { API_URL } from "../../constants";
+import { Link } from "react-router-dom";
 import { FaLock, FaPhone, FaEnvelope, FaUnlockAlt, FaSignInAlt } from "react-icons/fa";
 
 function Register() {
@@ -26,13 +27,14 @@ function Register() {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
       <div className="bg-white shadow-lg h-full rounded-lg w-full max-w-md p-8">
         <div className="flex justify-center mb-4">
-          <a href="/">
+          <Link 
+            to="/">
             <img
               src="../assets/images/mpiloLogo.png"
               alt="Mpilo Logo"
               className="h-12"
             />
-          </a>
+          </Link>
         </div>
 
         <div className="text-center mb-6">
@@ -109,9 +111,9 @@ function Register() {
             <input type="checkbox" id="customSwitchSuccess" className="mt-0.5" />
             <label htmlFor="customSwitchSuccess" className="flex items-center">
               By registering you agree to the{" "}
-              <a href="#" className="ml-1 text-primary hover:underline">
+              <Link to="#" className="ml-1 text-primary hover:underline">
                 Terms of Use
-              </a>
+              </Link>
             </label>
           </div>
 
@@ -125,9 +127,9 @@ function Register() {
 
         <div className="text-center mt-6 text-sm text-gray-600">
           Already have an account?
-          <a href="/login" className="ml-2 text-primary font-medium hover:underline">
+          <Link to="/login" className="ml-2 text-primary font-medium hover:underline">
             Log in
-          </a>
+          </Link>
         </div>
       </div>
     </div>

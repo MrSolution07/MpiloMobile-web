@@ -69,9 +69,9 @@ function Login() {
               <input type="checkbox" className="form-checkbox text-[#274D60] mr-2" />
               Remember me
             </label>
-            <a href="/forgot-password" className="text-primary hover:underline">
+            <Link to="/forgot-password" className="text-primary hover:underline">
               Forgot password?
-            </a>
+            </Link>
           </div>
 
           {/* Login Button */}
