@@ -147,9 +147,7 @@ const router = createBrowserRouter([
         path: "profile",
         element: <DoctorProfile />,
       },
-      { path: "inventory",
-        element: <AdminInventory />,
-      },
+      
 
     ],
   },
