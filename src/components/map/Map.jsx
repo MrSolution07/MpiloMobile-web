@@ -1,8 +1,96 @@
-// the map
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+import { useState, useEffect } from "react";
+import { MapContainer, TileLayer, CircleMarker, useMap } from "react-leaflet";
+
+const getMapCenter = (locations) => {
+  const entries = Object.values(locations);
+  if (entries.length === 0) return { lat: 0, lng: 0 };
+
+  const avgLat =
+    entries.reduce((sum, loc) => sum + loc.lat, 0) / entries.length;
+  const avgLng =
+    entries.reduce((sum, loc) => sum + loc.lng, 0) / entries.length;
+
+  return { lat: avgLat, lng: avgLng };
+};
+
+const FitBounds = (bounds) => {
+  const map = useMap();
+  map.fitBounds(bounds);
+  return null;
+};
+
 function Map() {
+  const [time, setTime] = useState(() => new Date());
+  const [positions, setPositions] = useState({
+    clinic_1: { lat: -25.748, lng: 28.229 },
+    clinic_2: { lat: -25.746, lng: 28.221 },
+    clinic_3: { lat: -25.745, lng: 28.228 },
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(new Date());
+    }, 10 * 1000); // update every 10s
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const fetchPositions = async () => {
+      try {
+        setPositions((prev) => {
+          const updated = { ...prev };
+
+          for (const key in updated) {
+            updated[key] = {
+              lat: updated[key].lat + (Math.random() - 0.5) * 0.0005,
+              lng: updated[key].lng + (Math.random() - 0.5) * 0.0005,
+            };
+          }
+
+          return updated;
+        });
+      } catch (error) {
+        console.error("Failed to load mobile clinic positions", error);
+      }
+    };
+
+    fetchPositions();
+  }, [time]);
+
+  const mapCenter = getMapCenter(positions);
+  const bounds = L.latLngBounds(Object.values(positions));
+
   return (
-    <div className="Mpilo-map">
-      <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d6940.875841771289!2d28.013966846704047!3d-26.18391557745966!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1e950bf679ea8157%3A0xf69d1fc11d5a6aab!2sUJ%20APB%20Bunting%20Road%20Campus%20Student%20Center!5e0!3m2!1sen!2sza!4v1711326854235!5m2!1sen!2sza"></iframe>
+    <div className="w-full h-screen">
+      <MapContainer
+        center={mapCenter}
+        zoom={16}
+        className="z-0 rounded-lg w-full h-full"
+      >
+        <TileLayer
+          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+
+        {bounds.length > 0 && <FitBounds bounds={bounds} />}
+
+        {positions &&
+          Object.entries(positions).map(([key, pos]) => (
+            <CircleMarker
+              key={key}
+              center={pos}
+              radius={7}
+              pathOptions={{
+                color: "#000",
+                fillColor: "#ffc107",
+                fillOpacity: 1,
+              }}
+            />
+          ))}
+      </MapContainer>
     </div>
   );
 }
