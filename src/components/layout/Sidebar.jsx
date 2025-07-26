@@ -7,20 +7,83 @@ import {
   AlertTriangle,
   FileText,
   Settings,
-  Package,
 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { supabase } from "../../services/supabaseClient";
 
 function Sidebar({ isSidebarOpen, toggleSidebar }) {
   const location = useLocation();
+  const [waitingTriageCount, setWaitingTriageCount] = useState(0);
+
+  // Fetch and subscribe to waiting triage cases count
+  useEffect(() => {
+    let subscription;
+
+    const fetchAndSubscribe = async () => {
+      try {
+        // Initial fetch of waiting cases count
+        const { count, error } = await supabase
+          .from('triage_cases')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'waiting');
+        
+        if (error) throw error;
+        setWaitingTriageCount(count || 0);
+
+        // Set up realtime subscription
+        subscription = supabase
+          .channel('triage-cases-changes')
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'triage_cases',
+            },
+            async (payload) => {
+              // Only refetch if the change affects a waiting case
+              if (payload.eventType === 'DELETE' || 
+                  payload.new?.status === 'waiting' || 
+                  payload.old?.status === 'waiting') {
+                const { count, error } = await supabase
+                  .from('triage_cases')
+                  .select('*', { count: 'exact', head: true })
+                  .eq('status', 'waiting');
+                
+                if (!error) {
+                  setWaitingTriageCount(count || 0);
+                }
+              }
+            }
+          )
+          .subscribe();
+
+      } catch (err) {
+        console.error('Error initializing triage count:', err);
+      }
+    };
+
+    fetchAndSubscribe();
+
+    return () => {
+      if (subscription) {
+        supabase.removeChannel(subscription);
+      }
+    };
+  }, []);
 
   const navItems = [
     { name: "Dashboard", path: "/dashboard", icon: <Home className="w-5 h-5" /> },
     { name: "Appointments", path: "/dashboard/appointments", icon: <Calendar className="w-5 h-5" /> },
     { name: "Messages", path: "/dashboard/messages", icon: <MessageSquare className="w-5 h-5" />, badge: 2 },
     { name: "Patients", path: "/dashboard/patients", icon: <Users className="w-5 h-5" /> },
-    { name: "Triage", path: "/dashboard/triage", icon: <AlertTriangle className="w-5 h-5" />, badge: 4 },
+    { 
+      name: "Triage", 
+      path: "/dashboard/triage", 
+      icon: <AlertTriangle className="w-5 h-5" />, 
+      badge: waitingTriageCount > 0 ? waitingTriageCount : null 
+    },
     { name: "Medical Records", path: "/dashboard/records", icon: <FileText className="w-5 h-5" /> },
-    { name: "Inventory", path: "/dashboard/inventory", icon: <Package className="w-5 h-5" />, badge: 3 },
   ];
 
   return (

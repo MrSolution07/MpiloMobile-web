@@ -1,3 +1,4 @@
+
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "./components/admin/ui/toaster";
 import { Toaster as Sonner } from "./components/admin/ui/sonner";
@@ -20,13 +21,13 @@ import { Register, Login, AdminLogin, ForgotPassword } from "./components/auth";
 // Dashboard layout and pages
 import { Layout, AdminLayout } from "./components/layout";
 import { Dashboard } from "./components/DoctorDashboard";
-import { AppointmentsList,NewAppointment } from "./components/appointments";
+import { AppointmentsList, NewAppointment } from "./components/appointments";
 import { MessagesList } from "./components/messages";
-import { PatientsList, PatientDetails,AddPatient } from "./components/patients";
+import { PatientsList, PatientDetails, AddPatient } from "./components/patients";
 import { TriageList, NewTriage } from "./components/triage";
 import { MedicalRecordsList, NewRecord } from "./components/records";
 import { DoctorSettings } from "./components/settings";
-import {DoctorProfile} from "./components/profile";
+import { DoctorProfile } from "./components/profile";
 
 // Admin dashboard pages
 import {
@@ -41,7 +42,6 @@ import {
   AdminMessages,
   AdminSettings,
   AdminProfile,
-  AdminInventory,
   Routes
 } from "./pages/admin";
 
@@ -136,19 +136,17 @@ const router = createBrowserRouter([
         element: <MedicalRecordsList />,
       },
       {
-        path: "newrecord",
+        path: "records/new",
         element: <NewRecord />,
       },
       {
-        path:"settings",
-        element: <DoctorSettings/>
+        path: "settings",
+        element: <DoctorSettings />
       },
       {
         path: "profile",
         element: <DoctorProfile />,
       },
-      
-
     ],
   },
 
@@ -208,10 +206,6 @@ const router = createBrowserRouter([
       {
         path: "adminprofile",
         element: <AdminProfile />,
-      },
-
-      { path: "inventory",
-        element: <AdminInventory />,
       },
     ],
   },
