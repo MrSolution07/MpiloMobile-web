@@ -68,13 +68,7 @@ const MedicalRecordsList = () => {
           </Button>
 
           <Link to = "/dashboard/newrecord">
-          <Button
-            variant="primary"
-            size="sm"
-            icon={<Plus className="w-4 h-4" />}
-          >
-            New Record
-          </Button>
+         
           </Link>
         </div>
       </div>

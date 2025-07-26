@@ -91,13 +91,7 @@ const PatientsList = () => {
           </Button>
 
           <Link to = "/dashboard/addpatient">
-          <Button
-            variant="primary"
-            size="sm"
-            icon={<Plus className="w-4 h-4" />}
-          >
-            Add Patient
-          </Button>
+         
           </Link>
         </div>
       </div>
