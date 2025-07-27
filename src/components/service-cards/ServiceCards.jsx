@@ -1,6 +1,6 @@
 import React from "react";
 import { IoIosArrowRoundForward } from "react-icons/io";
-import ServiceTags from "../servicetags/serviceTags";
+import ServiceTags from "../servicetags/ServiceTags";
 
 const ServiceCards = () => {
   return (
@@ -30,7 +30,7 @@ const ServiceCards = () => {
           
           <a
             href="/about"
-            className="mt-4 inline-flex items-center text-white text-[16px] bg-[#274D60] px-3 py-2 rounded-md hover:transition group"
+            className="mt-4 inline-flex items-center text-white text-[16px] bg-red-500 px-3 py-2 rounded-[0.8rem] hover:transition group"
           >
             <span className="flex items-center text-white gap-2 font-medium">
               Learn More

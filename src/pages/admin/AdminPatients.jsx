@@ -7,7 +7,7 @@ import { supabase } from "../../services/supabaseClient";
 const Button = ({ className = "", variant = "default", size = "default", children, ...props }) => {
   const baseStyles = "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
   const variants = {
-    default: "bg-[#274D60] text-white hover:bg-[#1A3A4A]",
+    default: "bg-red-600 text-white hover:bg-red-700",
     outline: "border border-gray-300 bg-white hover:bg-gray-50 hover:text-gray-900",
     ghost: "hover:bg-gray-100 hover:text-gray-900",
     destructive: "bg-red-600 text-white hover:bg-red-700",
@@ -32,7 +32,7 @@ const Button = ({ className = "", variant = "default", size = "default", childre
 // Input Component
 const Input = ({ className = "", ...props }) => (
   <input
-    className={`flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#274D60] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+    className={`flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
     {...props}
   />
 );

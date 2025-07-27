@@ -21,7 +21,7 @@ const Badge = ({ children, className }) => (
 
 const Input = ({ className, ...props }) => (
   <input
-    className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+    className={`flex h-10 w-full rounded-[0.8rem] border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
     {...props}
   />
 );
@@ -87,12 +87,12 @@ const ConversationSidebar = ({
               key={conversation.id}
               onClick={() => onSelectConversation(conversation.id)}
               className={`p-4 border-b cursor-pointer hover:bg-gray-50 transition-colors ${
-                selectedConversationId === conversation.id ? 'bg-blue-50 border-r-2 border-r-blue-500' : ''
+                selectedConversationId === conversation.id ? 'bg-red-50 border-r-2 border-r-red-500' : ''
               }`}
             >
               <div className="flex items-start space-x-3">
                 <Avatar className="h-12 w-12">
-                  <AvatarFallback className="bg-blue-100 text-blue-600">
+                  <AvatarFallback className="bg-red-100 text-red-600">
                     {conversation.participant.split(' ').map(n => n[0]).join('')}
                   </AvatarFallback>
                 </Avatar>
@@ -113,7 +113,7 @@ const ConversationSidebar = ({
                       {getLastMessage(conversation.messages)}
                     </p>
                     {unreadCount > 0 && (
-                      <Badge className="ml-2 bg-blue-500">
+                      <Badge className="ml-2 bg-red-500">
                         {unreadCount}
                       </Badge>
                     )}

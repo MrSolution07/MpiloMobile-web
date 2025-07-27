@@ -176,7 +176,7 @@ function AddPatientForm({ onSubmit, onCancel }) {
             value={form.first_name}
             onChange={handleChange}
             onBlur={handleBlur}
-            className={`mt-1 block w-full rounded-md border ${errors.first_name ? 'border-red-500' : 'border-gray-300'} px-3 py-2`}
+            className={`mt-1 block w-full rounded-[0.8rem] border ${errors.first_name ? 'border-red-500' : 'border-gray-300'} px-3 py-2`}
           />
           {errors.first_name && <p className="mt-1 text-sm text-red-600">{errors.first_name}</p>}
         </div>
@@ -190,7 +190,7 @@ function AddPatientForm({ onSubmit, onCancel }) {
             value={form.last_name}
             onChange={handleChange}
             onBlur={handleBlur}
-            className={`mt-1 block w-full rounded-md border ${errors.last_name ? 'border-red-500' : 'border-gray-300'} px-3 py-2`}
+            className={`mt-1 block w-full rounded-[0.8rem] border ${errors.last_name ? 'border-red-500' : 'border-gray-300'} px-3 py-2`}
           />
           {errors.last_name && <p className="mt-1 text-sm text-red-600">{errors.last_name}</p>}
         </div>
@@ -203,7 +203,7 @@ function AddPatientForm({ onSubmit, onCancel }) {
             value={form.gender}
             onChange={handleChange}
             onBlur={handleBlur}
-            className={`mt-1 block w-full rounded-md border ${errors.gender ? 'border-red-500' : 'border-gray-300'} px-3 py-2`}
+            className={`mt-1 block w-full rounded-[0.8rem] border ${errors.gender ? 'border-red-500' : 'border-gray-300'} px-3 py-2`}
           >
             <option value="">Select Gender</option>
             <option value="Male">Male</option>
@@ -223,7 +223,7 @@ function AddPatientForm({ onSubmit, onCancel }) {
             onChange={handleChange}
             onBlur={handleBlur}
             max={new Date().toISOString().split('T')[0]} // Prevent future dates
-            className={`mt-1 block w-full rounded-md border ${errors.date_of_birth ? 'border-red-500' : 'border-gray-300'} px-3 py-2`}
+            className={`mt-1 block w-full rounded-[0.8rem] border ${errors.date_of_birth ? 'border-red-500' : 'border-gray-300'} px-3 py-2`}
           />
           {errors.date_of_birth && <p className="mt-1 text-sm text-red-600">{errors.date_of_birth}</p>}
         </div>
@@ -239,7 +239,7 @@ function AddPatientForm({ onSubmit, onCancel }) {
             onBlur={handleBlur}
             min="0"
             max="120"
-            className={`mt-1 block w-full rounded-md border ${errors.age ? 'border-red-500' : 'border-gray-300'} px-3 py-2`}
+            className={`mt-1 block w-full rounded-[0.8rem] border ${errors.age ? 'border-red-500' : 'border-gray-300'} px-3 py-2`}
           />
           {errors.age && <p className="mt-1 text-sm text-red-600">{errors.age}</p>}
         </div>
@@ -253,7 +253,7 @@ function AddPatientForm({ onSubmit, onCancel }) {
             value={form.phone_number}
             onChange={handleChange}
             onBlur={handleBlur}
-            className={`mt-1 block w-full rounded-md border ${errors.phone_number ? 'border-red-500' : 'border-gray-300'} px-3 py-2`}
+            className={`mt-1 block w-full rounded-[0.8rem] border ${errors.phone_number ? 'border-red-500' : 'border-gray-300'} px-3 py-2`}
           />
           {errors.phone_number && <p className="mt-1 text-sm text-red-600">{errors.phone_number}</p>}
         </div>
@@ -267,7 +267,7 @@ function AddPatientForm({ onSubmit, onCancel }) {
             value={form.email}
             onChange={handleChange}
             onBlur={handleBlur}
-            className={`mt-1 block w-full rounded-md border ${errors.email ? 'border-red-500' : 'border-gray-300'} px-3 py-2`}
+            className={`mt-1 block w-full rounded-[0.8rem] border ${errors.email ? 'border-red-500' : 'border-gray-300'} px-3 py-2`}
           />
           {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
         </div>

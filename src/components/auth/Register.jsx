@@ -155,8 +155,10 @@ function Register() {
 
           <button
             type="submit"
+
             disabled={loading}
             className="flex justify-center items-center gap-2 bg-[#274D60] hover:opacity-90 py-2 rounded-md w-full text-white transition"
+
           >
             {loading ? "Registering..." : "Register"} <FaSignInAlt />
           </button>

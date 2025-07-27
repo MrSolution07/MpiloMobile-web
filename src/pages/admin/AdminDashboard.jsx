@@ -36,7 +36,7 @@ const CardDescription = ({ className = "", children, ...props }) => (
 const Progress = ({ value = 0, className = "", indicatorClassName = "" }) => (
   <div className={`relative h-4 w-full overflow-hidden rounded-full bg-gray-200 ${className}`}>
     <div
-      className={`h-full w-full flex-1 bg-[#274D60] transition-all ${indicatorClassName}`}
+      className={`h-full w-full flex-1 bg-red-600 transition-all ${indicatorClassName}`}
       style={{ transform: `translateX(-${100 - value}%)` }}
     />
   </div>
@@ -309,7 +309,7 @@ const AdminDashboard = () => {
                   <Progress
                     value={0}
                     className="h-2 bg-gray-200"
-                    indicatorClassName="bg-[#274D60]"
+                    indicatorClassName="bg-red-600"
                   />
                 </div>
               ))}
@@ -370,7 +370,7 @@ const AdminDashboard = () => {
             {recentActivity.length > 0 ? (
               recentActivity.map((activity) => (
                 <div key={activity.id} className="flex items-center pb-3 last:border-0 border-b">
-                  <div className="bg-[#274D60] mr-4 rounded-full w-2 h-2" />
+                  <div className="bg-red-600 mr-4 rounded-full w-2 h-2" />
                   <div>
                     <p className="text-sm">
                       <span className="font-medium">{activity.patient}</span> - {activity.action}
