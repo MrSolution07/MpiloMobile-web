@@ -76,9 +76,9 @@ function Header({ className, logo, joinBtn }) {
               <li key={link.name}>
                 <Link 
                   to={link.path} 
-                  className={`hover:text-[#274D60] ${
-                    isActive(link.path) ? "font-bold text-[#274D60]" : ""
-                  }`}
+                  className={`hover:text-red-600 ${
+                    isActive(link.path) ? "font-bold text-red-600" : ""
+                  } rounded-[0.8rem]`}
                 >
                   {link.name}
                 </Link>
@@ -92,7 +92,7 @@ function Header({ className, logo, joinBtn }) {
                 to="/login"
                 title="Login"
                 className="px-4 py-2 tracking-wider text-sm font-semibold 
-                text-[#274D60] border border-[#274D60] bg-transparent rounded-none 
+                text-red-500 border border-red-500 bg-transparent rounded-[0.8rem] 
                 transition-all duration-300 ease-in-out 
                 hover:rounded"
               >
@@ -103,10 +103,9 @@ function Header({ className, logo, joinBtn }) {
               <Link
                 to="/contact"
                 className="px-4 py-2 flex items-center justify-center tracking-wider 
-                h-10 text-sm font-semibold border-[#274D60] bg-[#274D60] 
-                text-white rounded transition-all duration-300 hover:bg-white 
-                hover:text-[#274D60] rounded-none hover: border border-[#274D60]"
-
+                h-10 text-sm font-semibold border border-red-500 bg-red-500 
+                text-white transition-all duration-300 hover:bg-white 
+                hover:text-red-500 rounded-[0.8rem]"
               >
                 Contact Us
               </Link>
@@ -116,15 +115,15 @@ function Header({ className, logo, joinBtn }) {
 
         {/* Mobile Menu Dropdown */}
         {activeMobileMenu && (
-          <div className="lg:hidden mt-2 bg-gray-50 rounded-lg shadow-md px-4 py-4 space-y-2">
+          <div className="lg:hidden mt-2 bg-gray-50 rounded-[0.8rem] shadow-md px-4 py-4 space-y-2">
             <ul className="flex flex-col space-y-3 text-gray-700 font-medium">
               {navLinks.map((link) => (
                 <li key={link.name}>
                   <Link 
                     to={link.path} 
-                    className={`block hover:text-[#274D60] ${
-                      isActive(link.path) ? "font-bold text-[#274D60]" : ""
-                    }`}
+                    className={`block hover:text-red-600 ${
+                      isActive(link.path) ? "font-bold text-red-600" : ""
+                    } rounded-[0.8rem]`}
                   >
                     {link.name}
                   </Link>
@@ -136,7 +135,7 @@ function Header({ className, logo, joinBtn }) {
               {className !== "header-02" && (
                 <Link
                   to="/login"
-                  className="block text-[#274D60] font-medium"
+                  className="block text-red-600 font-medium rounded-[0.8rem]"
                 >
                   Login
                 </Link>
@@ -144,7 +143,7 @@ function Header({ className, logo, joinBtn }) {
               {joinBtn && (
                 <Link
                   to="/contact"
-                  className="block w-full px-4 py-2 text-center text-sm font-semibold border-[#274D60] bg-[#274D60] text-white rounded transition-all duration-300 hover:bg-white hover:text-[#274D60]"
+                  className="block w-full px-4 py-2 text-center text-sm font-semibold border border-red-500 bg-red-500 text-white rounded-[0.8rem] transition-all duration-300 hover:bg-white hover:text-red-500"
                 >
                   Contact Us
                 </Link>

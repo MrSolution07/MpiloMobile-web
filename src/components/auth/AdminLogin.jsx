@@ -82,7 +82,7 @@ function AdminLogin() {
           <Link to="/admin">
           <button
             type="button"
-            className="w-full bg-[#274D60] text-white py-2 rounded-md mt-4 hover:opacity-90 transition flex items-center justify-center gap-2"
+            className="w-full bg-red-500 text-white py-2 rounded-[0.8rem] mt-4 hover:opacity-90 transition flex items-center justify-center gap-2"
           >
             Log In <FaSignInAlt />
           </button>

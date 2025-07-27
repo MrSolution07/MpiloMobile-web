@@ -115,7 +115,7 @@ function Login() {
           <button
           onClick={handleLogin}
           type="button"
-          className="w-full bg-[#274D60] text-white hover:opacity-90 text-gray-800 font-semibold py-2 rounded-md transition flex items-center justify-center gap-2 border border-gray-300"
+          className="w-full bg-red-500 text-white hover:opacity-90 font-semibold py-2 rounded-[0.8rem] transition flex items-center justify-center gap-2 border border-gray-300"
         >
           Login <LogIn size={16} />
         </button>
@@ -137,7 +137,7 @@ function Login() {
 
         {/* Admin Button */}
         <div className="mt-6 flex justify-center">
-          <button className="flex items-center gap-2 px-4 py-2 border border-[#274D60] text-[#274D60] rounded-md hover:bg-blue-50 transition" onClick={() => navigate("/AdminLogin")}>
+          <button className="flex items-center gap-2 px-4 py-2 border border-red-500 text-red-500 rounded-[0.8rem] hover:bg-red-50 transition" onClick={() => navigate("/AdminLogin")}>
             <UserCog size={18} />
             I'm an Admin
           </button>

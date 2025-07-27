@@ -99,7 +99,7 @@ const TriageQueue = () => {
             {triageCases.slice(0, 3).map((triage) => (
               <div
                 key={triage.id}
-                className="flex items-start hover:bg-gray-50 p-3 border border-gray-100 rounded-lg transition-colors"
+                className="flex items-start hover:bg-gray-50 p-3 border border-gray-100 rounded-[0.8rem] transition-colors"
               >
                 <div className="flex-shrink-0 mr-3">
                   <div

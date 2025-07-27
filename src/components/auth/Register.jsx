@@ -137,7 +137,7 @@ function Register() {
 
           <button
             type="submit"
-            className="w-full bg-[#274D60] text-white py-2 rounded-md hover:opacity-90 transition flex items-center justify-center gap-2"
+            className="w-full bg-red-500 text-white py-2 rounded-[0.8rem] hover:opacity-90 transition flex items-center justify-center gap-2"
           >
             Register <FaSignInAlt />
           </button>

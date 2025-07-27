@@ -56,7 +56,7 @@ function Services() {
             {["General Health", "Nutrition", "Vision", "Dental", "Cardio - Metabolic", "Optometry", "Dentistry", "ENT", "Respiratory"].map((tag, i) => (
               <span
                 key={i}
-                className="bg-white border-2 border-[#274D60] text-[#274D60] px-5 py-2 rounded-full shadow-md text-sm font-semibold hover:bg-[#274D60] hover:text-white transition-colors duration-300"
+                className="bg-white border-2 border-red-500 text-red-500 px-5 py-2 rounded-full shadow-md text-sm font-semibold hover:bg-red-500 hover:text-white transition-colors duration-300"
               >
                 {tag}
               </span>

@@ -149,7 +149,7 @@ function PatientDashboard() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center space-x-2 pb-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'border-[#274D60] text-[#274D60]'
+                  ? 'border-red-500 text-red-500'
                   : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
@@ -168,7 +168,7 @@ function PatientDashboard() {
               <div className="bg-gradient-to-r from-[#274D60] to-[#1e3a4a] rounded-xl p-6 text-white mb-6">
                 <h2 className="text-2xl font-bold mb-2">Welcome back, Major Tech!</h2>
                 <p className="text-blue-100">You have 1 appointment today and 2 upcoming this week.</p>
-                <button className="mt-4 bg-white text-[#274D60] px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition">
+                <button className="mt-4 bg-white text-red-500 px-4 py-2 rounded-[0.8rem] font-medium hover:bg-gray-100 transition">
                   Book New Appointment
                 </button>
               </div>
@@ -249,19 +249,19 @@ function PatientDashboard() {
                 <div className="space-y-4">
                   <button className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition">
                     <div className="flex items-center space-x-3">
-                      <FaCalendarAlt className="h-5 w-5 text-[#274D60]" />
+                      <FaCalendarAlt className="h-5 w-5 text-red-600" />
                       <span className="font-medium">Book Appointment</span>
                     </div>
                   </button>
                   <button className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition">
                     <div className="flex items-center space-x-3">
-                      <FaUserMd className="h-5 w-5 text-[#274D60]" />
+                      <FaUserMd className="h-5 w-5 text-red-600" />
                       <span className="font-medium">Find a Doctor</span>
                     </div>
                   </button>
                   <button className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition">
                     <div className="flex items-center space-x-3">
-                      <FaHistory className="h-5 w-5 text-[#274D60]" />
+                      <FaHistory className="h-5 w-5 text-red-600" />
                       <span className="font-medium">View Records</span>
                     </div>
                   </button>
@@ -276,7 +276,7 @@ function PatientDashboard() {
   <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-3">
       <h2 className="text-lg sm:text-xl font-semibold text-gray-800">My Appointments</h2>
-      <button className="bg-[#274D60] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#1e3b49] transition w-full md:w-auto">
+      <button className="bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition w-full md:w-auto">
         Book New Appointment
       </button>
     </div>
@@ -361,7 +361,7 @@ function PatientDashboard() {
               <button className="px-4 py-2 border border-[#274D60] text-[#274D60] rounded-lg hover:bg-blue-50 transition w-full sm:w-auto">
                 View Profile
               </button>
-              <button className="px-4 py-2 border border-[#D7261E] text-[#D7261E] rounded-lg hover:bg-red-100 transition w-full sm:w-auto">
+              <button className="px-4 py-2 border border-[#D7261E] text-[#D7261E] rounded-[0.8rem] hover:bg-red-100 transition w-full sm:w-auto">
                 Book Appointment
               </button>
             </div>
@@ -377,7 +377,7 @@ function PatientDashboard() {
   <div className="bg-white rounded-xl shadow-sm p-6 max-w-full overflow-x-auto">
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 sm:gap-0">
       <h2 className="text-xl font-semibold text-gray-800">Medical History</h2>
-      <button className="bg-[#274D60] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#1e3a4a] transition whitespace-nowrap max-w-full sm:max-w-xs truncate">
+      <button className="bg-red-500 text-white px-4 py-2 rounded-[0.8rem] font-medium hover:bg-red-600 transition whitespace-nowrap max-w-full sm:max-w-xs truncate">
         Download Records
       </button>
     </div>

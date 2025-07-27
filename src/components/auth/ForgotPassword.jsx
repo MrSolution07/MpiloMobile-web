@@ -43,7 +43,7 @@ function ForgotPassword() {
 
           <button
             type="button"
-            className="w-full bg-[#274D60] text-white py-2 rounded-md mt-2 hover:opacity-90 transition"
+            className="w-full bg-red-500 text-white py-2 rounded-[0.8rem] mt-2 hover:opacity-90 transition"
           >
             Reset <i className="fas fa-sign-in-alt ml-2"></i>
           </button>
