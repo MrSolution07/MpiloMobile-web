@@ -1,14 +1,9 @@
 
 import React, { useState } from "react";
-import { Link,useNavigate } from "react-router-dom";
-import { TbStethoscope } from "react-icons/tb";
-import { FaSignInAlt,FaEye, FaEyeSlash } from "react-icons/fa";
-
 import { Link, useNavigate } from "react-router-dom";
 import { TbStethoscope } from "react-icons/tb";
 import { FaEnvelope, FaLock, FaSignInAlt } from "react-icons/fa";
 import { useAuth } from "../../context";
-import { useState } from "react";
 
 function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -33,7 +28,6 @@ function AdminLogin() {
       setLoading(false);
     }
   };
-
 
   return (
     <div className="flex justify-center items-center bg-gray-100 min-h-screen">
@@ -81,7 +75,6 @@ function AdminLogin() {
             </div>
           </div>
 
-
           <div>
             <label
               htmlFor="password"
@@ -101,7 +94,6 @@ function AdminLogin() {
                 required
               />
             </div>
-
           </div>
 
           <div className="flex justify-between items-center mt-2 text-sm">
@@ -131,7 +123,6 @@ function AdminLogin() {
           </button>
         </form>
 
-
         <div className="flex justify-center mt-6">
           <Link to="/Login">
             <button className="flex items-center gap-2 hover:bg-[#274D60] px-4 py-2 border border-[#274D60] rounded-md text-[#274D60] hover:text-white transition">
@@ -141,15 +132,12 @@ function AdminLogin() {
           </Link>
         </div>
 
-
         <div className="mt-6 text-sm text-center">
           <p className="text-gray-500">
             Don't have an account?
             <Link
               to="/Register"
-
               className="bg-[#274D60] hover:opacity-90 ml-1 px-1 py-1 rounded-md font-medium text-primary"
-
             >
               Register
             </Link>
