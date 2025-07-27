@@ -3,7 +3,6 @@ import { Preloader } from "../components/preloader";
 import { Header } from "../components/header";
 import { Footer } from "../components/footer";
 import { Banner } from "../components/banner";
-import { Map } from "../components/map";
 import { GotoTop } from "../components/goto-top";
 import { ContactForm } from "../components/form";
 
@@ -80,7 +79,6 @@ function Contact() {
           </div>
         </div>
       </section>
-      <Map />
       <Footer />
       <GotoTop />
     </>

@@ -1,14 +1,17 @@
 import { useState } from "react";
-import axios from "axios";
-import { API_URL } from "../../constants";
 import { Link } from "react-router-dom";
-import { FaLock, FaPhone, FaEnvelope, FaUnlockAlt, FaSignInAlt } from "react-icons/fa";
+import { FaSignInAlt,FaEye,FaEyeSlash } from "react-icons/fa";
 
 function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
+
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -43,12 +46,12 @@ function Register() {
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
+           {/* Email */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email
             </label>
-            <div className="flex items-center border rounded-md px-3 mt-1">
-              <FaEnvelope className="text-gray-400 mr-2" />
+            <div className="flex items-center border border-gray-300 rounded-md px-3 mt-1 hover:rounded-none">
               <input
                 type="email"
                 id="email"
@@ -59,44 +62,58 @@ function Register() {
             </div>
           </div>
 
+          {/* Password */}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
             </label>
-            <div className="flex items-center border rounded-md px-3 mt-1">
-              <FaLock className="text-gray-400 mr-2" />
+            <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 bg-white hover:rounded-none">
               <input
-                type="password"
-                id="password"
+                id="userpassword"
+                type={showPassword ? "text" : "password"}
                 placeholder="Enter password"
-                className="w-full py-2 outline-none text-sm"
-                onChange={(e) => setPassword(e.target.value)}
+                className="w-full outline-none bg-transparent text-sm"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="focus:outline-none text-gray-400 ml-2"
+              >
+                {showPassword ? <FaEyeSlash size={20}/> : <FaEye size={20} />}
+              </button>
             </div>
           </div>
 
+          {/* Confirm Password */}
           <div>
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
               Confirm Password
             </label>
-            <div className="flex items-center border rounded-md px-3 mt-1">
-              <FaUnlockAlt className="text-gray-400 mr-2" />
+            <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 bg-white hover:rounded-none">
               <input
-                type="password"
                 id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm password"
-                className="w-full py-2 outline-none text-sm"
+                className="w-full outline-none bg-transparent text-sm"
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="focus:outline-none text-gray-400 ml-2"
+              >
+                {showConfirmPassword ? <FaEyeSlash size={20}/> : <FaEye size={20} />}
+              </button>
             </div>
           </div>
 
+
+          {/* Mobile Number */}
           <div>
             <label htmlFor="mobileNumber" className="block text-sm font-medium text-gray-700">
               Mobile Number
             </label>
-            <div className="flex items-center border rounded-md px-3 mt-1">
-              <FaPhone className="text-gray-400 mr-2" />
+            <div className="flex items-center border border-gray-300 rounded-md px-3 mt-1 hover:rounded-none">
               <input
                 type="text"
                 id="mobileNumber"
@@ -106,6 +123,7 @@ function Register() {
               />
             </div>
           </div>
+
 
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <input type="checkbox" id="customSwitchSuccess" className="mt-0.5" />

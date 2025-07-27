@@ -1,8 +1,15 @@
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link,useNavigate } from "react-router-dom";
 import { TbStethoscope } from "react-icons/tb";
-import { FaEnvelope, FaLock, FaSignInAlt } from "react-icons/fa";
+import { FaSignInAlt,FaEye, FaEyeSlash } from "react-icons/fa";
+
+
 
 function AdminLogin() {
+    const [showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate();
+
+
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       <div className="bg-white shadow-lg rounded-lg w-full max-w-md p-8">
@@ -12,6 +19,7 @@ function AdminLogin() {
               src="../assets/images/mpiloLogo.png"
               alt="Mpilo Logo"
               className="h-12"
+              onClick={() => navigate("/")}
             />
           </Link>
         </div>
@@ -26,12 +34,11 @@ function AdminLogin() {
         </div>
 
         <form className="space-y-4">
-          <div>
+            <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email
             </label>
-            <div className="flex items-center border rounded-md px-3 mt-1">
-              <FaEnvelope className="text-gray-400 mr-2" />
+            <div className="flex items-center border border-gray-300 rounded-md px-3 mt-1 hover:rounded-none">
               <input
                 type="email"
                 id="email"
@@ -41,19 +48,25 @@ function AdminLogin() {
             </div>
           </div>
 
-          <div>
+           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
             </label>
-            <div className="flex items-center border rounded-md px-3 mt-1">
-              <FaLock className="text-gray-400 mr-2" />
-              <input
-                type="password"
-                id="password"
-                placeholder="Enter password"
-                className="w-full py-2 outline-none text-sm"
-              />
-            </div>
+             <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 hover:rounded-none">
+                <input
+                  id="userpassword"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter password"
+                  className="w-full outline-none bg-transparent text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="focus:outline-none text-gray-400 ml-2"
+                >
+                  {showPassword ? <FaEyeSlash size={20}/> : <FaEye size={20} />}
+                </button>
+              </div>
           </div>
 
           <div className="flex justify-between items-center text-sm mt-2">
@@ -76,23 +89,14 @@ function AdminLogin() {
           </Link>
         </form>
 
-        <div className="flex justify-center mt-6">
-          <Link to="/Login">
-            <button
-              className="flex items-center gap-2 px-4 py-2 border rounded-md text-[#274D60] border-[#274D60] hover:bg-[#274D60] hover:text-white transition"
-            >
-              <TbStethoscope size={18} />
-              I'm a practitioner
-            </button>
-          </Link>
-        </div>
+     
 
         <div className="text-center mt-6 text-sm">
           <p className="text-gray-500">
             Don't have an account?
             <Link
               to="/Register"
-              className="ml-1 px-1 py-1 rounded-md bg-[#274D60] text-primary font-medium hover:opacity-90"
+              className="ml-1 px-1 py-1 rounded-md text-primary font-medium hover:opacity-90"
             >
               Register
             </Link>

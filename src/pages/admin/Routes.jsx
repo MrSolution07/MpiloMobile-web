@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { MapPin, Navigation, History, Route, ArrowRight, Clock, Car } from 'lucide-react';
+import { Map } from "../../components/map";
+
 
 const Index = () => {
   const [currentLocation, setCurrentLocation] = useState('');
@@ -330,7 +332,7 @@ const Index = () => {
           <div className="lg:col-span-2 space-y-4">
             <div className="rounded-lg border bg-white text-gray-900 shadow-sm">
               <div className="p-0">
-                <div ref={mapRef} className="w-full h-[400px] rounded-lg" />
+                <Map />
               </div>
             </div>
 

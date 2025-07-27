@@ -14,6 +14,7 @@ import {
   Gallery,
   Contact,
   Error,
+  UserDashboard
 } from "./pages";
 
 import { Register, Login, AdminLogin, ForgotPassword } from "./components/auth";
@@ -88,6 +89,10 @@ const router = createBrowserRouter([
   {
     path: "/forgot-password",
     element: <ForgotPassword />,
+  },
+  {
+    path: "/Userdashboard",
+    element: <UserDashboard />,
   },
 
   // Dashboard routes (nested under /dashboard path)
