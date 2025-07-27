@@ -1,14 +1,33 @@
 import React, { useState } from "react";
-import { Link,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { TbStethoscope } from "react-icons/tb";
-import { FaSignInAlt,FaEye, FaEyeSlash } from "react-icons/fa";
-
-
+import { FaSignInAlt, FaEye, FaEyeSlash } from "react-icons/fa";
+import { useAuth } from "../../context";
 
 function AdminLogin() {
-    const [showPassword, setShowPassword] = useState(false);
-    const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      setLoading(true);
+      await login(email.trim().toLowerCase(), password);
+      navigate("/admin");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -33,8 +52,8 @@ function AdminLogin() {
           </p>
         </div>
 
-        <form className="space-y-4">
-            <div>
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email
             </label>
@@ -44,29 +63,35 @@ function AdminLogin() {
                 id="email"
                 placeholder="Enter email"
                 className="w-full py-2 outline-none text-sm"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
           </div>
 
-           <div>
+          <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
             </label>
-             <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 hover:rounded-none">
-                <input
-                  id="userpassword"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter password"
-                  className="w-full outline-none bg-transparent text-sm"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="focus:outline-none text-gray-400 ml-2"
-                >
-                  {showPassword ? <FaEyeSlash size={20}/> : <FaEye size={20} />}
-                </button>
-              </div>
+            <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 hover:rounded-none">
+              <input
+                id="userpassword"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter password"
+                className="w-full outline-none bg-transparent text-sm"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="focus:outline-none text-gray-400 ml-2"
+              >
+                {showPassword ? <FaEyeSlash size={20}/> : <FaEye size={20} />}
+              </button>
+            </div>
           </div>
 
           <div className="flex justify-between items-center text-sm mt-2">
@@ -79,17 +104,16 @@ function AdminLogin() {
             </Link>
           </div>
 
-          <Link to="/admin">
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+
           <button
-            type="button"
+            type="submit"
+            disabled={loading}
             className="w-full bg-red-500 text-white py-2 rounded-[0.8rem] mt-4 hover:opacity-90 transition flex items-center justify-center gap-2"
           >
-            Log In <FaSignInAlt />
+            {loading ? "Logging in..." : "Log In"} <FaSignInAlt />
           </button>
-          </Link>
         </form>
-
-     
 
         <div className="text-center mt-6 text-sm">
           <p className="text-gray-500">

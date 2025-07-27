@@ -1,37 +1,46 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { FaSignInAlt,FaEye,FaEyeSlash } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context";
+import { FaSignInAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 
 function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { register } = useAuth();
+  const navigate = useNavigate();
 
-  
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    axios
-      .post(`${API_URL}/register`, {
-        email,
-        password,
-        confirmPassword,
-        mobileNumber,
-      })
-      .then((response) => console.log(response))
-      .catch((err) => console.log(err));
+    setError("");
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await register(email.trim().toLowerCase(), password);
+      navigate("/login");
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
       <div className="bg-white shadow-lg h-full rounded-lg w-full max-w-md p-8">
         <div className="flex justify-center mb-4">
-          <Link 
-            to="/">
+          <Link to="/">
             <img
               src="../assets/images/mpiloLogo.png"
               alt="Mpilo Logo"
@@ -57,7 +66,9 @@ function Register() {
                 id="email"
                 placeholder="Enter email"
                 className="w-full py-2 outline-none text-sm"
+                value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
           </div>
@@ -73,6 +84,9 @@ function Register() {
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter password"
                 className="w-full outline-none bg-transparent text-sm"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
               />
               <button
                 type="button"
@@ -95,7 +109,9 @@ function Register() {
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm password"
                 className="w-full outline-none bg-transparent text-sm"
+                value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                required
               />
               <button
                 type="button"
@@ -106,7 +122,6 @@ function Register() {
               </button>
             </div>
           </div>
-
 
           {/* Mobile Number */}
           <div>
@@ -119,11 +134,11 @@ function Register() {
                 id="mobileNumber"
                 placeholder="Enter mobile number"
                 className="w-full py-2 outline-none text-sm"
+                value={mobileNumber}
                 onChange={(e) => setMobileNumber(e.target.value)}
               />
             </div>
           </div>
-
 
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <input type="checkbox" id="customSwitchSuccess" className="mt-0.5" />
@@ -135,11 +150,14 @@ function Register() {
             </label>
           </div>
 
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+
           <button
             type="submit"
+            disabled={loading}
             className="w-full bg-red-500 text-white py-2 rounded-[0.8rem] hover:opacity-90 transition flex items-center justify-center gap-2"
           >
-            Register <FaSignInAlt />
+            {loading ? "Registering..." : "Register"} <FaSignInAlt />
           </button>
         </form>
 

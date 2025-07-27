@@ -8,6 +8,7 @@ import {
   MapPin,
   Settings,
 } from "lucide-react";
+import { Package } from "lucide-react"; 
 
 function AdminSidebar({ isSidebarOpen, toggleSidebar }) {
   const location = useLocation();
@@ -19,6 +20,7 @@ function AdminSidebar({ isSidebarOpen, toggleSidebar }) {
     { name: "Messages", path: "/admin/adminmessages", icon: <MessageSquare className="w-5 h-5" />, badge: 2 },
     { name: "Records", path: "/admin/records", icon: <FileText className="w-5 h-5" /> },
     { name: "Routes", path: "/admin/routes", icon: <MapPin className="w-5 h-5" /> },
+    { name: "Inventory", path: "/admin/admininventory", icon: <Package className="w-5 h-5" /> },
   ];
 
   return (

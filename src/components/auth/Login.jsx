@@ -1,20 +1,36 @@
 import { useState } from "react";
 import { User, LogIn, UserCog} from "lucide-react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useNavigate,Link } from "react-router-dom";
-
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../../context";
 
 function Login() {
   const [isPractitioner, setIsPractitioner] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    if (isPractitioner) {
-      navigate("/Dashboard");
-    } else {
-      navigate("/UserDashboard"); 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      setLoading(true);
+      await login(email.trim().toLowerCase(), password);
+      if (isPractitioner) {
+        navigate("/Dashboard");
+      } else {
+        navigate("/UserDashboard");
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -47,7 +63,6 @@ function Login() {
               className="sr-only peer"
               checked={isPractitioner}
               onChange={() => setIsPractitioner(!isPractitioner)}
-              
             />
             <div className={`relative w-11 h-6 peer-focus:outline-none rounded-full transition duration-300 ${isPractitioner ? 'bg-red-600' : 'bg-gray-300'}`}>
               <div className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform duration-300 shadow-sm ${isPractitioner ? 'translate-x-5' : ''}`}></div>
@@ -56,9 +71,9 @@ function Login() {
         </div>
 
         {/* Form */}
-        <div className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           {/* Email */}
-             <div>
+          <div>
             <label
               htmlFor="email"
               className="block text-sm font-medium text-gray-700"
@@ -71,17 +86,20 @@ function Login() {
                 type="text"
                 placeholder="Enter email"
                 className="w-full outline-none bg-transparent text-sm"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
           </div>
 
           {/* Password */}
           <div>
-          <label
-            htmlFor="userpassword"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Password
+            <label
+              htmlFor="userpassword"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Password
             </label>
             <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 bg-white hover:rounded-none">
               <input
@@ -89,6 +107,9 @@ function Login() {
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter password"
                 className="w-full outline-none bg-transparent text-sm"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
               />
               <button
                 type="button"
@@ -102,25 +123,26 @@ function Login() {
 
           {/* Remember & Forgot */}
           <div className="flex justify-between items-center text-sm">
-            <button onClick={() => setIsPractitioner(!isPractitioner)} className="flex items-center text-gray-600">
-              <input type="checkbox" checked={isPractitioner} onChange={() => setIsPractitioner(!isPractitioner)} className="form-checkbox text-white mr-2" />
+            <label className="flex items-center text-gray-600">
+              <input type="checkbox" className="form-checkbox text-white mr-2" />
               Remember Me
-            </button>
-            <button className="text-primary font-medium hover:underline">
+            </label>
+            <Link to="/forgot-password" className="text-primary font-medium hover:underline">
               Forgot Password?
-            </button>
+            </Link>
           </div>
+
+          {error && <p className="text-red-500 text-sm">{error}</p>}
 
           {/* Login Button */}
           <button
-          onClick={handleLogin}
-          type="button"
-          className="w-full bg-red-500 text-white hover:opacity-90 font-semibold py-2 rounded-[0.8rem] transition flex items-center justify-center gap-2 border border-gray-300"
-        >
-          Login <LogIn size={16} />
-        </button>
-
-        </div>
+            type="submit"
+            disabled={loading}
+            className="w-full bg-red-500 text-white hover:opacity-90 font-semibold py-2 rounded-[0.8rem] transition flex items-center justify-center gap-2 border border-gray-300"
+          >
+            {loading ? "Logging in..." : "Login"} <LogIn size={16} />
+          </button>
+        </form>
 
         {/* Divider */}
         <div className="my-4 flex items-center">
