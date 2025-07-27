@@ -1,5 +1,8 @@
+import { useState, useEffect } from "react";
 import { Users, Calendar, FileText, Activity, ArrowUp, ArrowDown } from "lucide-react";
+import { supabase } from "../../services/supabaseClient";
 
+// Card Components
 const Card = ({ className = "", children, ...props }) => (
   <div className={`rounded-lg border bg-white shadow-sm ${className}`} {...props}>
     {children}
@@ -40,104 +43,194 @@ const Progress = ({ value = 0, className = "", indicatorClassName = "" }) => (
 );
 
 const AdminDashboard = () => {
-  // Mock data for stats
-  const stats = [
-    {
-      title: "Total Patients",
-      value: "3,285",
-      icon: Users,
-      change: "+0.8%",
-      trend: "up",
-    },
-    {
-      title: "Appointments (Monthly Avg)",
-      value: "1,250",
-      icon: Calendar,
-      change: "+2.1%",
-      trend: "up",
-    },
-    {
-      title: "Medical Records",
-      value: "4,500",
-      icon: FileText,
-      change: "+1.5%",
-      trend: "up",
-    },
-    {
-      title: "Total Staff",
-      value: "238",
-      icon: Users,
-      change: "-0.2%",
-      trend: "down",
-    },
-  ];
+  const [stats, setStats] = useState([]);
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  const [departmentWorkload, setDepartmentWorkload] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Mock data for recent activity
-  const recentActivity = [
-    {
-      patient: "Sipho Dlamini",
-      action: "Appointment scheduled",
-      doctor: "Dr. Thabo Mokoena",
-      time: "5 minutes ago",
-    },
-    {
-      patient: "Naledi Khumalo",
-      action: "Lab results updated",
-      doctor: "Dr. Naledi Khumalo",
-      time: "20 minutes ago",
-    },
-    {
-      patient: "Pieter van der Merwe",
-      action: "Prescription renewed",
-      doctor: "Dr. Pieter van der Merwe",
-      time: "45 minutes ago",
-    },
-    {
-      patient: "Lindiwe Nkosi",
-      action: "Check-up completed",
-      doctor: "Dr. Lindiwe Nkosi",
-      time: "1 hour ago",
-    },
-    {
-      patient: "Thandi Mthembu",
-      action: "MRI scheduled",
-      doctor: "Dr. Thandi Mthembu",
-      time: "2 hours ago",
-    },
-  ];
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
 
-  // Mock data for upcoming appointments
-  const upcomingAppointments = [
-    {
-      patient: "Bongani Zulu",
-      time: "09:00 AM",
-      type: "Check-up",
-      doctor: "Dr. Thabo Mokoena",
-      status: "Confirmed",
-    },
-    {
-      patient: "Zanele Mkhize",
-      time: "10:30 AM",
-      type: "Follow-up",
-      doctor: "Dr. Naledi Khumalo",
-      status: "Pending",
-    },
-    {
-      patient: "Johan Smit",
-      time: "12:00 PM",
-      type: "Consultation",
-      doctor: "Dr. Pieter van der Merwe",
-      status: "Confirmed",
-    },
-  ];
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch total patients count
+      const { count: totalPatients } = await supabase
+        .from('patients')
+        .select('*', { count: 'exact', head: true });
 
-  // Mock data for department workload
-  const departmentWorkload = [
-    { department: "Cardiology", patients: 420, capacity: 600 },
-    { department: "Neurology", patients: 38, capacity: 450 },
-    { department: "Pediatrics", patients: 27, capacity: 500 },
-    { department: "Orthopedics", patients: 94, capacity: 400 },
-  ];
+      // Fetch medical records count
+      const { count: totalMedicalRecords } = await supabase
+        .from('medical_records')
+        .select('*', { count: 'exact', head: true });
+
+      // Fetch total staff count
+      const { count: totalStaff } = await supabase
+        .from('doctors')
+        .select('*', { count: 'exact', head: true });
+
+      // Fetch monthly appointments average
+      const { count: monthlyAppointments } = await supabase
+        .from('appointments')
+        .select('*', { count: 'exact', head: true })
+        .gte('appointment_date', new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString());
+
+      // Fetch recent activity from medical records
+      const { data: activityData } = await supabase
+        .from('medical_records')
+        .select(`
+          id,
+          created_at,
+          diagnosis,
+          patient:patients(first_name, last_name),
+          doctor:doctors(name)
+        `)
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      // Fetch today's upcoming appointments
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const todayEnd = new Date();
+      todayEnd.setHours(23, 59, 59, 999);
+
+      const { data: appointmentsData } = await supabase
+        .from('appointments')
+        .select(`
+          id,
+          appointment_time,
+          type,
+          status,
+          patient:patients(first_name, last_name),
+          doctor:doctors(name)
+        `)
+        .gte('appointment_date', todayStart.toISOString())
+        .lte('appointment_date', todayEnd.toISOString())
+        .order('appointment_time', { ascending: true })
+        .limit(3);
+
+      // Process the stats data
+      setStats([
+        {
+          title: "Total Patients",
+          value: totalPatients?.toLocaleString() || "0",
+          icon: Users,
+          change: "+0.8%",
+          trend: "up",
+        },
+        {
+          title: "Appointments (Monthly Avg)",
+          value: Math.round(monthlyAppointments/1)?.toLocaleString() || "0",
+          icon: Calendar,
+          change: "+2.1%",
+          trend: "up",
+        },
+        {
+          title: "Medical Records",
+          value: totalMedicalRecords?.toLocaleString() || "0",
+          icon: FileText,
+          change: "+1.5%",
+          trend: "up",
+        },
+        {
+          title: "Total Staff",
+          value: totalStaff?.toLocaleString() || "0",
+          icon: Users,
+          change: "-0.2%",
+          trend: "down",
+        },
+      ]);
+
+      // Process recent activity
+      if (activityData) {
+        const processedActivity = activityData.map(record => ({
+          id: record.id,
+          patient: `${record.patient?.first_name || 'Unknown'} ${record.patient?.last_name || 'Patient'}`,
+          action: record.diagnosis ? `Diagnosis: ${record.diagnosis}` : "Medical record updated",
+          doctor: record.doctor?.name || "Unknown Doctor",
+          time: formatTimeAgo(record.created_at),
+        }));
+        setRecentActivity(processedActivity);
+      }
+
+      // Process upcoming appointments
+      if (appointmentsData) {
+        const processedAppointments = appointmentsData.map(appt => ({
+          id: appt.id,
+          patient: `${appt.patient?.first_name || 'Unknown'} ${appt.patient?.last_name || 'Patient'}`,
+          time: formatAppointmentTime(appt.appointment_time),
+          type: appt.type || "Consultation",
+          doctor: appt.doctor?.name || "Unknown Doctor",
+          status: appt.status || "Pending",
+        }));
+        setUpcomingAppointments(processedAppointments);
+      }
+
+      // Set all department workloads to 0%
+      setDepartmentWorkload([
+        { department: "Cardiology", patients: 0, capacity: 100 },
+        { department: "Neurology", patients: 0, capacity: 100 },
+        { department: "Pediatrics", patients: 0, capacity: 100 },
+        { department: "Orthopedics", patients: 0, capacity: 100 },
+      ]);
+
+    } catch (err) {
+      setError(err.message);
+      console.error("Error fetching dashboard data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Helper function to format time ago
+  const formatTimeAgo = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+    
+    let interval = Math.floor(seconds / 31536000);
+    if (interval >= 1) return `${interval} year${interval === 1 ? '' : 's'} ago`;
+    
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) return `${interval} month${interval === 1 ? '' : 's'} ago`;
+    
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) return `${interval} day${interval === 1 ? '' : 's'} ago`;
+    
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) return `${interval} hour${interval === 1 ? '' : 's'} ago`;
+    
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) return `${interval} minute${interval === 1 ? '' : 's'} ago`;
+    
+    return "just now";
+  };
+
+  // Helper function to format appointment time
+  const formatAppointmentTime = (timeString) => {
+    const time = new Date(timeString);
+    return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-red-500">Error loading dashboard: {error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="animate-fade-in">
@@ -205,26 +298,21 @@ const AdminDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {departmentWorkload.map((dept, index) => {
-                const percentage = Math.round((dept.patients / dept.capacity) * 100);
-                return (
-                  <div key={index}>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="font-medium text-sm">{dept.department}</span>
-                      <span className="text-gray-500 text-sm">
-                        {dept.patients}/{dept.capacity} patients ({percentage}%)
-                      </span>
-                    </div>
-                    <Progress
-                      value={percentage}
-                      className={`h-2 ${
-                        percentage > 80 ? "bg-red-200" : "bg-gray-200"
-                      }`}
-                      indicatorClassName={percentage > 80 ? "bg-red-600" : "bg-[#274D60]"}
-                    />
+              {departmentWorkload.map((dept, index) => (
+                <div key={index}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="font-medium text-sm">{dept.department}</span>
+                    <span className="text-gray-500 text-sm">
+                      {dept.patients}/{dept.capacity} patients (0%)
+                    </span>
                   </div>
-                );
-              })}
+                  <Progress
+                    value={0}
+                    className="h-2 bg-gray-200"
+                    indicatorClassName="bg-[#274D60]"
+                  />
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
@@ -240,28 +328,32 @@ const AdminDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {upcomingAppointments.map((appointment, index) => (
-                <div key={index} className="flex justify-between items-center pb-3 last:border-0 border-b">
-                  <div>
-                    <p className="font-medium">{appointment.patient}</p>
-                    <p className="text-gray-500 text-sm">
-                      {appointment.time} - {appointment.type}
-                    </p>
+              {upcomingAppointments.length > 0 ? (
+                upcomingAppointments.map((appointment) => (
+                  <div key={appointment.id} className="flex justify-between items-center pb-3 last:border-0 border-b">
+                    <div>
+                      <p className="font-medium">{appointment.patient}</p>
+                      <p className="text-gray-500 text-sm">
+                        {appointment.time} - {appointment.type}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm">{appointment.doctor}</p>
+                      <p
+                        className={`text-xs ${
+                          appointment.status === "Confirmed"
+                            ? "text-green-600"
+                            : "text-yellow-600"
+                        }`}
+                      >
+                        {appointment.status}
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm">{appointment.doctor}</p>
-                    <p
-                      className={`text-xs ${
-                        appointment.status === "Confirmed"
-                          ? "text-green-600"
-                          : "text-yellow-600"
-                      }`}
-                    >
-                      {appointment.status}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-gray-500 text-center py-4">No appointments scheduled for today</p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -275,21 +367,25 @@ const AdminDashboard = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {recentActivity.map((activity, index) => (
-              <div key={index} className="flex items-center pb-3 last:border-0 border-b">
-                <div className="bg-[#274D60] mr-4 rounded-full w-2 h-2" />
-                <div>
-                  <p className="text-sm">
-                    <span className="font-medium">{activity.patient}</span> - {activity.action}
-                  </p>
-                  <div className="flex mt-1 text-gray-500 text-xs">
-                    <span>{activity.doctor}</span>
-                    <span className="mx-2">•</span>
-                    <span>{activity.time}</span>
+            {recentActivity.length > 0 ? (
+              recentActivity.map((activity) => (
+                <div key={activity.id} className="flex items-center pb-3 last:border-0 border-b">
+                  <div className="bg-[#274D60] mr-4 rounded-full w-2 h-2" />
+                  <div>
+                    <p className="text-sm">
+                      <span className="font-medium">{activity.patient}</span> - {activity.action}
+                    </p>
+                    <div className="flex mt-1 text-gray-500 text-xs">
+                      <span>{activity.doctor}</span>
+                      <span className="mx-2">•</span>
+                      <span>{activity.time}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-gray-500 text-center py-4">No recent activity</p>
+            )}
           </div>
         </CardContent>
       </Card>

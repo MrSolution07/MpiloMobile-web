@@ -1,7 +1,9 @@
-import { useState } from "react";
-import { Search, Plus, Filter } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Plus, Filter, Edit, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../../services/supabaseClient";
 
+// Button Component
 const Button = ({ className = "", variant = "default", size = "default", children, ...props }) => {
   const baseStyles = "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
   const variants = {
@@ -27,6 +29,7 @@ const Button = ({ className = "", variant = "default", size = "default", childre
   );
 };
 
+// Input Component
 const Input = ({ className = "", ...props }) => (
   <input
     className={`flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#274D60] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
@@ -34,6 +37,7 @@ const Input = ({ className = "", ...props }) => (
   />
 );
 
+// Card Components
 const Card = ({ className = "", children, ...props }) => (
   <div className={`rounded-lg border bg-white text-gray-900 shadow-sm ${className}`} {...props}>
     {children}
@@ -46,6 +50,7 @@ const CardContent = ({ className = "", children, ...props }) => (
   </div>
 );
 
+// Table Components
 const Table = ({ className = "", children, ...props }) => (
   <div className="relative w-full overflow-auto">
     <table className={`w-full caption-bottom text-sm ${className}`} {...props}>
@@ -84,70 +89,98 @@ const TableCell = ({ className = "", children, ...props }) => (
   </td>
 );
 
-const Edit = (props) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" {...props}>
-    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-  </svg>
-);
-const Trash2 = (props) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" {...props}>
-    <polyline points="3 6 5 6 21 6" />
-    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
-    <line x1="10" y1="11" x2="10" y2="17" />
-    <line x1="14" y1="11" x2="14" y2="17" />
-  </svg>
-);
-
-const initialPatients = [
-  {
-    id: "ZA001",
-    name: "Sipho Nkosi",
-    age: 29,
-    gender: "Male",
-    contact: "+27 82 123 4567",
-    email: "sipho.nkosi@example.co.za",
-    status: "Active",
-  },
-  {
-    id: "ZA002",
-    name: "Thandi Mokoena",
-    age: 34,
-    gender: "Female",
-    contact: "+27 83 234 5678",
-    email: "thandi.mokoena@example.co.za",
-    status: "Inactive",
-  },
-  {
-    id: "ZA003",
-    name: "Johan van der Merwe",
-    age: 45,
-    gender: "Male",
-    contact: "+27 84 345 6789",
-    email: "johan.vdm@example.co.za",
-    status: "Pending",
-  },
-];
-
 const Patients = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const [patients] = useState(initialPatients);
+  const [patients, setPatients] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchPatients();
+
+    // Set up realtime subscription
+    const subscription = supabase
+      .channel('patients_changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'patients'
+      }, () => {
+        fetchPatients();
+      })
+      .subscribe();
+
+    return () => supabase.removeChannel(subscription);
+  }, []);
+
+  const fetchPatients = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('patients')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setPatients(data || []);
+    } catch (err) {
+      setError(err.message);
+      console.error("Error fetching patients:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (patientId) => {
+    if (window.confirm("Are you sure you want to delete this patient?")) {
+      try {
+        const { error } = await supabase
+          .from('patients')
+          .delete()
+          .eq('id', patientId);
+        
+        if (error) throw error;
+      } catch (err) {
+        alert("Error deleting patient: " + err.message);
+      }
+    }
+  };
+
+  const handleEdit = (patientId) => {
+    navigate(`/admin/editpatient/${patientId}`);
+  };
 
   // Filter patients based on search
   const filteredPatients = search
     ? patients.filter(
         (patient) =>
-          patient.name.toLowerCase().includes(search.toLowerCase()) ||
+          `${patient.first_name} ${patient.last_name}`.toLowerCase().includes(search.toLowerCase()) ||
           patient.id.toLowerCase().includes(search.toLowerCase()) ||
-          patient.contact.includes(search) ||
-          patient.email.toLowerCase().includes(search.toLowerCase())
+          patient.phone?.includes(search) ||
+          patient.email?.toLowerCase().includes(search.toLowerCase())
       )
     : patients;
 
   const handleAddPatient = () => {
     navigate('/admin/adminaddpatient');
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-red-500">Error loading patients: {error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="animate-fade-in">
@@ -236,39 +269,62 @@ const Patients = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredPatients.map((patient) => (
-                  <TableRow key={patient.id} className="cursor-pointer hover:bg-gray-50">
-                    <TableCell className="font-medium">{patient.id}</TableCell>
-                    <TableCell>{patient.name}</TableCell>
-                    <TableCell>{patient.age}</TableCell>
-                    <TableCell>{patient.gender}</TableCell>
-                    <TableCell>{patient.contact}</TableCell>
-                    <TableCell>{patient.email}</TableCell>
-                    <TableCell>
-                      <span
-                        className={
-                          patient.status === "Active"
-                            ? "status-active"
-                            : patient.status === "Inactive"
-                            ? "status-inactive"
-                            : "status-pending"
-                        }
-                      >
-                        {patient.status}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        <Button variant="ghost" size="icon">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
+                {filteredPatients.length > 0 ? (
+                  filteredPatients.map((patient) => {
+                    // Calculate age from date of birth if available
+                    const age = patient.date_of_birth 
+                      ? new Date().getFullYear() - new Date(patient.date_of_birth).getFullYear()
+                      : 'N/A';
+
+                    return (
+                      <TableRow key={patient.id} className="cursor-pointer hover:bg-gray-50">
+                        <TableCell className="font-medium">{patient.id}</TableCell>
+                        <TableCell>{patient.first_name} {patient.last_name}</TableCell>
+                        <TableCell>{age}</TableCell>
+                        <TableCell>{patient.gender || 'N/A'}</TableCell>
+                        <TableCell>{patient.phone_number || 'N/A'}</TableCell>
+                        <TableCell>{patient.email || 'N/A'}</TableCell>
+                        <TableCell>
+                          <span
+                            className={
+                              patient.active === "active"
+                                ? "status-active"
+                                : patient.active === "inactive"
+                                ? "status-inactive"
+                                : "status-pending"
+                            }
+                          >
+                            {patient.active || 'Active'}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-1">
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
+                              onClick={() => handleEdit(patient.id)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
+                              onClick={() => handleDelete(patient.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center py-4 text-gray-500">
+                      {patients.length === 0 ? "No patients found" : "No matching patients found"}
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </div>
