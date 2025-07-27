@@ -92,7 +92,7 @@ function AppointmentsList() {
             </button>
           </div>
 
-          <Link to="/dashboard/newappointment" >
+          {/* <Link to="/dashboard/newappointment" >
           <Button
             variant="primary"
             size="sm"
@@ -100,7 +100,7 @@ function AppointmentsList() {
           >
             New Appointment
           </Button>
-          </Link>
+          </Link> */}
         </div>
       </div>
 
