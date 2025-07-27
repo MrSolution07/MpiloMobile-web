@@ -1,94 +1,109 @@
+
 import { useState } from "react";
 import { User, LogIn, UserCog} from "lucide-react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate,Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { RiAdminFill } from "react-icons/ri";
+import { FaUser, FaLock, FaSignInAlt } from "react-icons/fa";
 
+import { useAuth } from "../../context";
 
 function Login() {
-  const [isPractitioner, setIsPractitioner] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    if (isPractitioner) {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      setLoading(true);
+      await login(email.trim().toLowerCase(), password);
       navigate("/Dashboard");
-    } else {
-      navigate("/UserDashboard"); 
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-6 border border-gray-200">
+    <div className="flex justify-center items-center bg-gray-100 px-4 min-h-screen">
+      <div className="bg-white shadow-md p-6 rounded-xl w-full max-w-md">
+
         <div className="flex justify-center mb-6">
           <div>
             <img
               src="../assets/images/mpiloLogo.png"
               alt="Mpilo Logo"
-              className="h-14 w-auto"
-              onClick={() => navigate("/")}
+
+              className="w-auto h-14"
+
             />
           </div>
         </div>
 
-        <div className="text-center mb-4">
-          <h2 className="text-2xl font-extrabold text-gray-800">Welcome Back</h2>
-          <p className="text-sm text-gray-500">Sign in to continue your health journey</p>
+
+        <div className="mb-6 text-center">
+          <h2 className="font-bold text-gray-800 text-xl">
+            Healthcare Practitioner Login
+          </h2>
+          <p className="text-gray-500 text-sm">
+            Sign in to continue to Mpilo Mobile
+          </p>
         </div>
 
-        <div className="flex items-center justify-between bg-gray-100 rounded-xl px-4 py-2 mb-5 shadow-inner">
-          <span className="flex items-center gap-2 text-gray-800 font-medium text-sm">
-            <User size={16} /> Healthcare Practitioner
-          </span>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              className="sr-only peer"
-              checked={isPractitioner}
-              onChange={() => setIsPractitioner(!isPractitioner)}
-              
-            />
-            <div className={`relative w-11 h-6 peer-focus:outline-none rounded-full transition duration-300 ${isPractitioner ? 'bg-red-600' : 'bg-gray-300'}`}>
-              <div className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform duration-300 shadow-sm ${isPractitioner ? 'translate-x-5' : ''}`}></div>
-            </div>
-          </label>
-        </div>
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          {/* Username */}
+          <div>
 
-        {/* Form */}
-        <div className="space-y-4">
-          {/* Email */}
-             <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
+              className="block font-medium text-gray-700 text-sm"
             >
               Email
             </label>
-            <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 bg-white hover:rounded-none">
+
+            <div className="flex items-center bg-white mt-1 px-3 py-2 border border-gray-300 rounded-md">
+              <FaUser className="mr-2 text-gray-400" />
+
               <input
                 id="email"
                 type="text"
                 placeholder="Enter email"
-                className="w-full outline-none bg-transparent text-sm"
+                className="bg-transparent outline-none w-full text-sm"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
           </div>
 
           {/* Password */}
           <div>
-          <label
-            htmlFor="userpassword"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Password
+            <label
+              htmlFor="userpassword"
+              className="block font-medium text-gray-700 text-sm"
+            >
+              Password
             </label>
-            <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 bg-white hover:rounded-none">
+            <div className="flex items-center bg-white mt-1 px-3 py-2 border border-gray-300 rounded-md">
+              <FaLock className="mr-2 text-gray-400" />
+
               <input
                 id="userpassword"
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter password"
-                className="w-full outline-none bg-transparent text-sm"
+                className="bg-transparent outline-none w-full text-sm"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
               />
               <button
                 type="button"
@@ -100,58 +115,53 @@ function Login() {
             </div>
           </div>
 
-          {/* Remember & Forgot */}
-          <div className="flex justify-between items-center text-sm">
-            <button onClick={() => setIsPractitioner(!isPractitioner)} className="flex items-center text-gray-600">
-              <input type="checkbox" checked={isPractitioner} onChange={() => setIsPractitioner(!isPractitioner)} className="form-checkbox text-white mr-2" />
-              Remember Me
-            </button>
-            <button className="text-primary font-medium hover:underline">
-              Forgot Password?
-            </button>
+
+          <div className="flex justify-between items-center mt-2 text-sm">
+            <label className="flex items-center text-gray-600">
+              <input
+                type="checkbox"
+                className="mr-2 text-[#274D60] form-checkbox"
+              />
+              Remember me
+            </label>
+            <Link
+              to="/forgot-password"
+              className="text-primary hover:underline"
+            >
+              Forgot password?
+            </Link>
+
           </div>
+
+          {error && <p className="text-red-500 text-sm">{error}</p>}
 
           {/* Login Button */}
           <button
-          onClick={handleLogin}
-          type="button"
-          className="w-full bg-[#274D60] text-white hover:opacity-90 text-gray-800 font-semibold py-2 rounded-md transition flex items-center justify-center gap-2 border border-gray-300"
-        >
-          Login <LogIn size={16} />
-        </button>
 
-        </div>
-
-        {/* Divider */}
-        <div className="my-4 flex items-center">
-          <span className="flex-1 h-px bg-gray-200"></span>
-          <span className="px-4 text-sm text-gray-500 whitespace-nowrap">or</span>
-          <span className="flex-1 h-px bg-gray-200"></span>
-        </div>
-
-        {/* Google Sign-in */}
-        <button className="w-full border border-gray-300 rounded-md py-2 flex items-center justify-center gap-2 text-sm font-medium hover:bg-gray-50">
-          <img src="assets/images/google.png" alt="Google" className="w-5 h-5" />
-          Continue with Google
-        </button>
-
-        {/* Admin Button */}
-        <div className="mt-6 flex justify-center">
-          <button className="flex items-center gap-2 px-4 py-2 border border-[#274D60] text-[#274D60] rounded-md hover:bg-blue-50 transition" onClick={() => navigate("/AdminLogin")}>
-            <UserCog size={18} />
-            I'm an Admin
+            type="submit"
+            disabled={loading}
+            className="flex justify-center items-center gap-2 bg-gradient-to-r from-[#274D60] to-[#274D60] hover:opacity-90 py-2 rounded-md w-full text-white transition"
+          >
+            {loading ? "Logging in..." : "Log In"} <FaSignInAlt />
           </button>
+        </form>
+
+        {/* Register & Admin */}
+        <div className="mt-6 text-gray-600 text-sm text-center">
+          Don't have an account?
+          <Link to="/Register" className="ml-1 text-primary hover:underline">
+            Register
+          </Link>
         </div>
-        <div className="text-center mt-6 text-sm">
-          <p className="text-gray-500">
-            Don't have an account?
-            <Link
-              to="/Register"
-              className="ml-1 px-1 py-1 rounded-md text-primary font-medium hover:opacity-90"
-            >
-              Register
-            </Link>
-          </p>
+
+        <div className="flex justify-center mt-4">
+          <Link to="/AdminLogin">
+            <button className="flex items-center gap-2 hover:bg-blue-50 px-4 py-2 border border-[#274D60] rounded-md text-[#274D60] transition">
+              <RiAdminFill className="text-lg" />
+              I'm an Admin
+            </button>
+          </Link>
+
         </div>
       </div>
     </div>

@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, Navigate } from "react-router-dom";
 import HeaderDashboard from "./HeaderDashboard";
 import Sidebar from "./Sidebar";
+import { useAuth } from "../../context";
 
 function Layout() {
+  const { isLoggedIn } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -42,6 +44,8 @@ function Layout() {
     };
   }, [isSidebarOpen]);
 
+  if (!isLoggedIn) return <Navigate to="/login" replace />;
+
   return (
     <div className="flex bg-gray-50 h-screen">
       <div id="sidebar-container">
@@ -49,13 +53,16 @@ function Layout() {
       </div>
 
       <div className="flex flex-col flex-1 overflow-hidden">
-        <HeaderDashboard toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
+        <HeaderDashboard
+          toggleSidebar={toggleSidebar}
+          isSidebarOpen={isSidebarOpen}
+        />
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-white w-full max-w-full">
-        <div className="w-full max-w-full flex flex-col gap-4">
-          <Outlet />
-        </div>
-      </main>
+        <main className="flex-1 bg-white p-4 md:p-6 w-full max-w-full overflow-y-auto">
+          <div className="flex flex-col gap-4 w-full max-w-full">
+            <Outlet />
+          </div>
+        </main>
       </div>
 
       {isSidebarOpen && (

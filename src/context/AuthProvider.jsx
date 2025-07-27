@@ -20,22 +20,6 @@ export const AuthProvider = ({ children }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const register = async (email, password) => {
-    email = email.trim().toLowerCase();
-    const { data: newSession, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (error) throw error;
-
-    if (newSession?.user?.identities?.length === 0) {
-      throw new Error("User already exists.");
-    }
-
-    return newSession;
-  };
-
   const login = async (email, password) => {
     email = email.trim().toLowerCase();
     const { data: newSession, error } = await supabase.auth.signInWithPassword({
@@ -52,13 +36,35 @@ export const AuthProvider = ({ children }) => {
     setSession(null);
   };
 
+  const register = async (email, password) => {
+    email = email.trim().toLowerCase();
+    const { data: newSession, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) throw error;
+
+    if (newSession?.user?.identities?.length === 0) {
+      throw new Error("User already exists.");
+    }
+
+    return newSession;
+  };
+
+  const resetPassword = async (email) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    if (error) throw error;
+  };
+
   const value = {
     session,
     user: session?.user ?? null,
     isLoggedIn: !!session,
-    register,
     login,
     logout,
+    register,
+    resetPassword,
   };
 
   return (
