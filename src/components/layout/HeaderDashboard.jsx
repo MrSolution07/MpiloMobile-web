@@ -25,7 +25,7 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
     <div className="flex items-center gap-2">
       <button
         onClick={toggleSidebar}
-        className="lg:hidden hover:bg-gray-100 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600 hover:text-gray-900"
+        className="lg:hidden hover:bg-gray-100 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-600 hover:text-gray-900"
         aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
       >
         {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
