@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { FaSignInAlt,FaEye,FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context";
 import {
@@ -10,7 +9,6 @@ import {
   FaSignInAlt,
 } from "react-icons/fa";
 
-
 function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,11 +17,10 @@ function Register() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-
   const { register } = useAuth();
   const navigate = useNavigate();
-  const handleSubmit = async (e) => {
 
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -62,7 +59,6 @@ function Register() {
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
-           {/* Email */}
           <div>
             <label
               htmlFor="email"
@@ -70,10 +66,8 @@ function Register() {
             >
               Email
             </label>
-
             <div className="flex items-center mt-1 px-3 border rounded-md">
               <FaEnvelope className="mr-2 text-gray-400" />
-
               <input
                 type="email"
                 id="email"
@@ -85,7 +79,6 @@ function Register() {
             </div>
           </div>
 
-          {/* Password */}
           <div>
             <label
               htmlFor="password"
@@ -95,27 +88,17 @@ function Register() {
             </label>
             <div className="flex items-center mt-1 px-3 border rounded-md">
               <FaLock className="mr-2 text-gray-400" />
-
               <input
-                id="userpassword"
-                type={showPassword ? "text" : "password"}
+                type="password"
+                id="password"
                 placeholder="Enter password"
                 className="py-2 outline-none w-full text-sm"
                 onChange={(e) => setPassword(e.target.value)}
                 required
-
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="focus:outline-none text-gray-400 ml-2"
-              >
-                {showPassword ? <FaEyeSlash size={20}/> : <FaEye size={20} />}
-              </button>
             </div>
           </div>
 
-          {/* Confirm Password */}
           <div>
             <label
               htmlFor="confirmPassword"
@@ -123,31 +106,18 @@ function Register() {
             >
               Confirm Password
             </label>
-
             <div className="flex items-center mt-1 px-3 border rounded-md">
               <FaUnlockAlt className="mr-2 text-gray-400" />
-
               <input
+                type="password"
                 id="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm password"
-
                 className="py-2 outline-none w-full text-sm"
-
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="focus:outline-none text-gray-400 ml-2"
-              >
-                {showConfirmPassword ? <FaEyeSlash size={20}/> : <FaEye size={20} />}
-              </button>
             </div>
           </div>
 
-
-          {/* Mobile Number */}
           <div>
             <label
               htmlFor="mobileNumber"
@@ -155,7 +125,6 @@ function Register() {
             >
               Mobile Number
             </label>
-
             <div className="flex items-center mt-1 px-3 border rounded-md">
               <FaPhone className="mr-2 text-gray-400" />
               <input
@@ -168,14 +137,12 @@ function Register() {
             </div>
           </div>
 
-
           <div className="flex items-center gap-2 text-gray-600 text-sm">
             <input
               type="checkbox"
               id="customSwitchSuccess"
               className="mt-0.5"
             />
-
             <label htmlFor="customSwitchSuccess" className="flex items-center">
               By registering you agree to the{" "}
               <Link to="#" className="ml-1 text-primary hover:underline">

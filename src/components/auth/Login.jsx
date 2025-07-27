@@ -1,12 +1,7 @@
-
-import { useState } from "react";
-import { User, LogIn, UserCog} from "lucide-react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useNavigate,Link } from "react-router-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { RiAdminFill } from "react-icons/ri";
 import { FaUser, FaLock, FaSignInAlt } from "react-icons/fa";
-
+import { useState } from "react";
 import { useAuth } from "../../context";
 
 function Login() {
@@ -36,19 +31,15 @@ function Login() {
   return (
     <div className="flex justify-center items-center bg-gray-100 px-4 min-h-screen">
       <div className="bg-white shadow-md p-6 rounded-xl w-full max-w-md">
-
         <div className="flex justify-center mb-6">
-          <div>
+          <Link to="/">
             <img
               src="../assets/images/mpiloLogo.png"
               alt="Mpilo Logo"
-
               className="w-auto h-14"
-
             />
-          </div>
+          </Link>
         </div>
-
 
         <div className="mb-6 text-center">
           <h2 className="font-bold text-gray-800 text-xl">
@@ -62,17 +53,14 @@ function Login() {
         <form className="space-y-4" onSubmit={handleSubmit}>
           {/* Username */}
           <div>
-
             <label
               htmlFor="email"
               className="block font-medium text-gray-700 text-sm"
             >
               Email
             </label>
-
             <div className="flex items-center bg-white mt-1 px-3 py-2 border border-gray-300 rounded-md">
               <FaUser className="mr-2 text-gray-400" />
-
               <input
                 id="email"
                 type="text"
@@ -95,26 +83,17 @@ function Login() {
             </label>
             <div className="flex items-center bg-white mt-1 px-3 py-2 border border-gray-300 rounded-md">
               <FaLock className="mr-2 text-gray-400" />
-
               <input
                 id="userpassword"
-                type={showPassword ? "text" : "password"}
+                type="password"
                 placeholder="Enter password"
                 className="bg-transparent outline-none w-full text-sm"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="focus:outline-none text-gray-400 ml-2"
-              >
-                {showPassword ? <FaEyeSlash size={20}/> : <FaEye size={20} />}
-              </button>
             </div>
           </div>
-
 
           <div className="flex justify-between items-center mt-2 text-sm">
             <label className="flex items-center text-gray-600">
@@ -130,14 +109,12 @@ function Login() {
             >
               Forgot password?
             </Link>
-
           </div>
 
           {error && <p className="text-red-500 text-sm">{error}</p>}
 
           {/* Login Button */}
           <button
-
             type="submit"
             disabled={loading}
             className="flex justify-center items-center gap-2 bg-gradient-to-r from-[#274D60] to-[#274D60] hover:opacity-90 py-2 rounded-md w-full text-white transition"
@@ -161,7 +138,6 @@ function Login() {
               I'm an Admin
             </button>
           </Link>
-
         </div>
       </div>
     </div>
