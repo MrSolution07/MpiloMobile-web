@@ -153,7 +153,7 @@ const PatientsList = () => {
             Filter
           </Button>
 
-          <Link to="/dashboard/addpatient">
+          <Link to="/dashboard/patients/add">
             <Button
               variant="primary"
               size="sm"

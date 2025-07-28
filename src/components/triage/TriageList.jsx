@@ -314,7 +314,7 @@ const TriageList = () => {
             Filter
           </Button>
 
-          <Link to="/dashboard/newtriage">
+          <Link to="/dashboard/triage/new">
             <Button
               variant="primary"
               size="sm"
