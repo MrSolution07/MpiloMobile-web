@@ -1,13 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context";
-import {
-  FaLock,
-  FaPhone,
-  FaEnvelope,
-  FaUnlockAlt,
-  FaSignInAlt,
-} from "react-icons/fa";
+import { FaSignInAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 
 function Register() {
   const [email, setEmail] = useState("");
@@ -16,6 +10,8 @@ function Register() {
   const [mobileNumber, setMobileNumber] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -72,7 +68,8 @@ function Register() {
                 type="email"
                 id="email"
                 placeholder="Enter email"
-                className="py-2 outline-none w-full text-sm"
+                className="w-full py-2 outline-none text-sm"
+                value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
@@ -92,10 +89,18 @@ function Register() {
                 type="password"
                 id="password"
                 placeholder="Enter password"
-                className="py-2 outline-none w-full text-sm"
+                className="w-full outline-none bg-transparent text-sm"
+                value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="focus:outline-none text-gray-400 ml-2"
+              >
+                {showPassword ? <FaEyeSlash size={20}/> : <FaEye size={20} />}
+              </button>
             </div>
           </div>
 
@@ -112,12 +117,22 @@ function Register() {
                 type="password"
                 id="confirmPassword"
                 placeholder="Confirm password"
-                className="py-2 outline-none w-full text-sm"
+                className="w-full outline-none bg-transparent text-sm"
+                value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                required
               />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="focus:outline-none text-gray-400 ml-2"
+              >
+                {showConfirmPassword ? <FaEyeSlash size={20}/> : <FaEye size={20} />}
+              </button>
             </div>
           </div>
 
+          {/* Mobile Number */}
           <div>
             <label
               htmlFor="mobileNumber"
@@ -131,18 +146,15 @@ function Register() {
                 type="text"
                 id="mobileNumber"
                 placeholder="Enter mobile number"
-                className="py-2 outline-none w-full text-sm"
+                className="w-full py-2 outline-none text-sm"
+                value={mobileNumber}
                 onChange={(e) => setMobileNumber(e.target.value)}
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-2 text-gray-600 text-sm">
-            <input
-              type="checkbox"
-              id="customSwitchSuccess"
-              className="mt-0.5"
-            />
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <input type="checkbox" id="customSwitchSuccess" className="mt-0.5" />
             <label htmlFor="customSwitchSuccess" className="flex items-center">
               By registering you agree to the{" "}
               <Link to="#" className="ml-1 text-primary hover:underline">
@@ -155,10 +167,8 @@ function Register() {
 
           <button
             type="submit"
-
             disabled={loading}
-            className="flex justify-center items-center gap-2 bg-[#274D60] hover:opacity-90 py-2 rounded-md w-full text-white transition"
-
+            className="w-full bg-red-500 text-white py-2 rounded-[0.8rem] hover:opacity-90 transition flex items-center justify-center gap-2"
           >
             {loading ? "Registering..." : "Register"} <FaSignInAlt />
           </button>

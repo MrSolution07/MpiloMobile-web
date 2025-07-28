@@ -84,6 +84,7 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
       badge: waitingTriageCount > 0 ? waitingTriageCount : null 
     },
     { name: "Medical Records", path: "/dashboard/records", icon: <FileText className="w-5 h-5" /> },
+    
   ];
 
   return (

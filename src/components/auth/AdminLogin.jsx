@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { TbStethoscope } from "react-icons/tb";
-import { FaEnvelope, FaLock, FaSignInAlt } from "react-icons/fa";
+import { FaSignInAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAuth } from "../../context";
 
 function AdminLogin() {
@@ -10,6 +10,7 @@ function AdminLogin() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -54,10 +55,7 @@ function AdminLogin() {
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label
-              htmlFor="email"
-              className="block font-medium text-gray-700 text-sm"
-            >
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email
             </label>
             <div className="flex items-center mt-1 px-3 border rounded-md">
@@ -67,7 +65,7 @@ function AdminLogin() {
                 type="email"
                 id="email"
                 placeholder="Enter email"
-                className="py-2 outline-none w-full text-sm"
+                className="w-full py-2 outline-none text-sm"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -76,23 +74,26 @@ function AdminLogin() {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block font-medium text-gray-700 text-sm"
-            >
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
             </label>
-            <div className="flex items-center mt-1 px-3 border rounded-md">
-              <FaLock className="mr-2 text-gray-400" />
+            <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 hover:rounded-none">
               <input
-                type="password"
-                id="password"
+                id="userpassword"
+                type={showPassword ? "text" : "password"}
                 placeholder="Enter password"
-                className="py-2 outline-none w-full text-sm"
+                className="w-full outline-none bg-transparent text-sm"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="focus:outline-none text-gray-400 ml-2"
+              >
+                {showPassword ? <FaEyeSlash size={20}/> : <FaEye size={20} />}
+              </button>
             </div>
           </div>
 
@@ -117,20 +118,11 @@ function AdminLogin() {
           <button
             type="submit"
             disabled={loading}
-            className="flex justify-center items-center gap-2 bg-[#274D60] hover:opacity-90 mt-4 py-2 rounded-md w-full text-white transition"
+            className="w-full bg-red-500 text-white py-2 rounded-[0.8rem] mt-4 hover:opacity-90 transition flex items-center justify-center gap-2"
           >
             {loading ? "Logging in..." : "Log In"} <FaSignInAlt />
           </button>
         </form>
-
-        <div className="flex justify-center mt-6">
-          <Link to="/Login">
-            <button className="flex items-center gap-2 hover:bg-[#274D60] px-4 py-2 border border-[#274D60] rounded-md text-[#274D60] hover:text-white transition">
-              <TbStethoscope size={18} />
-              I'm a practitioner
-            </button>
-          </Link>
-        </div>
 
         <div className="mt-6 text-sm text-center">
           <p className="text-gray-500">

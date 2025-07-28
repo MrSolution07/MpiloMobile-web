@@ -2,9 +2,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { RiAdminFill } from "react-icons/ri";
 import { FaUser, FaLock, FaSignInAlt } from "react-icons/fa";
 import { useState } from "react";
+import { User, LogIn, UserCog} from "lucide-react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context";
 
 function Login() {
+  const [isPractitioner, setIsPractitioner] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -20,7 +25,11 @@ function Login() {
     try {
       setLoading(true);
       await login(email.trim().toLowerCase(), password);
-      navigate("/Dashboard");
+      if (isPractitioner) {
+        navigate("/Dashboard");
+      } else {
+        navigate("/UserDashboard");
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -50,8 +59,26 @@ function Login() {
           </p>
         </div>
 
+        <div className="flex items-center justify-between bg-gray-100 rounded-xl px-4 py-2 mb-5 shadow-inner">
+          <span className="flex items-center gap-2 text-gray-800 font-medium text-sm">
+            <User size={16} /> Healthcare Practitioner
+          </span>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              className="sr-only peer"
+              checked={isPractitioner}
+              onChange={() => setIsPractitioner(!isPractitioner)}
+            />
+            <div className={`relative w-11 h-6 peer-focus:outline-none rounded-full transition duration-300 ${isPractitioner ? 'bg-red-600' : 'bg-gray-300'}`}>
+              <div className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform duration-300 shadow-sm ${isPractitioner ? 'translate-x-5' : ''}`}></div>
+            </div>
+          </label>
+        </div>
+
+        {/* Form */}
         <form className="space-y-4" onSubmit={handleSubmit}>
-          {/* Username */}
+          {/* Email */}
           <div>
             <label
               htmlFor="email"
@@ -65,7 +92,7 @@ function Login() {
                 id="email"
                 type="text"
                 placeholder="Enter email"
-                className="bg-transparent outline-none w-full text-sm"
+                className="w-full outline-none bg-transparent text-sm"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -77,7 +104,7 @@ function Login() {
           <div>
             <label
               htmlFor="userpassword"
-              className="block font-medium text-gray-700 text-sm"
+              className="block text-sm font-medium text-gray-700"
             >
               Password
             </label>
@@ -87,27 +114,29 @@ function Login() {
                 id="userpassword"
                 type="password"
                 placeholder="Enter password"
-                className="bg-transparent outline-none w-full text-sm"
+                className="w-full outline-none bg-transparent text-sm"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="focus:outline-none text-gray-400 ml-2"
+              >
+                {showPassword ? <FaEyeSlash size={20}/> : <FaEye size={20} />}
+              </button>
             </div>
           </div>
 
-          <div className="flex justify-between items-center mt-2 text-sm">
+          {/* Remember & Forgot */}
+          <div className="flex justify-between items-center text-sm">
             <label className="flex items-center text-gray-600">
-              <input
-                type="checkbox"
-                className="mr-2 text-[#274D60] form-checkbox"
-              />
-              Remember me
+              <input type="checkbox" className="form-checkbox text-white mr-2" />
+              Remember Me
             </label>
-            <Link
-              to="/forgot-password"
-              className="text-primary hover:underline"
-            >
-              Forgot password?
+            <Link to="/forgot-password" className="text-primary font-medium hover:underline">
+              Forgot Password?
             </Link>
           </div>
 
@@ -117,19 +146,11 @@ function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="flex justify-center items-center gap-2 bg-gradient-to-r from-[#274D60] to-[#274D60] hover:opacity-90 py-2 rounded-md w-full text-white transition"
+            className="w-full bg-red-500 text-white hover:opacity-90 font-semibold py-2 rounded-[0.8rem] transition flex items-center justify-center gap-2 border border-gray-300"
           >
-            {loading ? "Logging in..." : "Log In"} <FaSignInAlt />
+            {loading ? "Logging in..." : "Login"} <LogIn size={16} />
           </button>
         </form>
-
-        {/* Register & Admin */}
-        <div className="mt-6 text-gray-600 text-sm text-center">
-          Don't have an account?
-          <Link to="/Register" className="ml-1 text-primary hover:underline">
-            Register
-          </Link>
-        </div>
 
         <div className="flex justify-center mt-4">
           <Link to="/AdminLogin">
