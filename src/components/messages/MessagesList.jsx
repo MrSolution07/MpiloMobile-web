@@ -17,6 +17,8 @@ function MessagesList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("all"); // 'all', 'unread', 'urgent'
   const [filterOpen, setFilterOpen] = useState(false);
+  const [replyOpen, setReplyOpen] = useState(false);
+  const [replyText, setReplyText] = useState("");
 
   // Filter messages
   const filteredMessages = mockMessages.filter((message) => {
@@ -48,6 +50,19 @@ function MessagesList() {
 
   const handleMessageSelect = (message) => {
     setSelectedMessage(message);
+  };
+
+  const handleReplyClick = () => {
+    setReplyOpen(true);
+  };
+
+  const handleSendReply = () => {
+    if (replyText.trim()) {
+      // Replace this with actual send logic
+      console.log("Reply sent:", replyText, "to", selectedMessage);
+      setReplyText("");
+      setReplyOpen(false);
+    }
   };
 
   return (
@@ -267,10 +282,49 @@ function MessagesList() {
                   </div>
 
                   <div className="mt-8 pt-4 border-gray-100 border-t">
-                    <div className="flex space-x-2 mt-4">
-                      <Button variant="primary">Reply</Button>
-                      <Button variant="secondary">Forward</Button>
-                    </div>
+                    {!replyOpen ? (
+                      <div className="flex space-x-2 mt-4">
+                        <Button variant="primary" onClick={handleReplyClick}>
+                          Reply
+                        </Button>
+                      </div>
+                    ) : (
+                      <form
+                        className="flex flex-col space-y-3 mt-4"
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          handleSendReply();
+                        }}
+                      >
+                        <textarea
+                          className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          rows={3}
+                          placeholder="Type your reply..."
+                          value={replyText}
+                          onChange={(e) => setReplyText(e.target.value)}
+                          autoFocus
+                        />
+                        <div className="flex space-x-2 mt-2">
+                          <Button
+                            variant="primary"
+                            type="submit"
+                            disabled={!replyText.trim()}
+                          >
+                            Send
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            type="button"
+                            onClick={() => {
+                              setReplyOpen(false);
+                              setReplyText("");
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </form>
+                    )}
                   </div>
                 </CardContent>
               </>
