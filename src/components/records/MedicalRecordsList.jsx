@@ -149,7 +149,7 @@ const MedicalRecordsList = () => {
           <input
             type="text"
             placeholder="Search by patient, diagnosis, or notes..."
-            className="bg-white py-2 pr-4 pl-10 border border-gray-300 focus:border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-gray-700"
+            className="bg-white py-2 pr-4 pl-10 border border-gray-300 focus:border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 w-full text-gray-700"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -272,7 +272,7 @@ const MedicalRecordsList = () => {
                         View Full Record
                       </Button>
                       <Button
-                        variant="primary"
+                        variant="danger"
                         size="sm"
                         icon={<FilePlus className="w-4 h-4" />}
                       >

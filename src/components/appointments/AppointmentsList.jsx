@@ -74,7 +74,7 @@ function AppointmentsList() {
           <div className="flex border border-gray-200 rounded-md overflow-hidden">
             <button
               className={`px-3 py-1.5 text-sm font-medium ${view === "list"
-                  ? "bg-blue-600 text-white"
+                  ? "bg-red-600 text-white"
                   : "bg-white text-gray-700 hover:bg-gray-50"
                 }`}
               onClick={() => setView("list")}
@@ -83,7 +83,7 @@ function AppointmentsList() {
             </button>
             <button
               className={`px-3 py-1.5 text-sm font-medium ${view === "calendar"
-                  ? "bg-blue-600 text-white"
+                  ? "bg-red-600 text-white"
                   : "bg-white text-gray-700 hover:bg-gray-50"
                 }`}
               onClick={() => setView("calendar")}
@@ -112,7 +112,7 @@ function AppointmentsList() {
           <input
             type="text"
             placeholder="Search appointments..."
-            className="bg-white py-2 pr-4 pl-10 border border-gray-300 focus:border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-gray-700"
+            className="bg-white py-2 pr-4 pl-10 border border-gray-300 focus:border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 w-full text-gray-700"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />

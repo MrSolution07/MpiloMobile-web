@@ -153,9 +153,9 @@ const PatientsList = () => {
             Filter
           </Button>
 
-          <Link to="/dashboard/addpatient">
+          <Link to="/dashboard/patients/add">
             <Button
-              variant="primary"
+              variant="danger"
               size="sm"
               icon={<Plus className="w-4 h-4" />}
             >
@@ -174,7 +174,7 @@ const PatientsList = () => {
           <input
             type="text"
             placeholder="Search patients by name, email, or phone..."
-            className="bg-white py-2 pr-4 pl-10 border border-gray-300 focus:border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-gray-700"
+            className="bg-white py-2 pr-4 pl-10 border border-gray-300 focus:border-gray-300rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 w-full text-gray-700"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />

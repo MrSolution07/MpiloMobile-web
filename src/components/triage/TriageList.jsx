@@ -314,11 +314,12 @@ const TriageList = () => {
             Filter
           </Button>
 
-          <Link to="/dashboard/newtriage">
+          <Link to="/dashboard/triage/new">
             <Button
               variant="primary"
               size="sm"
-              icon={<Plus className="w-4 h-4" />}
+              icon={<Plus className="w-4 h-4" />} 
+              className="bg-red-600 hover:bg-red-700 text-white border-red-700"
             >
               New Triage Case
             </Button>
@@ -335,7 +336,7 @@ const TriageList = () => {
           <input
             type="text"
             placeholder="Search by patient name or complaint..."
-            className="bg-white py-2 pr-4 pl-10 border border-gray-300 focus:border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-gray-700"
+            className="bg-white py-2 pr-4 pl-10 border border-gray-300 focus:border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 w-full text-gray-700"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -398,13 +399,13 @@ const TriageList = () => {
       <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
         {/* Waiting Column */}
         <Card>
-          <CardHeader className="bg-blue-50 border-b border-blue-100">
+          <CardHeader className="bg-red-50 border-b border-red-100">
             <div className="flex justify-between items-center">
-              <CardTitle className="flex items-center font-medium text-blue-900 text-lg">
-                <Clock className="mr-2 w-5 h-5 text-blue-700" />
+              <CardTitle className="flex items-center font-medium text-red-900 text-lg">
+                <Clock className="mr-2 w-5 h-5 text-red-700" />
                 Waiting
               </CardTitle>
-              <Badge text={`${groupedCases.waiting.length} cases`} variant="primary" />
+              <Badge text={`${groupedCases.waiting.length} cases`} variant="danger" />
             </div>
           </CardHeader>
           <CardContent className="space-y-4 p-4 max-h-[calc(100vh-300px)] overflow-y-auto">
@@ -415,7 +416,7 @@ const TriageList = () => {
                   triageCase={triageCase}
                   action={() => updateCaseStatus(triageCase.id, 'in-progress')}
                   actionText="Begin Treatment"
-                  actionVariant="primary"
+                  actionVariant="danger"
                 />
               ))
             ) : (

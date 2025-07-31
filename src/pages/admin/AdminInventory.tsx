@@ -933,13 +933,14 @@ const EnhancedInventoryManagement: React.FC = () => {
             <Scan size={16} />
             Smart Scan
           </Button>
-          <Button 
+            <Button 
+            variant="destructive"
             onClick={() => setShowAddModal(true)}
             className="flex items-center gap-2"
-          >
+            >
             <Plus size={16} />
             Add Item
-          </Button>
+            </Button>
         </div>
       </div>
 
