@@ -1,7 +1,3 @@
-//after years of trying to get the page to work....I had a little chat with my friend and he rebuilt the whole thing :)
-//I hope this works as expected
-
-
 import { useState, useEffect, useRef, useCallback } from "react";
 import { 
   MessageSquare, 
