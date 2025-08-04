@@ -37,7 +37,7 @@ export default function DoctorProfile() {
       </div>
 
       <div className="mt-6">
-        <Link to ="/dashboard/settings"><button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+        <Link to ="/dashboard/settings"><button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
           Edit Profile
         </button>
         </Link>

@@ -1,4 +1,4 @@
-// please note this is for presentation puroposes for Monday and will be reconstructed after
+// Updated PatientDashboard.jsx with PDF download functionality
 
 import { useState } from "react";
 import { 
@@ -15,14 +15,57 @@ import {
   FaHeart,
   FaThermometerHalf,
   FaWeight,
-  FaTint
+  FaTint,
+  FaDownload
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import { RecordPdf } from "../components/records/RecordPdf"; 
 
 function PatientDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
+  // Sample patient data for PDF generation
+  const patientRecordData = {
+    // Patient Information
+    patientName: "Major Tech",
+    dateOfBirth: "1990-01-15",
+    gender: "Male",
+    idNumber: "9001155555083",
+    contactNumber: "+27 82 123 4567",
+    address: "123 Main Street, Johannesburg, Gauteng, 2000",
+    medicalAid: "Discovery Health",
+    medicalAidNumber: "DH123456789",
+    
+    // Emergency Contact
+    emergencyContactName: "Jane Tech",
+    emergencyContactRelation: "Spouse",
+    emergencyContactPhone: "+27 83 987 6543",
+    
+    // Visit Information
+    visitDate: "2025-07-25",
+    visitTime: "14:30",
+    attendingPhysician: "Dr. Sarah Johnson",
+    department: "General Medicine",
+    
+    // Vital Signs
+    bloodPressure: "120/80",
+    heartRate: "72",
+    temperature: "36.5",
+    weight: "75",
+    height: "175",
+    respiratoryRate: "16",
+    
+    // Medical Information
+    chiefComplaint: "Annual check-up and routine health assessment",
+    historyOfPresentIllness: "Patient presents for routine annual physical examination. No acute complaints. Reports feeling well overall with good energy levels and no significant changes in health status since last visit.",
+    physicalExamination: "General appearance: Well-appearing, alert, oriented. Vital signs stable. Cardiovascular: Regular rate and rhythm, no murmurs. Respiratory: Clear to auscultation bilaterally. Abdomen: Soft, non-tender. Neurological: Grossly intact.",
+    diagnosis: "Z00.00 - Encounter for general adult medical examination without abnormal findings",
+    treatmentPlan: "Continue current healthy lifestyle. Regular exercise and balanced diet. Annual follow-up recommended.",
+    medications: "Vitamin D3 1000 IU daily, Multivitamin daily",
+    followUpInstructions: "Continue current medications. Return for annual physical examination in 12 months or sooner if any health concerns arise. Maintain healthy diet and regular exercise routine."
+  };
 
   const upcomingAppointments = [
     {
@@ -92,50 +135,68 @@ function PatientDashboard() {
     { label: "Weight", value: "165 lbs", icon: FaWeight, color: "text-green-500" }
   ];
 
+  // PDF Download Component
+  const DownloadRecordsButton = () => (
+    <PDFDownloadLink 
+      document={<RecordPdf data={patientRecordData} />}
+      fileName={`medical_record_${patientRecordData.patientName}_${new Date().toISOString().split('T')[0]}.pdf`}
+    >
+      {({ loading }) => (
+        <button 
+          className={`bg-red-500 text-white px-4 py-2 rounded-[0.8rem] font-medium hover:bg-red-600 transition whitespace-nowrap flex items-center gap-2 ${
+            loading ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+          disabled={loading}
+        >
+          <FaDownload className="h-4 w-4" />
+          {loading ? 'Preparing...' : 'Download Records'}
+        </button>
+      )}
+    </PDFDownloadLink>
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
-     {/* Header */}
-        <header className="bg-white shadow-sm">
+      {/* Header */}
+      <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4">
             <div className="flex items-center space-x-4 mb-3 sm:mb-0">
-                <img
+              <img
                 src="../assets/images/mpiloLogo.png"
                 alt="Mpilo Logo"
                 className="h-8 w-auto"
                 onClick={() => navigate("/")}
-                />
-              
+              />
             </div>
 
             <div className="flex items-center space-x-4">
-                <button className="relative p-2 text-gray-400 hover:text-gray-500">
+              <button className="relative p-2 text-gray-400 hover:text-gray-500">
                 <FaBell className="h-5 w-5" />
                 <span className="absolute top-0 right-0 block h-2 w-2 bg-red-400 rounded-full"></span>
-                </button>
+              </button>
 
-                <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-3">
                 <img
-                    className="h-8 w-8 rounded-full"
-                    src="https://www.gravatar.com/avatar/?d=mp"
-                    alt="User avatar"
+                  className="h-8 w-8 rounded-full"
+                  src="https://www.gravatar.com/avatar/?d=mp"
+                  alt="User avatar"
                 />
                 <span className="hidden sm:block text-sm font-medium text-gray-700">Major Tech</span>
                 <button className="text-gray-400 hover:text-gray-500" onClick={() => navigate("/Login")}>
-                    <FaSignOutAlt className="h-4 w-4" />
+                  <FaSignOutAlt className="h-4 w-4" />
                 </button>
-                </div>
+              </div>
             </div>
-            </div>
+          </div>
         </div>
-          
-        </header>
-
+      </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 mt-4">
         <h1 className="text-sm sm:text-sm md:text-sm lg:text-lg font-semibold text-gray-800">
           Patient Dashboard
         </h1>
+        
         {/* Navigation Tabs */}
         <div className="flex flex-wrap gap-6 sm:gap-8 lg:gap-12 mb-8 border-b overflow-x-auto">
           {[
@@ -272,193 +333,190 @@ function PatientDashboard() {
         )}
 
         {/* Appointments Tab */}
-{activeTab === 'appointments' && (
-  <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
-    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-3">
-      <h2 className="text-lg sm:text-xl font-semibold text-gray-800">My Appointments</h2>
-      <button className="bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition w-full md:w-auto">
-        Book New Appointment
-      </button>
-    </div>
+        {activeTab === 'appointments' && (
+          <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-3">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-800">My Appointments</h2>
+              <button className="bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition w-full md:w-auto">
+                Book New Appointment
+              </button>
+            </div>
 
-    <div className="grid gap-4">
-      {upcomingAppointments.map((appointment) => (
-        <div key={appointment.id} className="border border-gray-200 rounded-lg p-4 sm:p-6 hover:shadow-md transition">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-            <div className="flex items-center space-x-4">
-              <img src={appointment.avatar} alt={appointment.doctor} className="w-12 h-12 rounded-full" />
-              <div>
-                <h3 className="font-semibold text-gray-800">{appointment.doctor}</h3>
-                <p className="text-gray-600">{appointment.specialty}</p>
-                <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-gray-500">
-                  <div className="flex items-center">
-                    <FaClock className="h-4 w-4 mr-1" />
-                    <span>{appointment.date} at {appointment.time}</span>
-                  </div>
-                  <div className="flex items-center">
-                    {appointment.type === 'Video Call' && <FaVideo className="h-4 w-4 mr-1" />}
-                    {appointment.type === 'Phone Call' && <FaPhone className="h-4 w-4 mr-1" />}
-                    {appointment.type === 'In-Person' && <FaMapMarkerAlt className="h-4 w-4 mr-1" />}
-                    <span>{appointment.type}</span>
+            <div className="grid gap-4">
+              {upcomingAppointments.map((appointment) => (
+                <div key={appointment.id} className="border border-gray-200 rounded-lg p-4 sm:p-6 hover:shadow-md transition">
+                  <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                    <div className="flex items-center space-x-4">
+                      <img src={appointment.avatar} alt={appointment.doctor} className="w-12 h-12 rounded-full" />
+                      <div>
+                        <h3 className="font-semibold text-gray-800">{appointment.doctor}</h3>
+                        <p className="text-gray-600">{appointment.specialty}</p>
+                        <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-gray-500">
+                          <div className="flex items-center">
+                            <FaClock className="h-4 w-4 mr-1" />
+                            <span>{appointment.date} at {appointment.time}</span>
+                          </div>
+                          <div className="flex items-center">
+                            {appointment.type === 'Video Call' && <FaVideo className="h-4 w-4 mr-1" />}
+                            {appointment.type === 'Phone Call' && <FaPhone className="h-4 w-4 mr-1" />}
+                            {appointment.type === 'In-Person' && <FaMapMarkerAlt className="h-4 w-4 mr-1" />}
+                            <span>{appointment.type}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+                      <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition w-full sm:w-auto">
+                        Reschedule
+                      </button>
+                      <button className="px-4 py-2 border border-[#D7261E] text-[#D7261E] rounded-lg hover:bg-red-50 transition w-full sm:w-auto">
+                        {appointment.date === 'Today' ? 'Join Now' : 'View Details'}
+                      </button>
+                    </div>
                   </div>
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Find Doctors Tab */}
+        {activeTab === 'doctors' && (
+          <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Available Doctors</h2>
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full md:w-auto">
+                <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full sm:w-auto">
+                  <option>All Specialties</option>
+                  <option>General Medicine</option>
+                  <option>Cardiology</option>
+                  <option>Dermatology</option>
+                  <option>Orthopedics</option>
+                </select>
+                <input
+                  type="text"
+                  placeholder="Search doctors..."
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full sm:w-64"
+                />
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
-              <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition w-full sm:w-auto">
-                Reschedule
-              </button>
-              <button className="px-4 py-2 border border-[#D7261E] text-[#D7261E] rounded-lg hover:bg-red-50 transition w-full sm:w-auto">
-                {appointment.date === 'Today' ? 'Join Now' : 'View Details'}
-              </button>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+            <div className="grid gap-4">
+              {availableDoctors.map((doctor) => (
+                <div key={doctor.id} className="border border-gray-200 rounded-lg p-4 sm:p-6 hover:shadow-md transition">
+                  <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                    <div className="flex items-center space-x-4">
+                      <img src={doctor.avatar} alt={doctor.name} className="w-16 h-16 rounded-full" />
+                      <div>
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-800">{doctor.name}</h3>
+                        <p className="text-gray-600">{doctor.specialty}</p>
+                        <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-gray-500">
+                          <span>Next: {doctor.nextAvailable}</span>
+                        </div>
+                      </div>
+                    </div>
 
-{/* Find Doctors Tab */}
-{activeTab === 'doctors' && (
-  <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
-    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-      <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Available Doctors</h2>
-      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full md:w-auto">
-        <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full sm:w-auto">
-          <option>All Specialties</option>
-          <option>General Medicine</option>
-          <option>Cardiology</option>
-          <option>Dermatology</option>
-          <option>Orthopedics</option>
-        </select>
-        <input
-          type="text"
-          placeholder="Search doctors..."
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full sm:w-64"
-        />
-      </div>
-    </div>
-
-    <div className="grid gap-4">
-      {availableDoctors.map((doctor) => (
-        <div key={doctor.id} className="border border-gray-200 rounded-lg p-4 sm:p-6 hover:shadow-md transition">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-            <div className="flex items-center space-x-4">
-              <img src={doctor.avatar} alt={doctor.name} className="w-16 h-16 rounded-full" />
-              <div>
-                <h3 className="text-base sm:text-lg font-semibold text-gray-800">{doctor.name}</h3>
-                <p className="text-gray-600">{doctor.specialty}</p>
-                <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-gray-500">
-                  
-                  <span>Next: {doctor.nextAvailable}</span>
+                    <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+                      <button className="px-4 py-2 border border-[#274D60] text-[#274D60] rounded-lg hover:bg-blue-50 transition w-full sm:w-auto">
+                        View Profile
+                      </button>
+                      <button className="px-4 py-2 border border-[#D7261E] text-[#D7261E] rounded-[0.8rem] hover:bg-red-100 transition w-full sm:w-auto">
+                        Book Appointment
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
-              <button className="px-4 py-2 border border-[#274D60] text-[#274D60] rounded-lg hover:bg-blue-50 transition w-full sm:w-auto">
-                View Profile
-              </button>
-              <button className="px-4 py-2 border border-[#D7261E] text-[#D7261E] rounded-[0.8rem] hover:bg-red-100 transition w-full sm:w-auto">
-                Book Appointment
-              </button>
+              ))}
             </div>
           </div>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+        )}
 
         {/* Medical History Tab */}
-       {activeTab === "history" && (
-  <div className="bg-white rounded-xl shadow-sm p-6 max-w-full overflow-x-auto">
-    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 sm:gap-0">
-      <h2 className="text-xl font-semibold text-gray-800">Medical History</h2>
-      <button className="bg-red-500 text-white px-4 py-2 rounded-[0.8rem] font-medium hover:bg-red-600 transition whitespace-nowrap max-w-full sm:max-w-xs truncate">
-        Download Records
-      </button>
-    </div>
+        {activeTab === "history" && (
+          <div className="bg-white rounded-xl shadow-sm p-6 max-w-full overflow-x-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 sm:gap-0">
+              <h2 className="text-xl font-semibold text-gray-800">Medical History</h2>
+              <DownloadRecordsButton />
+            </div>
             
             <div className="space-y-6">
-      {/* Recent Consultations */}
-      <div>
-        <h3 className="text-lg font-medium text-gray-800 mb-4">Recent Consultations</h3>
-        <div className="space-y-4">
-          {[
-            {
-              date: "July 25, 2025",
-              doctor: "Dr. Sarah Johnson",
-              specialty: "General Medicine",
-              diagnosis: "Annual check-up - All vitals normal",
-              status: "Completed",
-            },
-            {
-              date: "June 15, 2025",
-              doctor: "Dr. Michael Chen",
-              specialty: "Cardiology",
-              diagnosis: "Blood pressure monitoring - Stable",
-              status: "Completed",
-            },
-            {
-              date: "May 8, 2025",
-              doctor: "Dr. Emily Davis",
-              specialty: "Dermatology",
-              diagnosis: "Skin examination - Minor concern addressed",
-              status: "Completed",
-            },
-          ].map((record, index) => (
-            <div key={index} className="border border-gray-200 rounded-lg p-4">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center space-x-0 sm:space-x-3 mb-2 sm:mb-0">
-                  <span className="font-medium text-gray-800">{record.date}</span>
-                  <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full whitespace-nowrap">
-                    {record.status}
-                  </span>
+              {/* Recent Consultations */}
+              <div>
+                <h3 className="text-lg font-medium text-gray-800 mb-4">Recent Consultations</h3>
+                <div className="space-y-4">
+                  {[
+                    {
+                      date: "July 25, 2025",
+                      doctor: "Dr. Sarah Johnson",
+                      specialty: "General Medicine",
+                      diagnosis: "Annual check-up - All vitals normal",
+                      status: "Completed",
+                    },
+                    {
+                      date: "June 15, 2025",
+                      doctor: "Dr. Michael Chen",
+                      specialty: "Cardiology",
+                      diagnosis: "Blood pressure monitoring - Stable",
+                      status: "Completed",
+                    },
+                    {
+                      date: "May 8, 2025",
+                      doctor: "Dr. Emily Davis",
+                      specialty: "Dermatology",
+                      diagnosis: "Skin examination - Minor concern addressed",
+                      status: "Completed",
+                    },
+                  ].map((record, index) => (
+                    <div key={index} className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center space-x-0 sm:space-x-3 mb-2 sm:mb-0">
+                          <span className="font-medium text-gray-800">{record.date}</span>
+                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full whitespace-nowrap">
+                            {record.status}
+                          </span>
+                        </div>
+                        <button className="text-[#274D60] hover:text-[#1e3a4a] text-sm font-medium whitespace-nowrap">
+                          View Details
+                        </button>
+                      </div>
+                      <p className="font-medium text-gray-800 mt-2">{record.doctor}</p>
+                      <p className="text-sm text-gray-600">{record.specialty}</p>
+                      <p className="text-sm text-gray-700 mt-2">{record.diagnosis}</p>
+                    </div>
+                  ))}
                 </div>
-                <button className="text-[#274D60] hover:text-[#1e3a4a] text-sm font-medium whitespace-nowrap">
-                  View Details
-                </button>
               </div>
-              <p className="font-medium text-gray-800 mt-2">{record.doctor}</p>
-              <p className="text-sm text-gray-600">{record.specialty}</p>
-              <p className="text-sm text-gray-700 mt-2">{record.diagnosis}</p>
-            </div>
-          ))}
-        </div>
-      </div>
 
               {/* Lab Results */}
               <div>
-        <h3 className="text-lg font-medium text-gray-800 mb-4">Lab Results</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {[
-            { test: "Complete Blood Count", date: "July 20, 2025", status: "Normal", file: "CBC_July2025.pdf" },
-            { test: "Lipid Panel", date: "June 10, 2025", status: "Normal", file: "Lipid_June2025.pdf" },
-            { test: "Thyroid Function", date: "May 15, 2025", status: "Normal", file: "Thyroid_May2025.pdf" },
-          ].map((result, index) => (
-            <div key={index} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 border border-gray-200 rounded-lg gap-4 sm:gap-0">
-              <div>
-                <p className="font-medium text-gray-800">{result.test}</p>
-                <p className="text-sm text-gray-600">{result.date}</p>
+                <h3 className="text-lg font-medium text-gray-800 mb-4">Lab Results</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[
+                    { test: "Complete Blood Count", date: "July 20, 2025", status: "Normal", file: "CBC_July2025.pdf" },
+                    { test: "Lipid Panel", date: "June 10, 2025", status: "Normal", file: "Lipid_June2025.pdf" },
+                    { test: "Thyroid Function", date: "May 15, 2025", status: "Normal", file: "Thyroid_May2025.pdf" },
+                  ].map((result, index) => (
+                    <div key={index} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 border border-gray-200 rounded-lg gap-4 sm:gap-0">
+                      <div>
+                        <p className="font-medium text-gray-800">{result.test}</p>
+                        <p className="text-sm text-gray-600">{result.date}</p>
+                      </div>
+                      <div className="flex items-center space-x-4">
+                        <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full whitespace-nowrap">
+                          {result.status}
+                        </span>
+                        <button className="text-[#274D60] hover:text-red-700 text-sm font-medium whitespace-nowrap">
+                          Download
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="flex items-center space-x-4">
-                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full whitespace-nowrap">
-                  {result.status}
-                </span>
-                <button className="text-[#274D60] hover:text-red-700 text-sm font-medium whitespace-nowrap">
-                  Download
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
 
               {/* Prescriptions */}
-               <div>
+              <div>
                 <h3 className="text-lg font-medium text-gray-800 mb-4">Current Prescriptions</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
