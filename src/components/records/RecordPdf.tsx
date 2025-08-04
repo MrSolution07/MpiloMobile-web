@@ -180,7 +180,7 @@ const clinicDetails = {
   registrationNumber: 'HPCSA-12345'
 };
 
-export const MedicalRecordPDF = ({ data }: { data: MedicalRecordData }) => {
+export const RecordPdf = ({ data }: { data: MedicalRecordData }) => {
   const currentDate = new Date().toLocaleDateString();
   const patientAge = data.dateOfBirth 
     ? Math.floor((new Date().getTime() - new Date(data.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
@@ -441,3 +441,5 @@ export const dummyMedicalData: MedicalRecordData = {
   medications: "1. Ibuprofen 400mg - Take twice daily with food for 5 days\n2. Rizatriptan 10mg - As needed for severe headache (max 2 tablets per day)",
   followUpInstructions: "Return if headaches worsen or if new symptoms develop (fever, vision changes, confusion). Schedule follow-up appointment in 1 week. Maintain headache diary."
 };
+
+export default RecordPdf;

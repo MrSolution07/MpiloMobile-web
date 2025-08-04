@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';;
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card-custom';
 import {Button} from '../ui/Button-record';
 import  {Input}  from '../ui/Input';
 import  {Label}  from '../ui/label';
@@ -8,7 +8,7 @@ import  {Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { FileText, Download, Eye, X, Stethoscope } from 'lucide-react';
 import { useToast } from '../../hooks/use-toast';
 import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
-import { MedicalRecordPDF, dummyMedicalData } from './RecordPdf';
+import { RecordPdf, dummyMedicalData } from './RecordPdf';
 
 // Type definition for medical record data
 interface MedicalRecordData {
@@ -160,7 +160,7 @@ export const MedicalRecordGenerator = () => {
 
   const DownloadButton = () => (
     <PDFDownloadLink 
-      document={<MedicalRecordPDF data={currentData} />}
+      document={<RecordPdf data={currentData} />}
       fileName={`medical_record_${currentData.patientName}_${currentData.visitDate}.pdf`}
     >
       {({ loading }) => (
@@ -546,7 +546,7 @@ export const MedicalRecordGenerator = () => {
             
             <div className="flex-1 border rounded-lg overflow-hidden">
               <PDFViewer width="100%" height="100%" className="min-h-[70vh]">
-                <MedicalRecordPDF data={currentData} />
+                <RecordPdf data={currentData} />
               </PDFViewer>
             </div>
             
@@ -566,3 +566,5 @@ export const MedicalRecordGenerator = () => {
     </div>
   );
 };
+
+export default MedicalRecordGenerator;
