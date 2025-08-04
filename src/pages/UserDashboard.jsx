@@ -20,7 +20,7 @@ import {
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { PDFDownloadLink } from "@react-pdf/renderer";
-import { RecordPdf } from "../components/records/RecordPdf"; // Make sure this path is correct
+import { RecordPdf } from "../components/records/RecordPdf"; 
 
 function PatientDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
