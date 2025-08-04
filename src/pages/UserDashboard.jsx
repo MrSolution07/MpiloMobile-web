@@ -265,6 +265,7 @@ function PatientDashboard() {
                       <span className="font-medium">View Records</span>
                     </div>
                   </button>
+                  
                 </div>
               </div>
             </div>
@@ -377,6 +378,7 @@ function PatientDashboard() {
   <div className="bg-white rounded-xl shadow-sm p-6 max-w-full overflow-x-auto">
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 sm:gap-0">
       <h2 className="text-xl font-semibold text-gray-800">Medical History</h2>
+      // will add download functionality later
       <button className="bg-red-500 text-white px-4 py-2 rounded-[0.8rem] font-medium hover:bg-red-600 transition whitespace-nowrap max-w-full sm:max-w-xs truncate">
         Download Records
       </button>
