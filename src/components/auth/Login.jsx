@@ -3,9 +3,7 @@ import { FaUser, FaLock, FaSignInAlt } from "react-icons/fa";
 import { useState } from "react";
 import { User, LogIn, UserCog} from "lucide-react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-
 import { useNavigate, Link } from "react-router-dom";
-import { useNavigate,Link } from "react-router-dom";
 import { useAuth } from "../../context";
 
 function Login() {
