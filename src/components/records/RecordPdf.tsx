@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
 
 // Clinic/Hospital details configuration
 const clinicDetails = {
-  name: 'MedCare Health Center',
+  name: 'Mpilo Mobile',
   address: '123 Medical Drive, Health City, HC 12345',
   phone: '+27 11 123 4567',
   email: 'records@medcare.co.za',
