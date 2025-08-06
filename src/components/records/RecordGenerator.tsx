@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card-custom';
 import {Button} from '../ui/Button-record';
-import  {Input}  from '../ui/Input';
+import  {Input}  from '../ui/input';
 import  {Label}  from '../ui/label';
 import  {Textarea}  from '../ui/textarea';
 import  {Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';

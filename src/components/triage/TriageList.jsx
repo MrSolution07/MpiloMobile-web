@@ -310,16 +310,16 @@ const TriageList = () => {
             size="sm"
             icon={<Filter className="w-4 h-4" />}
             onClick={() => setFilterOpen(!filterOpen)}
+            className="mr-2"
           >
             Filter
           </Button>
-
           <Link to="/dashboard/triage/new">
             <Button
               variant="primary"
               size="sm"
-              icon={<Plus className="w-4 h-4" />} 
-              className="bg-red-600 hover:bg-red-700 text-white border-red-700"
+              icon={<Plus className="w-4 h-4" />}
+              className="ml-2 bg-red-600 hover:bg-red-700 text-white border-red-700"
             >
               New Triage Case
             </Button>

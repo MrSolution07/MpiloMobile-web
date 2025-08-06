@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { User } from "lucide-react";
 
 // Debounced scroll hook to prevent jamming
 function useWindowPosition() {
@@ -37,7 +38,7 @@ const navLinks = [
   { name: "Gallery", path: "/gallery" },
 ];
 
-function Header({ className, logo, joinBtn }) {
+function Header({ className, logo, joinBtn, user }) {
   const [activeMobileMenu, setActiveMobileMenu] = useState(false);
   const windowPosition = useWindowPosition();
   const location = useLocation();
@@ -46,11 +47,7 @@ function Header({ className, logo, joinBtn }) {
 
   return (
     <header
-      className={`w-full ${
-        className ? className : "header-01"
-      }  ${
-        windowPosition > 0 ? "fix-header" : ""
-      }`}
+      className={`w-full ${className ? className : "header-01"}  ${windowPosition > 0 ? "fix-header" : ""}`}
     >
       <div className="w-full px-4 sm:px-6 md:px-8">
         <div className="flex justify-between items-center py-4">
@@ -91,12 +88,10 @@ function Header({ className, logo, joinBtn }) {
               <Link
                 to="/login"
                 title="Login"
-                className="px-4 py-2 tracking-wider text-sm font-semibold 
-                text-red-500 border border-red-500 bg-transparent rounded-[0.8rem] 
-                transition-all duration-300 ease-in-out 
-                hover:rounded"
+                className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 bg-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500"
+                style={{ minWidth: 40, minHeight: 40 }}
               >
-                Login
+                <User className="w-6 h-6" />
               </Link>
             )}
             {joinBtn && (
@@ -135,9 +130,10 @@ function Header({ className, logo, joinBtn }) {
               {className !== "header-02" && (
                 <Link
                   to="/login"
-                  className="block text-red-600 font-medium rounded-[0.8rem]"
+                  className="block w-10 h-10 rounded-full overflow-hidden border border-gray-300 bg-gray-200 mx-auto text-gray-500 flex items-center justify-center"
+                  style={{ minWidth: 40, minHeight: 40 }}
                 >
-                  Login
+                  <User className="w-6 h-6" />
                 </Link>
               )}
               {joinBtn && (
