@@ -22,7 +22,7 @@ const AddDoctor = () => {
       `}</style>
 
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">Add New Doctor</h1>
+        <span className="text-3xl font-bold text-black sm:text-3xl">Add New Doctor</span>
         <p className="text-gray-600 mt-2">Fill in the details to add a new doctor to the system</p>
       </div>
 

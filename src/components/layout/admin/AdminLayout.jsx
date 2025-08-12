@@ -51,7 +51,7 @@ const AdminLayout = () => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <AdminSidebar />
+        <AdminSidebar  isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}  />
       </div>
 
       {isSidebarOpen && (

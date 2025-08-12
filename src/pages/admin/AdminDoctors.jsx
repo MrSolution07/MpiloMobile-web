@@ -154,14 +154,14 @@ const Doctors = () => {
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <p className="text-red-500">Error loading doctors: {error}</p>
+      <div className="flex justify-center items-center h-64 px-4">
+        <p className="text-red-500 text-center">Error loading doctors: {error}</p>
       </div>
     );
   }
 
   return (
-    <div className="animate-fade-in">
+  <div className="animate-fade-in px-2 py-2 sm:px-4 md:px-8 lg:px-16 xl:px-32 w-full max-w-screen-2xl mx-auto">
       <style jsx>{`
         .animate-fade-in {
           animation: fade-in 0.3s ease-in-out;
@@ -206,46 +206,46 @@ const Doctors = () => {
         }
       `}</style>
 
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Doctors</h1>
-        <Button onClick={handleAddDoctor}>
+      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <span className="text-3xl sm:text-3xl text-black font-bold">Doctors</span>
+        <Button onClick={handleAddDoctor} className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" /> Add Doctor
         </Button>
       </div>
 
-      <Card>
+      <Card className="w-full">
         <CardHeader className="pb-3">
           <CardTitle>Medical Staff</CardTitle>
           <CardDescription>Manage doctors and medical staff in your facility</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="mb-6 flex flex-col gap-4 sm:flex-row">
-            <div className="relative flex-1">
+        <CardContent className="p-2 sm:p-4 md:p-6">
+          <div className="mb-4 flex flex-col gap-2 sm:flex-row">
+            <div className="relative flex-1 min-w-0">
               <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
               <Input
                 placeholder="Search doctors..."
-                className="pl-9"
+                className="pl-9 w-full"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <Button variant="outline" className="flex gap-2">
+            <Button variant="outline" className="flex gap-2 w-full sm:w-auto">
               <Filter className="h-4 w-4" /> Filter
             </Button>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {filteredDoctors.map((doctor) => (
-              <Card key={doctor.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center">
+              <Card key={doctor.id} className="hover:shadow-md transition-shadow w-full">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row items-start justify-between mb-4 gap-2">
+                    <div className="flex items-center w-full sm:w-auto">
                       <div className="rounded-full bg-red-100 p-3 text-red-600 mr-3">
                         <UserCheck className="h-6 w-6" />
                       </div>
                       <div>
-                        <h3 className="font-medium text-lg">{doctor.first_name} {doctor.last_name}</h3>
-                        <p className="text-sm text-gray-500">{doctor.specialization}</p>
+                        <h3 className="font-medium text-base sm:text-lg">{doctor.first_name} {doctor.last_name}</h3>
+                        <p className="text-xs sm:text-sm text-gray-500">{doctor.specialization}</p>
                       </div>
                     </div>
                     <div className="flex gap-1">
@@ -265,19 +265,17 @@ const Doctors = () => {
                       </Button>
                     </div>
                   </div>
-                  
-                  <div className="space-y-2 text-sm">
-                    <p><span className="font-medium">ID:</span> {doctor.doctor_number}</p>
-                    <p><span className="font-medium">License:</span> {doctor.license_number}</p>
-                    <p><span className="font-medium">HPCSA:</span> {doctor.hpcsa_number}</p>
+                  <div className="space-y-1 text-xs sm:text-sm">
+                    <p><span className="font-medium">ID:</span> <span className="break-all">{doctor.doctor_number}</span></p>
+                    <p><span className="font-medium">License:</span> <span className="break-all">{doctor.license_number}</span></p>
+                    <p><span className="font-medium">HPCSA:</span> <span className="break-all">{doctor.hpcsa_number}</span></p>
                     <p><span className="font-medium">Experience:</span> {doctor.experience_years} years</p>
                     <p><span className="font-medium">Consultation Fee:</span> R{doctor.consultation_fee}</p>
                     <p><span className="font-medium">Languages:</span> {doctor.languages?.join(', ') || 'English'}</p>
                   </div>
-                  
-                  <div className="mt-4 flex items-center justify-between">
+                  <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-2">
                     <span
-                      className={doctor.is_available ? "status-active" : "status-inactive"}
+                      className={(doctor.is_available ? "status-active" : "status-inactive") + " px-2 py-1 text-xs font-semibold whitespace-nowrap"}
                     >
                       {doctor.is_available ? "Available" : "Not Available"}
                     </span>

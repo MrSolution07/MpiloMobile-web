@@ -6790,9 +6790,9 @@ button.bg-dark:focus {
   background-color: transparent !important;
 }
 
-.border {
-  border: 1px solid #dee2e6 !important;
-}
+/* .border {
+  border: 1px solid #dee2e6 ;
+} */
 
 .border-top {
   border-top: 1px solid #dee2e6 !important;

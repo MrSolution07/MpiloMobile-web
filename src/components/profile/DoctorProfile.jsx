@@ -7,7 +7,7 @@ export default function DoctorProfile() {
     phone: '+27 12 345 6789',
     specialization: 'General Practitioner',
     status: 'Available',
-    imageUrl: 'https://i.pravatar.cc/150?img=5', // placeholder picture
+    imageUrl: 'https://www.gravatar.com/avatar/?d=mp', // placeholder picture
   };
 
   return (

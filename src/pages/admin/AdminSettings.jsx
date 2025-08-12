@@ -131,16 +131,16 @@ export default function AdminSettings() {
         </div>
 
         {/* Actions */}
-        <div className="flex justify-end space-x-3 pt-6">
+  <div className="flex justify-end gap-4 pt-6">
           <button
             type="button"
-            className="px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-100"
+            className="px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-100 whitespace-nowrap min-w-0 flex items-center justify-center text-center"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-5 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
+            className="px-5 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 whitespace-nowrap min-w-0 flex items-center justify-center text-center"
           >
             Save Changes
           </button>

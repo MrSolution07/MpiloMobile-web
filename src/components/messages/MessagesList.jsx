@@ -13,7 +13,7 @@ import {
 const currentUser = {
   id: "user-1",
   name: "Dr. Sarah Johnson",
-  avatar: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face"
+  avatar: "https://www.gravatar.com/avatar/?d=mp"
 };
 
 // Avatar component
@@ -128,19 +128,19 @@ function MessagesList() {
     {
       id: "user-2",
       name: "John Smith",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+      avatar: "https://www.gravatar.com/avatar/?d=mp",
       role: "Patient"
     },
     {
       id: "user-3", 
       name: "Dr. Mike Wilson",
-      avatar: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face",
+      avatar: "https://www.gravatar.com/avatar/?d=mp",
       role: "Colleague"
     },
     {
       id: "user-4",
       name: "Sarah Davis",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b60fc7c0?w=150&h=150&fit=crop&crop=face",
+      avatar: "https://www.gravatar.com/avatar/?d=mp",
       role: "Patient"
     }
   ];
@@ -153,7 +153,7 @@ function MessagesList() {
         id: "conv-1",
         participantId: "user-2",
         participantName: "John Smith",
-        participantAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+        participantAvatar: "https://www.gravatar.com/avatar/?d=mp",
         lastMessage: {
           id: "msg-1",
           senderId: "user-2",
@@ -169,7 +169,7 @@ function MessagesList() {
         id: "conv-2",
         participantId: "user-3",
         participantName: "Dr. Mike Wilson",
-        participantAvatar: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face",
+        participantAvatar: "https://www.gravatar.com/avatar/?d=mp",
         lastMessage: {
           id: "msg-2",
           senderId: "user-3",

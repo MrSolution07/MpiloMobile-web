@@ -58,17 +58,7 @@ function Clients() {
           display: inline-block;
         }
 
-        .section-title::after {
-          content: '';
-          position: absolute;
-          bottom: -10px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 80px;
-          height: 4px;
-          background: linear-gradient(to right, #274D60, #D7261E);
-          border-radius: 2px;
-        }
+     
 
         .section-description {
           font-size: 18px;
