@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { User, LogIn } from "lucide-react";
+import { Stethoscope, LogIn } from "lucide-react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context";
 
-function Login() {
+function DoctorLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +21,7 @@ function Login() {
     try {
       setLoading(true);
       await login(email.trim().toLowerCase(), password);
-      navigate("/UserDashboard");
+      navigate("/dashboard");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -44,13 +44,13 @@ function Login() {
         </div>
 
         <div className="text-center mb-4">
-          <h2 className="text-2xl font-extrabold text-gray-800">Welcome Back</h2>
-          <p className="text-sm text-gray-500">Sign in to continue your health journey</p>
+          <h2 className="text-2xl font-extrabold text-gray-800">Doctor Portal</h2>
+          <p className="text-sm text-gray-500">Sign in to access your medical dashboard</p>
         </div>
 
-        <div className="flex items-center justify-center bg-green-50 rounded-xl px-4 py-2 mb-5 shadow-inner">
-          <span className="flex items-center gap-2 text-green-800 font-medium text-sm">
-            <User size={16} /> Patient Portal
+        <div className="flex items-center justify-center bg-blue-50 rounded-xl px-4 py-2 mb-5 shadow-inner">
+          <span className="flex items-center gap-2 text-blue-800 font-medium text-sm">
+            <Stethoscope size={16} /> Healthcare Practitioner
           </span>
         </div>
 
@@ -68,7 +68,7 @@ function Login() {
               <input
                 id="email"
                 type="text"
-                placeholder="Enter email"
+                placeholder="Enter doctor email"
                 className="w-full outline-none bg-transparent text-sm"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -89,7 +89,7 @@ function Login() {
               <input
                 id="userpassword"
                 type={showPassword ? "text" : "password"}
-                placeholder="Enter password"
+                placeholder="Enter doctor password"
                 className="w-full outline-none bg-transparent text-sm"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -122,11 +122,12 @@ function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-green-500 text-white hover:opacity-90 font-semibold py-2 rounded-[0.8rem] transition flex items-center justify-center gap-2 border border-gray-300"
+            className="w-full bg-blue-500 text-white hover:opacity-90 font-semibold py-2 rounded-[0.8rem] transition flex items-center justify-center gap-2 border border-gray-300"
           >
-            {loading ? "Logging in..." : "Patient Login"} <LogIn size={16} />
+            {loading ? "Logging in..." : "Doctor Login"} <LogIn size={16} />
           </button>
         </form>
+
         <div className="text-center mt-6 text-sm">
           <p className="text-gray-500">
             Don't have an account?
@@ -143,4 +144,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default DoctorLogin;
