@@ -16,7 +16,7 @@
     "@radix-ui/react-toast": "^1.2.14",
     "@radix-ui/react-tooltip": "^1.2.7",
     "@react-pdf/renderer": "^4.3.0",
-    "@supabase/supabase-js": "^2.52.1",
+    "@supabase/supabase-js": "^2.57.0",
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/react-query": "^5.83.0",
     "@zxing/library": "^0.21.3",
