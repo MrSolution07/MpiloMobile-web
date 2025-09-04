@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function AddMedicalRecordForm({ onSubmit, onCancel }) {
   const [form, setForm] = useState({
-    patientId: '',
-    diagnosis: '',
-    treatment: '',
-    medication: '',
-    notes: '',
-    date: new Date().toISOString().split('T')[0], // today’s date
+    patientId: "",
+    diagnosis: "",
+    treatment: "",
+    medication: "",
+    notes: "",
+    date: new Date().toISOString().split("T")[0], // today’s date
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,9 +24,14 @@ function AddMedicalRecordForm({ onSubmit, onCancel }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-4 bg-white border rounded-md shadow-sm">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4 p-4 bg-white border rounded-md shadow-sm"
+    >
       <div>
-        <label className="block text-sm font-medium text-gray-700">Patient ID / Name</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Patient ID / Name
+        </label>
         <input
           type="text"
           name="patientId"
@@ -35,7 +43,9 @@ function AddMedicalRecordForm({ onSubmit, onCancel }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">Diagnosis</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Diagnosis
+        </label>
         <input
           type="text"
           name="diagnosis"
@@ -47,7 +57,9 @@ function AddMedicalRecordForm({ onSubmit, onCancel }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">Treatment Plan</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Treatment Plan
+        </label>
         <textarea
           name="treatment"
           value={form.treatment}
@@ -58,7 +70,9 @@ function AddMedicalRecordForm({ onSubmit, onCancel }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">Medication Prescribed</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Medication Prescribed
+        </label>
         <input
           type="text"
           name="medication"
@@ -69,7 +83,9 @@ function AddMedicalRecordForm({ onSubmit, onCancel }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">Doctor's Notes</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Doctor's Notes
+        </label>
         <textarea
           name="notes"
           value={form.notes}
@@ -92,7 +108,8 @@ function AddMedicalRecordForm({ onSubmit, onCancel }) {
       <div className="flex justify-end space-x-2">
         <button
           type="button"
-          onClick={onCancel}
+          // onClick={onCancel}
+          onClick={() => navigate("/dashboard/records")}
           className="rounded-md border px-4 py-2 hover:bg-gray-100"
         >
           Cancel

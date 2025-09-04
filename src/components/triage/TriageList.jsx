@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   AlertTriangle,
@@ -11,8 +11,9 @@ import {
   Activity,
 } from "lucide-react";
 import { Card, Button, Badge, CardHeader, CardTitle, CardContent } from "../ui";
-import { mockTriageCases } from "../../data";
+import { mockTriageCases as fetchTriageCases } from "../../data";
 import { formatDateTime } from "../../utils";
+import { Preloader } from "../preloader";
 
 const TriageList = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -20,20 +21,40 @@ const TriageList = () => {
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [filterOpen, setFilterOpen] = useState(false);
 
+  const [cases, setCases] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true);
+
+      try {
+        const data = await fetchTriageCases();
+        setCases(data);
+      } catch (error) {
+        console.error("Error loading triage cases:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+  }, []);
+
   // Filter triage cases
-  const filteredCases = mockTriageCases.filter((triageCase) => {
+  const filteredCases = cases.filter((triageCase) => {
     const matchesSearch =
-      triageCase.patientName
+      triageCase?.patient_id
         .toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
-      triageCase.chiefComplaint
+      triageCase?.chief_complaint
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
 
     const matchesStatus =
-      statusFilter === "all" || triageCase.status === statusFilter;
+      statusFilter === "all" || triageCase?.status === statusFilter;
     const matchesPriority =
-      priorityFilter === "all" || triageCase.priority === priorityFilter;
+      priorityFilter === "all" || triageCase?.priority === priorityFilter;
 
     return matchesSearch && matchesStatus && matchesPriority;
   });
@@ -70,6 +91,8 @@ const TriageList = () => {
     }
   };
 
+  if (loading) return <Preloader />;
+
   return (
     <div className="space-y-6">
       <div className="flex sm:flex-row flex-col sm:justify-between sm:items-center space-y-2 sm:space-y-0">
@@ -90,14 +113,14 @@ const TriageList = () => {
             Filter
           </Button>
 
-          <Link to = "/dashboard/newtriage">
-          <Button
-            variant="primary"
-            size="sm"
-            icon={<Plus className="w-4 h-4" />}
-          >
-            New Triage Case
-          </Button>
+          <Link to="/dashboard/newtriage">
+            <Button
+              variant="primary"
+              size="sm"
+              icon={<Plus className="w-4 h-4" />}
+            >
+              New Triage Case
+            </Button>
           </Link>
         </div>
       </div>
@@ -238,13 +261,13 @@ const TriageList = () => {
             {groupedCases.waiting.length > 0 ? (
               groupedCases.waiting.map((triageCase) => (
                 <div
-                  key={triageCase.id}
+                  key={triageCase?.id}
                   className={`
                     p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow
                     ${
-                      triageCase.priority === "high"
+                      triageCase?.priority === "high"
                         ? "border-l-4 border-l-red-500"
-                        : triageCase.priority === "medium"
+                        : triageCase?.priority === "medium"
                         ? "border-l-4 border-l-yellow-500"
                         : "border-l-4 border-l-green-500"
                     }
@@ -255,21 +278,21 @@ const TriageList = () => {
                       <p className="flex items-center font-medium text-gray-900">
                         <span
                           className={`block w-2 h-2 rounded-full mr-2 ${getPriorityColor(
-                            triageCase.priority
+                            triageCase?.priority
                           )}`}
                         ></span>
-                        {triageCase.patientName}
+                        {triageCase?.patientName}
                       </p>
                       <p className="mt-1 text-gray-500 text-sm">
-                        Arrived: {formatDateTime(triageCase.arrivalTime)}
+                        Arrived: {formatDateTime(triageCase?.arrivalTime)}
                       </p>
                     </div>
                     <Badge
-                      text={triageCase.priority}
+                      text={triageCase?.priority}
                       variant={
-                        triageCase.priority === "high"
+                        triageCase?.priority === "high"
                           ? "danger"
-                          : triageCase.priority === "medium"
+                          : triageCase?.priority === "medium"
                           ? "warning"
                           : "success"
                       }
@@ -279,7 +302,7 @@ const TriageList = () => {
 
                   <div className="mt-3">
                     <p className="font-medium text-gray-700 text-sm">
-                      {triageCase.chiefComplaint}
+                      {triageCase?.chiefComplaint}
                     </p>
                   </div>
 
@@ -287,23 +310,23 @@ const TriageList = () => {
                     <div className="flex items-center">
                       <Heart className="mr-1 w-3 h-3 text-red-500" />
                       <span className="text-gray-700">
-                        HR: {triageCase.vitalSigns.heartRate}
+                        HR: {triageCase?.vital_signs?.heartRate}
                       </span>
                     </div>
                     <div className="flex items-center">
                       <Activity className="mr-1 w-3 h-3 text-blue-500" />
                       <span className="text-gray-700">
-                        BP: {triageCase.vitalSigns.bloodPressure}
+                        BP: {triageCase?.vital_signs?.bloodPressure}
                       </span>
                     </div>
                     <div className="flex items-center">
                       <span className="text-gray-700">
-                        Temp: {triageCase.vitalSigns.temperature}°C
+                        Temp: {triageCase?.vital_signs?.temperature}°C
                       </span>
                     </div>
                     <div className="flex items-center">
                       <span className="text-gray-700">
-                        O₂: {triageCase.vitalSigns.oxygenSaturation}%
+                        O₂: {triageCase?.vital_signs?.oxygenSaturation}%
                       </span>
                     </div>
                   </div>
@@ -347,13 +370,13 @@ const TriageList = () => {
             {groupedCases["in-progress"].length > 0 ? (
               groupedCases["in-progress"].map((triageCase) => (
                 <div
-                  key={triageCase.id}
+                  key={triageCase?.id}
                   className={`
                     p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow
                     ${
-                      triageCase.priority === "high"
+                      triageCase?.priority === "high"
                         ? "border-l-4 border-l-red-500"
-                        : triageCase.priority === "medium"
+                        : triageCase?.priority === "medium"
                         ? "border-l-4 border-l-yellow-500"
                         : "border-l-4 border-l-green-500"
                     }
@@ -364,21 +387,21 @@ const TriageList = () => {
                       <p className="flex items-center font-medium text-gray-900">
                         <span
                           className={`block w-2 h-2 rounded-full mr-2 ${getPriorityColor(
-                            triageCase.priority
+                            triageCase?.priority
                           )}`}
                         ></span>
-                        {triageCase.patientName}
+                        {triageCase?.patientName}
                       </p>
                       <p className="mt-1 text-gray-500 text-sm">
-                        Arrived: {formatDateTime(triageCase.arrivalTime)}
+                        Arrived: {formatDateTime(triageCase?.arrivalTime)}
                       </p>
                     </div>
                     <Badge
-                      text={triageCase.priority}
+                      text={triageCase?.priority}
                       variant={
-                        triageCase.priority === "high"
+                        triageCase?.priority === "high"
                           ? "danger"
-                          : triageCase.priority === "medium"
+                          : triageCase?.priority === "medium"
                           ? "warning"
                           : "success"
                       }
@@ -388,7 +411,7 @@ const TriageList = () => {
 
                   <div className="mt-3">
                     <p className="font-medium text-gray-700 text-sm">
-                      {triageCase.chiefComplaint}
+                      {triageCase?.chiefComplaint}
                     </p>
                   </div>
 
@@ -396,23 +419,23 @@ const TriageList = () => {
                     <div className="flex items-center">
                       <Heart className="mr-1 w-3 h-3 text-red-500" />
                       <span className="text-gray-700">
-                        HR: {triageCase.vitalSigns.heartRate}
+                        HR: {triageCase?.vital_signs?.heartRate}
                       </span>
                     </div>
                     <div className="flex items-center">
                       <Activity className="mr-1 w-3 h-3 text-blue-500" />
                       <span className="text-gray-700">
-                        BP: {triageCase.vitalSigns.bloodPressure}
+                        BP: {triageCase?.vital_signs?.bloodPressure}
                       </span>
                     </div>
                     <div className="flex items-center">
                       <span className="text-gray-700">
-                        Temp: {triageCase.vitalSigns.temperature}°C
+                        Temp: {triageCase?.vital_signs?.temperature}°C
                       </span>
                     </div>
                     <div className="flex items-center">
                       <span className="text-gray-700">
-                        O₂: {triageCase.vitalSigns.oxygenSaturation}%
+                        O₂: {triageCase?.vital_signs?.oxygenSaturation}%
                       </span>
                     </div>
                   </div>
@@ -456,24 +479,24 @@ const TriageList = () => {
             {groupedCases.completed.length > 0 ? (
               groupedCases.completed.map((triageCase) => (
                 <div
-                  key={triageCase.id}
+                  key={triageCase?.id}
                   className="shadow-sm hover:shadow-md p-4 border border-gray-200 rounded-lg transition-shadow"
                 >
                   <div className="flex justify-between items-start">
                     <div>
                       <p className="font-medium text-gray-900">
-                        {triageCase.patientName}
+                        {triageCase?.patientName}
                       </p>
                       <p className="mt-1 text-gray-500 text-sm">
-                        Arrived: {formatDateTime(triageCase.arrivalTime)}
+                        Arrived: {formatDateTime(triageCase?.arrivalTime)}
                       </p>
                     </div>
                     <Badge
-                      text={triageCase.priority}
+                      text={triageCase?.priority}
                       variant={
-                        triageCase.priority === "high"
+                        triageCase?.priority === "high"
                           ? "danger"
-                          : triageCase.priority === "medium"
+                          : triageCase?.priority === "medium"
                           ? "warning"
                           : "success"
                       }
@@ -483,7 +506,7 @@ const TriageList = () => {
 
                   <div className="mt-3">
                     <p className="font-medium text-gray-700 text-sm">
-                      {triageCase.chiefComplaint}
+                      {triageCase?.chiefComplaint}
                     </p>
                   </div>
 

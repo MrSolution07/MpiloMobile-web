@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MessageSquare, Search, Plus, Filter, Mail } from "lucide-react";
-import { mockMessages, currentUser } from "../../data";
+import { mockMessages as fetchMessages, currentUser } from "../../data";
 import {
   Card,
   CardHeader,
@@ -11,6 +11,7 @@ import {
   Avatar,
 } from "../ui";
 import { formatDateTime } from "../../utils";
+import { useAuth } from "../../context";
 
 function MessagesList() {
   const [selectedMessage, setSelectedMessage] = useState(null);
@@ -18,25 +19,47 @@ function MessagesList() {
   const [filter, setFilter] = useState("all"); // 'all', 'unread', 'urgent'
   const [filterOpen, setFilterOpen] = useState(false);
 
+  const { user } = useAuth();
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    async function loadData() {
+      setLoading(true);
+
+      try {
+        const data = await fetchMessages(user.id);
+        setMessages(data || []);
+      } catch (error) {
+        console.error("Error loading messages:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+  }, [user?.id]);
+
   // Filter messages
-  const filteredMessages = mockMessages.filter((message) => {
+  const filteredMessages = messages.filter((message) => {
     // Only show messages to/from current user
     const isRelevantToUser =
-      message.recipientId === currentUser.id ||
-      message.senderId === currentUser.id;
+      message?.recipient_id === user.id || message?.sender_id === user.id;
 
     // Apply search filter
     const matchesSearch =
-      message.senderName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      message.content.toLowerCase().includes(searchQuery.toLowerCase());
+      message?.sender_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      message?.content?.toLowerCase().includes(searchQuery.toLowerCase());
 
     // Apply status filter
     const matchesFilter =
       filter === "all" ||
       (filter === "unread" &&
-        !message.read &&
-        message.recipientId === currentUser.id) ||
-      (filter === "urgent" && message.urgent);
+        !message?.read &&
+        message?.recipient_id === user.id) ||
+      (filter === "urgent" && message?.urgent);
 
     return isRelevantToUser && matchesSearch && matchesFilter;
   });
@@ -145,21 +168,22 @@ function MessagesList() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0 max-h-[calc(100vh-300px)] overflow-y-auto">
-              {sortedMessages.length > 0 ? (
+              {loading ? (
+                <p className="p-4 text-gray-500 text-sm">Loading messages...</p>
+              ) : sortedMessages.length > 0 ? (
                 <div className="divide-y divide-gray-100">
                   {sortedMessages.map((message) => (
                     <div
-                      key={message.id}
+                      key={message?.id}
                       className={`
                         flex items-start p-4 cursor-pointer transition-colors
                         ${
-                          selectedMessage?.id === message.id
+                          selectedMessage?.id === message?.id
                             ? "bg-blue-50"
                             : "hover:bg-gray-50"
                         }
                         ${
-                          !message.read &&
-                          message.recipientId === currentUser.id
+                          !message?.read && message?.recipient_id === user.id
                             ? "bg-blue-50"
                             : ""
                         }
@@ -167,8 +191,8 @@ function MessagesList() {
                       onClick={() => handleMessageSelect(message)}
                     >
                       <Avatar
-                        src={message.senderAvatar}
-                        alt={message.senderName}
+                        // src={message?.sender_avatar}
+                        alt={message?.sender_name || "anon"}
                         size="md"
                         className="flex-shrink-0 mr-3"
                       />
@@ -177,38 +201,37 @@ function MessagesList() {
                         <div className="flex justify-between items-center">
                           <p
                             className={`text-sm font-medium ${
-                              !message.read &&
-                              message.recipientId === currentUser.id
+                              !message?.read &&
+                              message?.recipient_id === user.id
                                 ? "text-blue-800"
                                 : "text-gray-900"
                             } truncate`}
                           >
-                            {message.senderName}
+                            {message?.sender_name}
                           </p>
                           <p className="ml-2 text-gray-500 text-xs whitespace-nowrap">
-                            {formatDateTime(message.timestamp).split(",")[0]}
+                            {formatDateTime(message?.timestamp)?.split(",")[0]}
                           </p>
                         </div>
                         <p
                           className={`text-xs ${
-                            !message.read &&
-                            message.recipientId === currentUser.id
+                            !message?.read && message?.recipient_id === user.id
                               ? "text-blue-700 font-medium"
                               : "text-gray-700"
                           } mt-1 line-clamp-2`}
                         >
-                          {message.content}
+                          {message?.content}
                         </p>
                         <div className="flex items-center mt-1">
-                          {message.urgent && (
+                          {message?.urgent && (
                             <Badge
                               text="Urgent"
                               variant="danger"
                               size="small"
                             />
                           )}
-                          {!message.read &&
-                            message.recipientId === currentUser.id && (
+                          {!message?.read &&
+                            message?.recipient_id === user.id && (
                               <span className="inline-block bg-blue-600 ml-auto rounded-full w-2 h-2"></span>
                             )}
                         </div>
@@ -240,21 +263,21 @@ function MessagesList() {
                   <div className="flex justify-between items-center">
                     <div className="flex items-center">
                       <Avatar
-                        src={selectedMessage.senderAvatar}
-                        alt={selectedMessage.senderName}
+                        // src={selectedMessage?.sender_avatar}
+                        alt={selectedMessage?.sender_name || "anon"}
                         size="md"
                         className="mr-3"
                       />
                       <div>
                         <h3 className="font-medium text-gray-900 text-lg">
-                          {selectedMessage.senderName}
+                          {selectedMessage?.sender_name}
                         </h3>
                         <p className="text-gray-500 text-sm">
-                          {formatDateTime(selectedMessage.timestamp)}
+                          {formatDateTime(selectedMessage?.timestamp)}
                         </p>
                       </div>
                     </div>
-                    {selectedMessage.urgent && (
+                    {selectedMessage?.urgent && (
                       <Badge text="Urgent" variant="danger" />
                     )}
                   </div>
@@ -262,7 +285,7 @@ function MessagesList() {
                 <CardContent className="p-6">
                   <div className="max-w-none prose">
                     <p className="text-gray-800 whitespace-pre-wrap">
-                      {selectedMessage.content}
+                      {selectedMessage?.content}
                     </p>
                   </div>
 

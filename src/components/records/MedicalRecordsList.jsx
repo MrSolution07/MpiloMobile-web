@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FileText,
   Search,
@@ -9,25 +9,57 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, Button, Badge, Avatar } from "../ui";
-import { mockMedicalRecords, mockPatients } from "../../data";
+import {
+  mockMedicalRecords as fetchMedicalRecords,
+  mockPatients as fetchPatients,
+} from "../../data";
 import { formatDate } from "../../utils";
+import { Preloader } from "../preloader";
 
 const MedicalRecordsList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedDiagnosis, setSelectedDiagnosis] = useState("all");
 
+  const [records, setRecords] = useState([]);
+  const [patients, setPatients] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true);
+
+      try {
+        const [recordsData, patientsData] = await Promise.all([
+          fetchMedicalRecords(),
+          fetchPatients(),
+        ]);
+
+        setRecords(recordsData || []);
+        setPatients(patientsData || []);
+      } catch (err) {
+        console.error("Error loading medical records:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+  }, []);
+
   // Get unique diagnoses for filter
   const diagnoses = [
     "all",
-    ...new Set(mockMedicalRecords.map((record) => record.diagnosis)),
+    ...new Set(records.map((record) => record.diagnosis)),
   ];
 
   // Filter records
-  const filteredRecords = mockMedicalRecords.filter((record) => {
+  const filteredRecords = records.filter((record) => {
     const matchesSearch =
-      record.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      record.diagnosis.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      record?.patient_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      record?.diagnosis?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (record.notes &&
         record.notes.toLowerCase().includes(searchQuery.toLowerCase()));
 
@@ -44,8 +76,14 @@ const MedicalRecordsList = () => {
 
   // Get patient details
   const getPatientDetails = (patientId) => {
-    return mockPatients.find((patient) => patient.id === patientId);
+    return patients.find((patient) => patient.id === patientId);
   };
+
+  if (loading) return <Preloader />;
+
+  if (error) {
+    return <div className="p-6 text-center text-red-600">{error}</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -67,14 +105,14 @@ const MedicalRecordsList = () => {
             Filter
           </Button>
 
-          <Link to = "/dashboard/newrecord">
-          <Button
-            variant="primary"
-            size="sm"
-            icon={<Plus className="w-4 h-4" />}
-          >
-            New Record
-          </Button>
+          <Link to="/dashboard/newrecord">
+            <Button
+              variant="primary"
+              size="sm"
+              icon={<Plus className="w-4 h-4" />}
+            >
+              New Record
+            </Button>
           </Link>
         </div>
       </div>
@@ -120,7 +158,7 @@ const MedicalRecordsList = () => {
       <div className="space-y-6">
         {sortedRecords.length > 0 ? (
           sortedRecords.map((record) => {
-            const patient = getPatientDetails(record.patientId);
+            const patient = getPatientDetails(record.patient_id);
             return (
               <Card
                 key={record.id}
@@ -132,16 +170,16 @@ const MedicalRecordsList = () => {
                     <div className="flex items-center md:mr-6 mb-4 md:mb-0">
                       <Avatar
                         src={patient?.avatar}
-                        alt={record.patientName}
+                        alt={record?.patient_name || "anon"}
                         size="lg"
                         className="mr-4"
                       />
                       <div>
                         <h3 className="font-medium text-gray-900 text-lg">
-                          {record.patientName}
+                          {record.patient_name}
                         </h3>
                         <p className="text-gray-500 text-sm">
-                          Patient ID: {record.patientId}
+                          Patient ID: {record.patient_id}
                         </p>
                         <div className="flex items-center mt-1">
                           <Calendar className="mr-1 w-4 h-4 text-gray-400" />
