@@ -183,17 +183,15 @@ const Patients = () => {
   }
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in px-2 py-2 sm:px-4 md:px-8 lg:px-16 xl:px-32 w-full max-w-screen-2xl mx-auto">
       <style jsx>{`
         .animate-fade-in {
           animation: fade-in 0.3s ease-in-out;
         }
-        
         @keyframes fade-in {
           from { opacity: 0; }
           to { opacity: 1; }
         }
-        
         .status-active {
           display: inline-flex;
           align-items: center;
@@ -204,7 +202,6 @@ const Patients = () => {
           background-color: #dcfce7;
           color: #166534;
         }
-        
         .status-inactive {
           display: inline-flex;
           align-items: center;
@@ -215,7 +212,6 @@ const Patients = () => {
           background-color: #fee2e2;
           color: #991b1b;
         }
-        
         .status-pending {
           display: inline-flex;
           align-items: center;
@@ -228,44 +224,44 @@ const Patients = () => {
         }
       `}</style>
 
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Patients</h1>
-        <Button onClick={handleAddPatient}>
+      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <span className="text-3xl sm:text-3xl text-black font-bold">Patients</span>
+        <Button onClick={handleAddPatient} className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" /> Add Patient
         </Button>
       </div>
 
-      <Card>
-        <CardContent className="p-6">
+      <Card className="w-full">
+        <CardContent className="p-2 sm:p-4 md:p-6">
           {/* Search and filter bar */}
-          <div className="mb-6 flex flex-col gap-4 sm:flex-row">
-            <div className="relative flex-1">
+          <div className="mb-4 flex flex-col gap-2 sm:flex-row">
+            <div className="relative flex-1 min-w-0">
               <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
               <Input
                 placeholder="Search patients..."
-                className="pl-9"
+                className="pl-9 w-full"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <Button variant="outline" className="flex gap-2">
+            <Button variant="outline" className="flex gap-2 w-full sm:w-auto">
               <Filter className="h-4 w-4" /> Filter
             </Button>
           </div>
 
           {/* Patients table */}
-          <div className="overflow-auto rounded-md border">
-            <Table>
+          <div className="overflow-x-auto rounded-md border">
+            <Table className="min-w-[600px]">
               <TableHeader>
                 <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Age</TableHead>
-                  <TableHead>Gender</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="min-w-[80px] whitespace-nowrap align-middle text-left">ID</TableHead>
+                  <TableHead className="min-w-[120px] whitespace-nowrap align-middle text-left">Name</TableHead>
+                  <TableHead className="min-w-[60px] whitespace-nowrap align-middle text-left">Age</TableHead>
+                  <TableHead className="min-w-[80px] whitespace-nowrap align-middle text-left">Gender</TableHead>
+                  <TableHead className="min-w-[120px] whitespace-nowrap align-middle text-left">Contact</TableHead>
+                  <TableHead className="min-w-[160px] whitespace-nowrap align-middle text-left">Email</TableHead>
+                  <TableHead className="min-w-[80px] whitespace-nowrap align-middle text-left">Status</TableHead>
+                  <TableHead className="min-w-[100px] whitespace-nowrap align-middle text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -278,26 +274,27 @@ const Patients = () => {
 
                     return (
                       <TableRow key={patient.id} className="cursor-pointer hover:bg-gray-50">
-                        <TableCell className="font-medium">{patient.id}</TableCell>
-                        <TableCell>{patient.first_name} {patient.last_name}</TableCell>
-                        <TableCell>{age}</TableCell>
-                        <TableCell>{patient.gender || 'N/A'}</TableCell>
-                        <TableCell>{patient.phone_number || 'N/A'}</TableCell>
-                        <TableCell>{patient.email || 'N/A'}</TableCell>
-                        <TableCell>
+                        <TableCell className="font-medium whitespace-nowrap align-middle text-left">{patient.id}</TableCell>
+                        <TableCell className="whitespace-nowrap align-middle text-left">{patient.first_name} {patient.last_name}</TableCell>
+                        <TableCell className="whitespace-nowrap align-middle text-left">{age}</TableCell>
+                        <TableCell className="whitespace-nowrap align-middle text-left">{patient.gender || 'N/A'}</TableCell>
+                        <TableCell className="whitespace-nowrap align-middle text-left">{patient.phone_number || 'N/A'}</TableCell>
+                        <TableCell className="whitespace-nowrap align-middle text-left">{patient.email || 'N/A'}</TableCell>
+                        <TableCell className="whitespace-nowrap align-middle text-left">
                           <span
                             className={
-                              patient.active === "active"
+                              (patient.active === "active"
                                 ? "status-active"
                                 : patient.active === "inactive"
                                 ? "status-inactive"
-                                : "status-pending"
+                                : "status-pending") +
+                              " px-2 py-1 text-xs font-semibold whitespace-nowrap"
                             }
                           >
                             {patient.active || 'Active'}
                           </span>
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-center whitespace-nowrap align-middle">
                           <div className="flex justify-end gap-1">
                             <Button 
                               variant="ghost" 

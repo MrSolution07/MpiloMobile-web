@@ -18,7 +18,7 @@ function About() {
   return (
     <>
       <Header logo="assets/images/mpiloLogo.png" joinBtn={true} />
-      <Banner title="About Us" background="assets/images/aboutBanner.jpg" />
+      <Banner title="About Us" background="assets/images/aboutBanner1.jpg" />
       <Cta />
       <Footer getStart={true}/>
       <GotoTop />

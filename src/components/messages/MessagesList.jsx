@@ -1,7 +1,3 @@
-//after years of trying to get the page to work....I had a little chat with my friend and he rebuilt the whole thing :)
-//I hope this works as expected
-
-
 import { useState, useEffect, useRef, useCallback } from "react";
 import { 
   MessageSquare, 
@@ -17,7 +13,7 @@ import {
 const currentUser = {
   id: "user-1",
   name: "Dr. Sarah Johnson",
-  avatar: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face"
+  avatar: "https://www.gravatar.com/avatar/?d=mp"
 };
 
 // Avatar component
@@ -132,19 +128,19 @@ function MessagesList() {
     {
       id: "user-2",
       name: "John Smith",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+      avatar: "https://www.gravatar.com/avatar/?d=mp",
       role: "Patient"
     },
     {
       id: "user-3", 
       name: "Dr. Mike Wilson",
-      avatar: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face",
+      avatar: "https://www.gravatar.com/avatar/?d=mp",
       role: "Colleague"
     },
     {
       id: "user-4",
       name: "Sarah Davis",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b60fc7c0?w=150&h=150&fit=crop&crop=face",
+      avatar: "https://www.gravatar.com/avatar/?d=mp",
       role: "Patient"
     }
   ];
@@ -157,7 +153,7 @@ function MessagesList() {
         id: "conv-1",
         participantId: "user-2",
         participantName: "John Smith",
-        participantAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+        participantAvatar: "https://www.gravatar.com/avatar/?d=mp",
         lastMessage: {
           id: "msg-1",
           senderId: "user-2",
@@ -173,7 +169,7 @@ function MessagesList() {
         id: "conv-2",
         participantId: "user-3",
         participantName: "Dr. Mike Wilson",
-        participantAvatar: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face",
+        participantAvatar: "https://www.gravatar.com/avatar/?d=mp",
         lastMessage: {
           id: "msg-2",
           senderId: "user-3",
@@ -407,16 +403,16 @@ function MessagesList() {
             </p>
           </div>
           
-          <div className="flex space-x-2">
+          <div className="flex space-x-4">
             <Button
               variant="secondary"
               size="sm"
               icon={<Filter className="w-4 h-4" />}
               onClick={() => setFilterOpen(!filterOpen)}
+              className="mr-2"
             >
               Filter
             </Button>
-            
             <Button
               variant="primary"
               size="sm"
@@ -589,15 +585,16 @@ function MessagesList() {
               {/* Message Input */}
               <div className="bg-white border-t border-gray-200 p-6">
                 <div className="flex space-x-3 items-end">
-                  <input
-                    type="text"
+                  <textarea
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     placeholder="Type your message..."
-                    className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-gray-300 h-[40px] overflow-hidden"
-                    style={{ resize: "none" }}
+                    className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-gray-300 h-[40px] resize-none leading-tight align-middle"
+                    rows={1}
+                    style={{ minHeight: '40px', maxHeight: '40px', resize: 'none' }}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
+                      // Allow Enter for newline, Ctrl+Enter or Cmd+Enter to send
+                      if ((e.key === 'Enter' && (e.ctrlKey || e.metaKey))) {
                         e.preventDefault();
                         sendMessage();
                       }
@@ -607,7 +604,7 @@ function MessagesList() {
                     variant="primary"
                     disabled={!newMessage.trim() || sendingMessage}
                     onClick={sendMessage}
-                    className="px-6 py-3 h-[40px] flex items-center justify-center"
+                    className="px-6 py-3 h-[40px] flex items-center justify-center ml-3"
                   >
                     {sendingMessage ? "Sending..." : "Send"}
                   </Button>

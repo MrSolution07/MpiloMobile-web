@@ -67,11 +67,11 @@ function AppointmentsList() {
             size="sm"
             icon={<Filter className="w-4 h-4" />}
             onClick={() => setFilterOpen(!filterOpen)}
+            className="mr-2"
           >
             Filter
           </Button>
-
-          <div className="flex border border-gray-200 rounded-md overflow-hidden">
+          <div className="flex border border-gray-200 rounded-md overflow-hidden ml-2">
             <button
               className={`px-3 py-1.5 text-sm font-medium ${view === "list"
                   ? "bg-red-600 text-white"
@@ -91,12 +91,12 @@ function AppointmentsList() {
               Calendar
             </button>
           </div>
-
           {/* <Link to="/dashboard/newappointment" >
           <Button
             variant="primary"
             size="sm"
             icon={<Plus className="w-4 h-4" />}
+            className="ml-2"
           >
             New Appointment
           </Button>

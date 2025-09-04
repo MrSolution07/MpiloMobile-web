@@ -124,6 +124,7 @@ const MedicalRecordsList = () => {
             size="sm"
             icon={<Filter className="w-4 h-4" />}
             onClick={() => setFilterOpen(!filterOpen)}
+            className="mr-2"
           >
             Filter
           </Button>
@@ -133,6 +134,7 @@ const MedicalRecordsList = () => {
               variant="primary"
               size="sm"
               icon={<Plus className="w-4 h-4" />}
+              className="ml-2"
             >
               New Record
             </Button>
@@ -263,7 +265,7 @@ const MedicalRecordsList = () => {
                     <div className="text-gray-500 text-sm">
                       Recorded on: {formatDate(record.created_at)}
                     </div>
-                    <div className="flex space-x-2">
+                    <div className="flex gap-3">
                       <Button
                         variant="secondary"
                         size="sm"

@@ -1,8 +1,3 @@
-
-
-
-
-
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Search, Plus, Filter, UserX } from "lucide-react";
@@ -149,15 +144,16 @@ const PatientsList = () => {
             size="sm"
             icon={<Filter className="w-4 h-4" />}
             onClick={() => setFilterOpen(!filterOpen)}
+            className="mr-2"
           >
             Filter
           </Button>
-
           <Link to="/dashboard/patients/add">
             <Button
               variant="danger"
               size="sm"
               icon={<Plus className="w-4 h-4" />}
+              className="ml-2"
             >
               Add Patient
             </Button>
