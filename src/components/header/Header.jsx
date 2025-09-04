@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { User } from "lucide-react";
+import { User, ChevronDown, Stethoscope, UserCog } from "lucide-react";
 
 // Debounced scroll hook to prevent jamming
 function useWindowPosition() {
@@ -40,10 +40,25 @@ const navLinks = [
 
 function Header({ className, logo, joinBtn, user }) {
   const [activeMobileMenu, setActiveMobileMenu] = useState(false);
+  const [loginDropdownOpen, setLoginDropdownOpen] = useState(false);
   const windowPosition = useWindowPosition();
   const location = useLocation();
 
   const isActive = (path) => location.pathname === path;
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (loginDropdownOpen && !event.target.closest('.login-dropdown')) {
+        setLoginDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [loginDropdownOpen]);
 
   return (
     <header
@@ -85,14 +100,47 @@ function Header({ className, logo, joinBtn, user }) {
 
           <div className="hidden lg:flex items-center space-x-4">
             {className !== "header-02" && (
-              <Link
-                to="/login"
-                title="Login"
-                className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 bg-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500"
-                style={{ minWidth: 40, minHeight: 40 }}
-              >
-                <User className="w-6 h-6" />
-              </Link>
+              <div className="relative login-dropdown">
+                <button
+                  onClick={() => setLoginDropdownOpen(!loginDropdownOpen)}
+                  className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 bg-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 hover:bg-gray-300 transition-colors"
+                  style={{ minWidth: 40, minHeight: 40 }}
+                  title="Login Options"
+                >
+                  <User className="w-6 h-6" />
+                </button>
+                
+                {loginDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                    <div className="py-1">
+                      <Link
+                        to="/login"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors"
+                        onClick={() => setLoginDropdownOpen(false)}
+                      >
+                        <User className="w-4 h-4 mr-3" />
+                        Patient Login
+                      </Link>
+                      <Link
+                        to="/doctorlogin"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                        onClick={() => setLoginDropdownOpen(false)}
+                      >
+                        <Stethoscope className="w-4 h-4 mr-3" />
+                        Doctor Login
+                      </Link>
+                      <Link
+                        to="/adminlogin"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors"
+                        onClick={() => setLoginDropdownOpen(false)}
+                      >
+                        <UserCog className="w-4 h-4 mr-3" />
+                        Admin Login
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
             {joinBtn && (
               <Link
@@ -130,7 +178,7 @@ function Header({ className, logo, joinBtn, user }) {
               {className !== "header-02" && (
                 <Link
                   to="/login"
-                  className="block w-10 h-10 rounded-full overflow-hidden border border-gray-300 bg-gray-200 mx-auto text-gray-500 flex items-center justify-center"
+                  className="w-10 h-10 rounded-full overflow-hidden border border-gray-300 bg-gray-200 mx-auto text-gray-500 flex items-center justify-center"
                   style={{ minWidth: 40, minHeight: 40 }}
                 >
                   <User className="w-6 h-6" />

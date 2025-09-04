@@ -1,12 +1,10 @@
-
 import { useState } from "react";
-import { UserCog, LogIn } from "lucide-react";
+import { Stethoscope, LogIn } from "lucide-react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context";
-import { FaEnvelope } from "react-icons/fa";
 
-function AdminLogin() {
+function DoctorLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +21,7 @@ function AdminLogin() {
     try {
       setLoading(true);
       await login(email.trim().toLowerCase(), password);
-      navigate("/admin");
+      navigate("/dashboard");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -32,10 +30,8 @@ function AdminLogin() {
   };
 
   return (
-
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-6 border border-gray-200">
-
         <div className="flex justify-center mb-6">
           <div>
             <img
@@ -47,16 +43,14 @@ function AdminLogin() {
           </div>
         </div>
 
-
         <div className="text-center mb-4">
-          <h2 className="text-2xl font-extrabold text-gray-800">Admin Access</h2>
-          <p className="text-sm text-gray-500">Sign in to access admin dashboard</p>
-
+          <h2 className="text-2xl font-extrabold text-gray-800">Doctor Portal</h2>
+          <p className="text-sm text-gray-500">Sign in to access your medical dashboard</p>
         </div>
 
-        <div className="flex items-center justify-center bg-red-50 rounded-xl px-4 py-2 mb-5 shadow-inner">
-          <span className="flex items-center gap-2 text-red-800 font-medium text-sm">
-            <UserCog size={16} /> Administrator Portal
+        <div className="flex items-center justify-center bg-blue-50 rounded-xl px-4 py-2 mb-5 shadow-inner">
+          <span className="flex items-center gap-2 text-blue-800 font-medium text-sm">
+            <Stethoscope size={16} /> Healthcare Practitioner
           </span>
         </div>
 
@@ -70,12 +64,11 @@ function AdminLogin() {
             >
               Email
             </label>
-
             <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 bg-white hover:rounded-none">
               <input
                 id="email"
                 type="text"
-                placeholder="Enter admin email"
+                placeholder="Enter doctor email"
                 className="w-full outline-none bg-transparent text-sm"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -96,7 +89,7 @@ function AdminLogin() {
               <input
                 id="userpassword"
                 type={showPassword ? "text" : "password"}
-                placeholder="Enter admin password"
+                placeholder="Enter doctor password"
                 className="w-full outline-none bg-transparent text-sm"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -111,7 +104,6 @@ function AdminLogin() {
               </button>
             </div>
           </div>
-
 
           {/* Remember & Forgot */}
           <div className="flex justify-between items-center text-sm">
@@ -130,27 +122,26 @@ function AdminLogin() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-red-500 text-white hover:opacity-90 font-semibold py-2 rounded-[0.8rem] transition flex items-center justify-center gap-2 border border-gray-300"
+            className="w-full bg-blue-500 text-white hover:opacity-90 font-semibold py-2 rounded-[0.8rem] transition flex items-center justify-center gap-2 border border-gray-300"
           >
-            {loading ? "Logging in..." : "Admin Login"} <LogIn size={16} />
+            {loading ? "Logging in..." : "Doctor Login"} <LogIn size={16} />
           </button>
         </form>
 
-
-        {/* <div className="text-center mt-6 text-sm">
+        <div className="text-center mt-6 text-sm">
           <p className="text-gray-500">
             Don't have an account?
             <Link
               to="/Register"
-              className="bg-[#274D60] hover:opacity-90 ml-1 px-1 py-1 rounded-md font-medium text-primary"
+              className="ml-1 px-1 py-1 rounded-md text-primary font-medium hover:opacity-90"
             >
               Register
             </Link>
           </p>
-        </div> */}
+        </div>
       </div>
     </div>
   );
 }
 
-export default AdminLogin;
+export default DoctorLogin;
