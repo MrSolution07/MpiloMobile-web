@@ -1,6 +1,6 @@
 export const currentUser = {
   id: 'u1',
-  name: 'Dr. Sarah Johnson',
+  name: 'Dr. BULABULA HUSSEIN',
   role: 'doctor',
   department: 'Family Medicine',
   email: 'sarah.johnson@mediclinic.com',

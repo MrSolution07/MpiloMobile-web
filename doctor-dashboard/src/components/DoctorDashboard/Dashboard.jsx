@@ -7,13 +7,14 @@ import {
   Users,
 } from "lucide-react";
 import { supabase } from "../../services/supabaseClient";
-import { isToday } from "../../utils";
+import { useAuth } from "../../context/AuthProvider";
 import StatCard from "./StatCard";
 import UpcomingAppointments from "./UpcomingAppointments";
 import RecentMessages from "./RecentMessages";
 import TriageQueue from "./TriageQueue";
 
 const Dashboard = () => {
+  const { user } = useAuth();
   const [stats, setStats] = useState({
     appointmentsToday: 0,
     pendingMessages: 0,
@@ -23,6 +24,37 @@ const Dashboard = () => {
   const [todaysAppointments, setTodaysAppointments] = useState([]);
   const [unreadMessages, setUnreadMessages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [doctorName, setDoctorName] = useState('');
+
+  
+  useEffect(() => {
+    const fetchDoctorName = async () => {
+      if (user?.email) {
+        try {
+          const { data: doctorData, error } = await supabase
+            .from('doctors')
+            .select('first_name, last_name')
+            .eq('email', user.email)
+            .single();
+
+          if (doctorData && !error) {
+            setDoctorName(`Dr ${doctorData.first_name} ${doctorData.last_name}`);
+          } else {
+            // Fallback to user metadata or email
+            const fallbackName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Doctor';
+            setDoctorName(`Dr ${fallbackName}`);
+          }
+        } catch (error) {
+          console.error('Error fetching doctor name:', error);
+          // Fallback to user metadata or email
+          const fallbackName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Doctor';
+          setDoctorName(`Dr ${fallbackName}`);
+        }
+      }
+    };
+
+    fetchDoctorName();
+  }, [user]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -87,7 +119,7 @@ const Dashboard = () => {
         event: '*',
         schema: 'public',
         table: 'appointments'
-      }, (payload) => {
+      }, () => {
         fetchDashboardData();
       })
       .subscribe();
@@ -110,7 +142,7 @@ const Dashboard = () => {
       <div>
         <h1 className="font-bold text-gray-900 text-2xl">Dashboard</h1>
         <p className="mt-1 text-gray-500 text-sm">
-          Welcome back, Dr. Johnson. Here's what's happening today.
+          Welcome back, {doctorName || 'Dr. User'}. Here's what's happening today.
         </p>
       </div>
 

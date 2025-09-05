@@ -1,13 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Bell, Search, Menu, X } from "lucide-react";
 import { Avatar } from "../ui";
-import { currentUser } from "../../data";
+import { useAuth } from "../../context/AuthProvider";
+import { supabase } from "../../services/supabaseClient";
 
 function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
+  const { user, logout } = useAuth();
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [doctorProfile, setDoctorProfile] = useState({
+    name: '',
+    email: '',
+    department: 'Doctor'
+  });
 
   const toggleProfileDropdown = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
@@ -17,6 +24,59 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
   const toggleNotifications = () => {
     setIsNotificationsOpen(!isNotificationsOpen);
     if (isProfileDropdownOpen) setIsProfileDropdownOpen(false);
+  };
+
+  //doc details here 
+  useEffect(() => {
+    const fetchDoctorProfile = async () => {
+      if (user?.email) {
+        try {
+          // Fetch from doctors table
+          const { data: doctorData, error: doctorError } = await supabase
+            .from('doctors')
+            .select('first_name, last_name, email')
+            .eq('email', user.email)
+            .single();
+
+          if (doctorData && !doctorError) {
+            setDoctorProfile({
+              name: `Dr ${doctorData.first_name} ${doctorData.last_name}`,
+              email: doctorData.email,
+              department: 'Doctor'
+            });
+          } else {
+            // Fallback to user metadata or email
+            const fallbackName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Doctor';
+            setDoctorProfile({
+              name: `Dr ${fallbackName}`,
+              email: user.email,
+              department: 'Doctor'
+            });
+          }
+        } catch (error) {
+          console.error('Error fetching doctor profile:', error);
+          // Fallback to user metadata or email
+          const fallbackName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Doctor';
+          setDoctorProfile({
+            name: `Dr ${fallbackName}`,
+            email: user.email,
+            department: 'Doctor'
+          });
+        }
+      }
+    };
+
+    fetchDoctorProfile();
+  }, [user]);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      // Redirect to login page
+      window.location.href = '/login';
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
 
   return (
@@ -95,8 +155,8 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
           aria-label="User menu"
         >
           <Avatar
-            src={currentUser.avatar}
-            alt={currentUser.name}
+            src="https://www.gravatar.com/avatar/?d=mp"
+            alt={doctorProfile.name}
             size="sm"
             status="online"
           />
@@ -105,8 +165,9 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
         {isProfileDropdownOpen && (
           <div className="absolute right-0 mt-2 bg-white shadow-lg border border-gray-200 rounded-lg w-48 z-40">
             <div className="px-4 py-3 border-b border-gray-100">
-              <p className="font-semibold text-sm text-gray-900">{currentUser.name}</p>
-              <p className="text-xs mt-1 text-gray-500">{currentUser.email}</p>
+              <p className="font-semibold text-sm text-gray-900">{doctorProfile.name}</p>
+              <p className="text-xs mt-1 text-gray-500">{doctorProfile.email}</p>
+              <p className="text-xs mt-1 text-blue-600 font-medium">{doctorProfile.department}</p>
             </div>
             <div className="py-1">
               <a
@@ -121,12 +182,12 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
               >
                 Settings
               </a>
-              <a
-                href="/Login"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              <button
+                onClick={handleLogout}
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
                 Sign out
-              </a>
+              </button>
             </div>
           </div>
         )}
