@@ -157,61 +157,61 @@ function NewRecord() {
         {/* Medical Record Fields */}
         <div className="grid grid-cols-1 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Date</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
             <input
               type="date"
               name="date"
               value={form.date}
               onChange={handleChange}
-              className="mt-1 w-full rounded-md border-gray-300 p-2"
+              className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-colors duration-200"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Diagnosis</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Diagnosis</label>
             <input
               type="text"
               name="diagnosis"
               value={form.diagnosis}
               onChange={handleChange}
-              className="mt-1 w-full rounded-md border-gray-300 p-2"
+              className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-colors duration-200"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Treatment</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Treatment</label>
             <textarea
               name="treatment"
               value={form.treatment}
               onChange={handleChange}
-              className="mt-1 w-full rounded-md border-gray-300 p-2"
+              className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-colors duration-200 resize-vertical"
               rows={3}
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Medication</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Medication</label>
             <input
               type="text"
               name="medication"
               value={form.medication}
               onChange={handleChange}
-              className="mt-1 w-full rounded-md border-gray-300 p-2"
+              className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-colors duration-200"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Notes</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
             <textarea
               name="notes"
               value={form.notes}
               onChange={handleChange}
-              className="mt-1 w-full rounded-md border-gray-300 p-2"
+              className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-colors duration-200 resize-vertical"
               rows={3}
             />
           </div>
         </div>
 
-        <div className="flex justify-end space-x-2">
+        <div className="flex justify-between items-center">
           <Button
             type="button"
             variant="secondary"
