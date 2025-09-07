@@ -6,3 +6,6 @@ export { default as Gallery } from "./Gallery";
 export { default as Home } from "./Home";
 export { default as Services } from "./Services";
 export { default as UserDashboard } from "./UserDashboard";
+export { default as DoctorProfile } from "../components/doctorProfile/DoctorProfile";
+export { default as AppointmentDetails } from "../components/appointments/AppointmentDetails";
+export { default as UserAppointment } from "../components/appointments/UserAppointment";

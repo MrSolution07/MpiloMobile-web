@@ -17,6 +17,11 @@ import {
   UserDashboard,
 } from "./pages";
 
+// Import the new components
+import DoctorProfile from "./components/doctorProfile/DoctorProfile";
+import AppointmentDetails from "./components/appointments/AppointmentDetails";
+import UserAppointment from "./components/appointments/UserAppointment";
+
 import { Register, Login, ForgotPassword } from "./components/auth";
 
 const queryClient = new QueryClient();
@@ -63,9 +68,24 @@ const router = createBrowserRouter([
     path: "/Userdashboard",
     element: <UserDashboard />,
   },
+  {
+    path: "/doctor-profile",
+    element: <DoctorProfile />,
+  },
+  {
+    path: "/appointment-details",
+    element: <AppointmentDetails />,
+  },
+  {
+    path: "/Userappointment",
+    element: <UserAppointment />, // Make sure to import this component too
+  },
 
   // Catch-all
-  { path: "*", element: <Error /> },
+  { 
+    path: "*", 
+    element: <Error /> 
+  },
 ]);
 
 function App() {
