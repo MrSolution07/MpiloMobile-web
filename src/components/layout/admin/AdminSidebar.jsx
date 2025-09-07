@@ -8,6 +8,7 @@ import {
   MapPin,
   Settings,
 } from "lucide-react";
+import { Package } from "lucide-react"; 
 
 function AdminSidebar({ isSidebarOpen, toggleSidebar }) {
   const location = useLocation();
@@ -19,6 +20,7 @@ function AdminSidebar({ isSidebarOpen, toggleSidebar }) {
     { name: "Messages", path: "/admin/adminmessages", icon: <MessageSquare className="w-5 h-5" />, badge: 2 },
     { name: "Records", path: "/admin/records", icon: <FileText className="w-5 h-5" /> },
     { name: "Routes", path: "/admin/routes", icon: <MapPin className="w-5 h-5" /> },
+    { name: "Inventory", path: "/admin/admininventory", icon: <Package className="w-5 h-5" /> },
   ];
 
   return (
@@ -54,7 +56,7 @@ function AdminSidebar({ isSidebarOpen, toggleSidebar }) {
                       flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors group
                       ${
                         isActive
-                          ? "bg-blue-50 text-blue-700"
+                          ? "bg-red-50 text-red-700"
                           : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                       }
                     `}
@@ -64,7 +66,7 @@ function AdminSidebar({ isSidebarOpen, toggleSidebar }) {
                       <span
                         className={
                           isActive
-                            ? "text-blue-600"
+                            ? "text-red-600"
                             : "text-gray-500 group-hover:text-gray-700"
                         }
                       >
@@ -73,7 +75,7 @@ function AdminSidebar({ isSidebarOpen, toggleSidebar }) {
                       <span className="ml-3 font-medium">{item.name}</span>
                     </div>
                     {item.badge && (
-                      <span className="inline-flex items-center bg-blue-100 px-2 py-0.5 rounded-full font-medium text-blue-800 text-xs">
+                      <span className="inline-flex items-center bg-red-100 px-2 py-0.5 rounded-full font-medium text-red-800 text-xs">
                         {item.badge}
                       </span>
                     )}

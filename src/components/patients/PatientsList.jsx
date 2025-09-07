@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate,Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { Search, Plus, Filter, UserX } from "lucide-react";
 import {
   Card,
@@ -14,8 +14,8 @@ import {
   TableCell,
   TableHeaderCell,
 } from "../ui";
-import { mockPatients } from "../../data";
 import { formatDate } from "../../utils";
+import { supabase } from "../../services/supabaseClient";
 
 const PatientsList = () => {
   const navigate = useNavigate();
@@ -24,6 +24,48 @@ const PatientsList = () => {
   const [filterOpen, setFilterOpen] = useState(false);
   const [sortField, setSortField] = useState("name");
   const [sortDirection, setSortDirection] = useState("asc");
+  const [patients, setPatients] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('patients')
+          .select('*');
+
+        if (error) throw error;
+
+        // Transform data to match our expected format
+        const formattedPatients = data.map(patient => ({
+          id: patient.id,
+          name: `${patient.first_name} ${patient.last_name}`,
+          first_name: patient.first_name,
+          last_name: patient.last_name,
+          age: patient.age,
+          phone: patient.phone_number,
+          email: patient.email,
+          avatar: patient.avatar || `https://ui-avatars.com/api/?name=${patient.first_name}+${patient.last_name}&background=random`,
+          lastVisit: patient.last_visit,
+          status: patient.status || 'Moderate',
+          gender: patient.gender, // Add gender if available in your database
+          address: patient.address,
+          chronic_conditions: patient.chronic_conditions
+        }));
+
+        setPatients(formattedPatients);
+      } catch (err) {
+        setError(err.message);
+        console.error('Error fetching patients:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPatients();
+  }, []);
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -34,14 +76,14 @@ const PatientsList = () => {
     }
   };
 
-  const filteredPatients = mockPatients.filter((patient) => {
+  const filteredPatients = patients.filter((patient) => {
     const matchesSearch =
       patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       patient.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       patient.phone.includes(searchQuery);
 
     const matchesStatus =
-      statusFilter === "all" || patient.status === statusFilter;
+      statusFilter === "all" || patient.status.toLowerCase() === statusFilter.toLowerCase();
 
     return matchesSearch && matchesStatus;
   });
@@ -70,6 +112,22 @@ const PatientsList = () => {
     navigate(`/patients/${patientId}`);
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p>Loading patients...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-red-500">Error loading patients: {error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex sm:flex-row flex-col sm:justify-between sm:items-center space-y-2 sm:space-y-0">
@@ -86,18 +144,19 @@ const PatientsList = () => {
             size="sm"
             icon={<Filter className="w-4 h-4" />}
             onClick={() => setFilterOpen(!filterOpen)}
+            className="mr-2"
           >
             Filter
           </Button>
-
-          <Link to = "/dashboard/addpatient">
-          <Button
-            variant="primary"
-            size="sm"
-            icon={<Plus className="w-4 h-4" />}
-          >
-            Add Patient
-          </Button>
+          <Link to="/dashboard/patients/add">
+            <Button
+              variant="danger"
+              size="sm"
+              icon={<Plus className="w-4 h-4" />}
+              className="ml-2"
+            >
+              Add Patient
+            </Button>
           </Link>
         </div>
       </div>
@@ -111,7 +170,7 @@ const PatientsList = () => {
           <input
             type="text"
             placeholder="Search patients by name, email, or phone..."
-            className="bg-white py-2 pr-4 pl-10 border border-gray-300 focus:border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-gray-700"
+            className="bg-white py-2 pr-4 pl-10 border border-gray-300 focus:border-gray-300rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 w-full text-gray-700"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -201,6 +260,7 @@ const PatientsList = () => {
                   <TableRow
                     key={patient.id}
                     onClick={() => handlePatientClick(patient.id)}
+                    className="cursor-pointer"
                   >
                     <TableCell>
                       <div className="flex items-center">
@@ -230,9 +290,9 @@ const PatientsList = () => {
                       <Badge
                         text={patient.status}
                         variant={
-                          patient.status === "stable"
+                          patient.status.toLowerCase() === "stable"
                             ? "success"
-                            : patient.status === "moderate"
+                            : patient.status.toLowerCase() === "moderate"
                             ? "warning"
                             : "danger"
                         }

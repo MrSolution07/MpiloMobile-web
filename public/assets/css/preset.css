@@ -31,14 +31,14 @@ h1, h2, h3, h4, h5, h6{
     line-height: 1.2;
 }
 a{
-    color: #2c234d;
+    /* color: #2c234d; */
     text-decoration: none;
     -webkit-transition: all 0.4s ease;
     -o-transition: all 0.4s ease;
     transition: all 0.4s ease;
 }
 a:hover{
-    color: #13547a;
+    /* color: #13547a; */
     text-decoration: none;
 }
 a:focus{
