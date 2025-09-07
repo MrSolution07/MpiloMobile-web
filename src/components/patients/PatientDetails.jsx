@@ -10,7 +10,6 @@ import {
   CreditCard,
   Edit,
   Heart,
-  Plus,
 } from "lucide-react";
 import {
   Card,
@@ -21,58 +20,12 @@ import {
   Badge,
   Avatar,
 } from "../ui";
-import {
-  mockPatients as fetchPatients,
-  mockAppointments as fetchAppointments,
-  mockMedicalRecords as fetchMedicalRecords,
-} from "../../data";
+import { mockPatients, mockAppointments, mockMedicalRecords } from "../../data";
 import { formatDate } from "../../utils";
-import { Preloader } from "../preloader";
-import { useEffect, useState } from "react";
 
 function PatientDetails() {
   const { id } = useParams();
-
-  const [patient, setPatient] = useState(null);
-  const [appointments, setAppointments] = useState([]);
-  const [records, setRecords] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadData() {
-      setLoading(true);
-
-      // fetch patients
-      const patients = await fetchPatients();
-      const foundPatient = patients.find((p) => p.id === id);
-      setPatient(foundPatient);
-
-      if (foundPatient) {
-        // fetch appointments for this patient
-        const allAppointments = await fetchAppointments();
-        const patientAppointments = allAppointments
-          .filter((a) => a.patient_id === id)
-          .sort(
-            (a, b) =>
-              new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`)
-          );
-        setAppointments(patientAppointments);
-
-        // fetch medical records for this patient
-        const allRecords = await fetchMedicalRecords();
-        const patientRecords = allRecords
-          .filter((r) => r.patient_id === id)
-          .sort((a, b) => new Date(b.date) - new Date(a.date));
-        setRecords(patientRecords);
-      }
-
-      setLoading(false);
-    }
-
-    loadData();
-  }, [id]);
-
-  if (loading) return <Preloader />;
+  const patient = mockPatients.find((p) => p.id === id);
 
   if (!patient) {
     return (
@@ -94,6 +47,18 @@ function PatientDetails() {
       </div>
     );
   }
+
+  // Get patient's appointments and records
+  const patientAppointments = mockAppointments
+    .filter((a) => a.patientId === id)
+    .sort(
+      (a, b) =>
+        new Date(b.date + "T" + b.time) - new Date(a.date + "T" + a.time)
+    );
+
+  const patientRecords = mockMedicalRecords
+    .filter((r) => r.patientId === id)
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
 
   return (
     <div className="space-y-6">
@@ -214,9 +179,9 @@ function PatientDetails() {
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            {records.length > 0 ? (
+            {patientRecords.length > 0 ? (
               <div className="divide-y divide-gray-100">
-                {records.map((record) => (
+                {patientRecords.map((record) => (
                   <div key={record.id} className="hover:bg-gray-50 p-4">
                     <div className="flex justify-between items-start">
                       <div>
@@ -314,9 +279,9 @@ function PatientDetails() {
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          {appointments.length > 0 ? (
+          {patientAppointments.length > 0 ? (
             <div className="divide-y divide-gray-100">
-              {appointments.map((appointment) => (
+              {patientAppointments.map((appointment) => (
                 <div
                   key={appointment.id}
                   className="flex justify-between items-center hover:bg-gray-50 p-4"

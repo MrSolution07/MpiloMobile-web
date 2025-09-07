@@ -27,7 +27,7 @@ function Register() {
 
     try {
       setLoading(true);
-      await register(email, password);
+      await register(email.trim().toLowerCase(), password);
       navigate("/login");
     } catch (error) {
       setError(error.message);

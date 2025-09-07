@@ -17,7 +17,7 @@ function ForgotPassword() {
 
     try {
       setLoading(true);
-      await resetPassword(email);
+      await resetPassword(email.trim().toLowerCase());
       setStatus("Password reset link sent! Check your email.");
     } catch (err) {
       setError(err.message);
