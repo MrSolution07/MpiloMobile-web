@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-
+import { useState, useEffect } from "react";
 import {
   FileText,
   Search,
@@ -10,13 +9,8 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, Button, Badge, Avatar } from "../ui";
-import {
-  mockMedicalRecords as fetchMedicalRecords,
-  mockPatients as fetchPatients,
-} from "../../data";
-
+import { supabase } from "../../services/supabaseClient";
 import { formatDate } from "../../utils";
-import { Preloader } from "../preloader";
 
 const MedicalRecordsList = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -71,48 +65,20 @@ const MedicalRecordsList = () => {
     return () => supabase.removeChannel(subscription);
   }, []);
 
-  const [records, setRecords] = useState([]);
-  const [patients, setPatients] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    async function loadData() {
-      setLoading(true);
-
-      try {
-        const [recordsData, patientsData] = await Promise.all([
-          fetchMedicalRecords(),
-          fetchPatients(),
-        ]);
-
-        setRecords(recordsData || []);
-        setPatients(patientsData || []);
-      } catch (err) {
-        console.error("Error loading medical records:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadData();
-  }, []);
-
   // Get unique diagnoses for filter
   const diagnoses = [
     "all",
-    ...new Set(records.map((record) => record.diagnosis)),
+    ...new Set(medicalRecords.map((record) => record.diagnosis).filter(Boolean)),
   ];
 
   // Filter records
-  const filteredRecords = records.filter((record) => {
+  const filteredRecords = medicalRecords.filter((record) => {
+    const patientName = `${record.first_name || ''} ${record.last_name || ''}`.trim();
+    
     const matchesSearch =
-      record?.patient_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      record?.diagnosis?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (record.notes &&
-        record.notes.toLowerCase().includes(searchQuery.toLowerCase()));
-
+      patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (record.diagnosis && record.diagnosis.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (record.notes && record.notes.toLowerCase().includes(searchQuery.toLowerCase()));
 
     const matchesDiagnosis =
       selectedDiagnosis === "all" || record.diagnosis === selectedDiagnosis;
@@ -125,16 +91,20 @@ const MedicalRecordsList = () => {
     (a, b) => new Date(b.date) - new Date(a.date)
   );
 
-  // Get patient details
-  const getPatientDetails = (patientId) => {
-    return patients.find((patient) => patient.id === patientId);
-  };
-
-
-  if (loading) return <Preloader />;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   if (error) {
-    return <div className="p-6 text-center text-red-600">{error}</div>;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-red-500">Error loading medical records: {error}</p>
+      </div>
+    );
   }
 
   return (
@@ -159,17 +129,16 @@ const MedicalRecordsList = () => {
             Filter
           </Button>
 
-          <Link to="/dashboard/newrecord">
-
+          {/* <Link to="/dashboard/newrecord">
             <Button
               variant="primary"
               size="sm"
               icon={<Plus className="w-4 h-4" />}
+              className="ml-2"
             >
               New Record
             </Button>
-          </Link>
-
+          </Link> */}
         </div>
       </div>
 
@@ -214,7 +183,7 @@ const MedicalRecordsList = () => {
       <div className="space-y-6">
         {sortedRecords.length > 0 ? (
           sortedRecords.map((record) => {
-            const patient = getPatientDetails(record.patient_id);
+            const patientName = `${record.first_name || ''} ${record.last_name || ''}`.trim();
 
             return (
               <Card
@@ -226,16 +195,14 @@ const MedicalRecordsList = () => {
                   <div className="flex md:flex-row flex-col md:items-start">
                     <div className="flex items-center md:mr-6 mb-4 md:mb-0">
                       <Avatar
-                        src={patient?.avatar}
-                        alt={record?.patient_name || "anon"}
-
+                        src={record.avatar}  // Assuming avatar is now in medical_records table
+                        alt={patientName}
                         size="lg"
                         className="mr-4"
                       />
                       <div>
                         <h3 className="font-medium text-gray-900 text-lg">
-                          {record.patient_name}
-
+                          {patientName}
                         </h3>
                         <p className="text-gray-500 text-sm">
                           Patient ID: {record.patient_id}
