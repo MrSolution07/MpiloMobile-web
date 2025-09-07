@@ -74,9 +74,11 @@ function ForgotPassword() {
           {status && <p className="text-green-600 text-sm">{status}</p>}
 
           <button
+
             type="submit"
             disabled={loading}
             className="bg-[#274D60] hover:opacity-90 mt-2 py-2 rounded-md w-full text-white transition"
+
           >
             {loading ? "Sending..." : "Reset"}{" "}
             <i className="ml-2 fas fa-sign-in-alt"></i>

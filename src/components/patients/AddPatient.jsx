@@ -16,6 +16,7 @@ function AddPatientForm({ onSubmit, onCancel }) {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -61,6 +62,7 @@ function AddPatientForm({ onSubmit, onCancel }) {
       setError(err.message);
     } finally {
       setLoading(false);
+
     }
   };
 
@@ -186,6 +188,7 @@ function AddPatientForm({ onSubmit, onCancel }) {
         </div>
       </form>
     </>
+
   );
 }
 

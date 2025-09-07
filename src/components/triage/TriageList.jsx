@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+
 import {
   AlertTriangle,
   Filter,
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 import { Card, Button, Badge, CardHeader, CardTitle, CardContent } from "../ui";
 import { mockTriageCases as fetchTriageCases } from "../../data";
+
 import { formatDateTime } from "../../utils";
 import { Preloader } from "../preloader";
 
@@ -20,6 +22,111 @@ const TriageList = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [filterOpen, setFilterOpen] = useState(false);
+  const [triageCases, setTriageCases] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [updatingCases, setUpdatingCases] = useState({});
+  const navigate = useNavigate();
+
+  // Fetch data from Supabase
+  const fetchTriageCases = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('triage_cases')
+        .select('*')
+        .order('arrival_time', { ascending: true });
+
+      if (error) throw error;
+      setTriageCases(data || []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial fetch and realtime subscription
+  useEffect(() => {
+    fetchTriageCases();
+
+    const subscription = supabase
+      .channel('triage_changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'triage_cases'
+      }, (payload) => {
+        if (payload.eventType === 'INSERT') {
+          setTriageCases(prev => [...prev, payload.new]);
+        } else if (payload.eventType === 'UPDATE') {
+          setTriageCases(prev => prev.map(c => c.id === payload.new.id ? payload.new : c));
+          setUpdatingCases(prev => {
+            const newState = {...prev};
+            delete newState[payload.new.id];
+            return newState;
+          });
+        } else if (payload.eventType === 'DELETE') {
+          setTriageCases(prev => prev.filter(c => c.id !== payload.old.id));
+        }
+      })
+      .subscribe();
+
+    return () => supabase.removeChannel(subscription);
+  }, []);
+
+  // Update case status in database
+  const updateCaseStatus = async (caseId, newStatus) => {
+    try {
+      setUpdatingCases(prev => ({ ...prev, [caseId]: true }));
+      setTriageCases(prev => 
+        prev.map(caseItem => 
+          caseItem.id === caseId 
+            ? { ...caseItem, status: newStatus } 
+            : caseItem
+        )
+      );
+      
+      const { error } = await supabase
+        .from('triage_cases')
+        .update({ status: newStatus })
+        .eq('id', caseId);
+
+      if (error) throw error;
+      
+    } catch (err) {
+      console.error('Error updating status:', err);
+      setError(err.message);
+      fetchTriageCases();
+    } finally {
+      setUpdatingCases(prev => {
+        const newState = {...prev};
+        delete newState[caseId];
+        return newState;
+      });
+    }
+  };
+
+  // Handle complete treatment - navigate to NewRecord with patient data
+  const handleCompleteTreatment = (triageCase) => {
+    navigate('/dashboard/records/new', {
+      state: {
+        patientData: {
+          id: triageCase.id,
+          firstName: triageCase.first_name,
+          lastName: triageCase.last_name,
+          vitalSigns: {
+            heartRate: triageCase.heart_rate,
+            bloodPressure: triageCase.blood_pressure,
+            temperature: triageCase.temperature,
+            oxygenSaturation: triageCase.oxygen_saturation,
+            respiratoryRate: triageCase.respiratory_rate || 0
+          }
+        },
+        fromTriage: true // Flag to indicate coming from triage
+      }
+    });
+  };
 
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,6 +158,7 @@ const TriageList = () => {
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
 
+
     const matchesStatus =
       statusFilter === "all" || triageCase?.status === statusFilter;
     const matchesPriority =
@@ -59,15 +167,11 @@ const TriageList = () => {
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
-  // Sort cases by priority (high -> medium -> low) and then by arrival time (oldest first)
+  // Sort cases by priority and arrival time
   const sortedCases = [...filteredCases].sort((a, b) => {
     const priorityOrder = { high: 0, medium: 1, low: 2 };
-
-    if (a.priority !== b.priority) {
-      return priorityOrder[a.priority] - priorityOrder[b.priority];
-    }
-
-    return new Date(a.arrivalTime) - new Date(b.arrivalTime);
+    return priorityOrder[a.priority] - priorityOrder[b.priority] || 
+           new Date(a.arrival_time) - new Date(b.arrival_time);
   });
 
   // Group cases by status
@@ -80,21 +184,19 @@ const TriageList = () => {
   // Get priority color
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case "high":
-        return "bg-red-500";
-      case "medium":
-        return "bg-yellow-500";
-      case "low":
-        return "bg-green-500";
-      default:
-        return "bg-gray-500";
+      case "high": return "bg-red-500";
+      case "medium": return "bg-yellow-500";
+      case "low": return "bg-green-500";
+      default: return "bg-gray-500";
     }
   };
 
   if (loading) return <Preloader />;
 
+
   return (
     <div className="space-y-6">
+      {/* Header and controls */}
       <div className="flex sm:flex-row flex-col sm:justify-between sm:items-center space-y-2 sm:space-y-0">
         <div>
           <h1 className="font-bold text-gray-900 text-2xl">Triage</h1>
@@ -109,15 +211,18 @@ const TriageList = () => {
             size="sm"
             icon={<Filter className="w-4 h-4" />}
             onClick={() => setFilterOpen(!filterOpen)}
+            className="mr-2"
           >
             Filter
           </Button>
 
           <Link to="/dashboard/newtriage">
+
             <Button
               variant="primary"
               size="sm"
               icon={<Plus className="w-4 h-4" />}
+
             >
               New Triage Case
             </Button>
@@ -134,7 +239,7 @@ const TriageList = () => {
           <input
             type="text"
             placeholder="Search by patient name or complaint..."
-            className="bg-white py-2 pr-4 pl-10 border border-gray-300 focus:border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-gray-700"
+            className="bg-white py-2 pr-4 pl-10 border border-gray-300 focus:border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 w-full text-gray-700"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -147,46 +252,19 @@ const TriageList = () => {
                 Status
               </label>
               <div className="flex flex-wrap gap-2">
-                <button
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium ${
-                    statusFilter === "all"
-                      ? "bg-blue-100 text-blue-800"
-                      : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                  }`}
-                  onClick={() => setStatusFilter("all")}
-                >
-                  All
-                </button>
-                <button
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium ${
-                    statusFilter === "waiting"
-                      ? "bg-blue-100 text-blue-800"
-                      : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                  }`}
-                  onClick={() => setStatusFilter("waiting")}
-                >
-                  Waiting
-                </button>
-                <button
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium ${
-                    statusFilter === "in-progress"
-                      ? "bg-blue-100 text-blue-800"
-                      : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                  }`}
-                  onClick={() => setStatusFilter("in-progress")}
-                >
-                  In Progress
-                </button>
-                <button
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium ${
-                    statusFilter === "completed"
-                      ? "bg-blue-100 text-blue-800"
-                      : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                  }`}
-                  onClick={() => setStatusFilter("completed")}
-                >
-                  Completed
-                </button>
+                {["all", "waiting", "in-progress", "completed"].map((status) => (
+                  <button
+                    key={status}
+                    className={`px-3 py-1.5 rounded-md text-sm font-medium ${
+                      statusFilter === status
+                        ? "bg-blue-100 text-blue-800"
+                        : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                    }`}
+                    onClick={() => setStatusFilter(status)}
+                  >
+                    {status === "in-progress" ? "In Progress" : status.charAt(0).toUpperCase() + status.slice(1)}
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -195,46 +273,25 @@ const TriageList = () => {
                 Priority
               </label>
               <div className="flex flex-wrap gap-2">
-                <button
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium ${
-                    priorityFilter === "all"
-                      ? "bg-blue-100 text-blue-800"
-                      : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                  }`}
-                  onClick={() => setPriorityFilter("all")}
-                >
-                  All
-                </button>
-                <button
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium ${
-                    priorityFilter === "high"
-                      ? "bg-red-100 text-red-800"
-                      : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                  }`}
-                  onClick={() => setPriorityFilter("high")}
-                >
-                  High
-                </button>
-                <button
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium ${
-                    priorityFilter === "medium"
-                      ? "bg-yellow-100 text-yellow-800"
-                      : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                  }`}
-                  onClick={() => setPriorityFilter("medium")}
-                >
-                  Medium
-                </button>
-                <button
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium ${
-                    priorityFilter === "low"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                  }`}
-                  onClick={() => setPriorityFilter("low")}
-                >
-                  Low
-                </button>
+                {["all", "high", "medium", "low"].map((priority) => (
+                  <button
+                    key={priority}
+                    className={`px-3 py-1.5 rounded-md text-sm font-medium ${
+                      priorityFilter === priority
+                        ? priority === "high"
+                          ? "bg-red-100 text-red-800"
+                          : priority === "medium"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : priority === "low"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-blue-100 text-blue-800"
+                        : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                    }`}
+                    onClick={() => setPriorityFilter(priority)}
+                  >
+                    {priority === "all" ? "All" : priority.charAt(0).toUpperCase() + priority.slice(1)}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
@@ -243,18 +300,15 @@ const TriageList = () => {
 
       {/* Triage Board */}
       <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
-        {/* Waiting */}
+        {/* Waiting Column */}
         <Card>
-          <CardHeader className="bg-blue-50 border-b border-blue-100">
+          <CardHeader className="bg-red-50 border-b border-red-100">
             <div className="flex justify-between items-center">
-              <CardTitle className="flex items-center font-medium text-blue-900 text-lg">
-                <Clock className="mr-2 w-5 h-5 text-blue-700" />
+              <CardTitle className="flex items-center font-medium text-red-900 text-lg">
+                <Clock className="mr-2 w-5 h-5 text-red-700" />
                 Waiting
               </CardTitle>
-              <Badge
-                text={`${groupedCases.waiting.length} cases`}
-                variant="primary"
-              />
+              <Badge text={`${groupedCases.waiting.length} cases`} variant="danger" />
             </div>
           </CardHeader>
           <CardContent className="space-y-4 p-4 max-h-[calc(100vh-300px)] overflow-y-auto">
@@ -337,22 +391,15 @@ const TriageList = () => {
                     </Button>
                   </div>
                 </div>
+
               ))
             ) : (
-              <div className="py-6 text-center">
-                <Clock className="mx-auto w-10 h-10 text-gray-300" />
-                <p className="mt-2 font-medium text-gray-900 text-sm">
-                  No waiting cases
-                </p>
-                <p className="text-gray-500 text-xs">
-                  All patients are being attended to
-                </p>
-              </div>
+              <EmptyState icon={Clock} message="No waiting cases" />
             )}
           </CardContent>
         </Card>
 
-        {/* In Progress */}
+        {/* In Progress Column */}
         <Card>
           <CardHeader className="bg-yellow-50 border-yellow-100 border-b">
             <div className="flex justify-between items-center">
@@ -360,10 +407,7 @@ const TriageList = () => {
                 <AlertTriangle className="mr-2 w-5 h-5 text-yellow-700" />
                 In Progress
               </CardTitle>
-              <Badge
-                text={`${groupedCases["in-progress"].length} cases`}
-                variant="warning"
-              />
+              <Badge text={`${groupedCases["in-progress"].length} cases`} variant="warning" />
             </div>
           </CardHeader>
           <CardContent className="space-y-4 p-4 max-h-[calc(100vh-300px)] overflow-y-auto">
@@ -446,22 +490,15 @@ const TriageList = () => {
                     </Button>
                   </div>
                 </div>
+
               ))
             ) : (
-              <div className="py-6 text-center">
-                <AlertTriangle className="mx-auto w-10 h-10 text-gray-300" />
-                <p className="mt-2 font-medium text-gray-900 text-sm">
-                  No active cases
-                </p>
-                <p className="text-gray-500 text-xs">
-                  No patients are currently being treated
-                </p>
-              </div>
+              <EmptyState icon={AlertTriangle} message="No active cases" />
             )}
           </CardContent>
         </Card>
 
-        {/* Completed */}
+        {/* Completed Column */}
         <Card>
           <CardHeader className="bg-green-50 border-green-100 border-b">
             <div className="flex justify-between items-center">
@@ -469,10 +506,7 @@ const TriageList = () => {
                 <User className="mr-2 w-5 h-5 text-green-700" />
                 Completed
               </CardTitle>
-              <Badge
-                text={`${groupedCases.completed.length} cases`}
-                variant="success"
-              />
+              <Badge text={`${groupedCases.completed.length} cases`} variant="success" />
             </div>
           </CardHeader>
           <CardContent className="space-y-4 p-4 max-h-[calc(100vh-300px)] overflow-y-auto">
@@ -514,17 +548,10 @@ const TriageList = () => {
                     <Badge text="Completed" variant="success" />
                   </div>
                 </div>
+
               ))
             ) : (
-              <div className="py-6 text-center">
-                <User className="mx-auto w-10 h-10 text-gray-300" />
-                <p className="mt-2 font-medium text-gray-900 text-sm">
-                  No completed cases
-                </p>
-                <p className="text-gray-500 text-xs">
-                  Cases will appear here once completed
-                </p>
-              </div>
+              <EmptyState icon={User} message="No completed cases" />
             )}
           </CardContent>
         </Card>

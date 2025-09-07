@@ -70,6 +70,7 @@ const Dashboard = () => {
     loadData();
   }, [userId]);
 
+
   return (
     <div className="space-y-6">
       <div>
@@ -103,16 +104,16 @@ const Dashboard = () => {
         />
 
         <StatCard
-          title="Critical Patients"
+          title="Critical Patients Waiting"
           value={stats.criticalPatients}
           icon={<Users className="w-6 h-6 text-red-600" />}
-          linkTo="/dashboard/patients"
+          linkTo="/dashboard/triage"
           cardColor="bg-red-50 border-red-200"
           iconColor="text-red-600"
         />
 
         <StatCard
-          title="Triage Cases"
+          title="Triage Cases Waiting"
           value={stats.triageCases}
           icon={<AlertTriangle className="w-6 h-6 text-yellow-600" />}
           trend="up"
@@ -126,7 +127,7 @@ const Dashboard = () => {
       <div className="gap-6 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
         <UpcomingAppointments appointments={todaysAppointments} />
         <RecentMessages messages={unreadMessages} />
-        <TriageQueue triageCases={activeTriageCases} />
+        <TriageQueue />
       </div>
     </div>
   );

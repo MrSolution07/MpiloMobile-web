@@ -139,7 +139,7 @@ export default function DoctorSettings() {
           </button>
           <button
             type="submit"
-            className="px-5 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700"
+            className="px-5 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
           >
             Save Changes
           </button>

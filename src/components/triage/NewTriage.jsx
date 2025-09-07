@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function AddTriageForm({ onSubmit, onCancel }) {
+
+function NewTriageForm() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     patientId: "",
     symptoms: "",
@@ -16,9 +18,20 @@ function AddTriageForm({ onSubmit, onCancel }) {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm(prev => ({ ...prev, [name]: value }));
+    
+    if (touched[name]) {
+      validateField(name, value);
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+    validateField(name, form[name]);
   };
 
   const handleSubmit = async (e) => {
@@ -67,6 +80,7 @@ function AddTriageForm({ onSubmit, onCancel }) {
       setError(err.message);
     } finally {
       setLoading(false);
+
     }
   };
 
@@ -198,6 +212,7 @@ function AddTriageForm({ onSubmit, onCancel }) {
             // onClick={onCancel}
             onClick={() => navigate("/dashboard/triage")}
             className="rounded-md border border-gray-300 px-4 py-2 hover:bg-gray-100"
+
           >
             Cancel
           </button>
@@ -210,7 +225,8 @@ function AddTriageForm({ onSubmit, onCancel }) {
         </div>
       </form>
     </>
+
   );
 }
 
-export default AddTriageForm;
+export default NewTriageForm;

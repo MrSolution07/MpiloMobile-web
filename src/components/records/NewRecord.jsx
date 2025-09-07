@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function AddMedicalRecordForm({ onSubmit, onCancel }) {
+
   const [form, setForm] = useState({
     patientId: "",
     diagnosis: "",
@@ -13,14 +13,54 @@ function AddMedicalRecordForm({ onSubmit, onCancel }) {
 
   const navigate = useNavigate();
 
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(form);
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const recordData = {
+        patient_id: form.patientId,
+        first_name: form.firstName,
+        last_name: form.lastName,
+        date: form.date,
+        diagnosis: form.diagnosis,
+        treatment: form.treatment,
+        medication: form.medication,
+        notes: form.notes,
+       
+      };
+
+      const { error: supabaseError } = await supabase
+        .from('medical_records')
+        .insert([recordData]);
+
+      if (supabaseError) throw supabaseError;
+
+      // If coming from triage, mark the case as completed
+      if (fromTriage) {
+        const { error: statusError } = await supabase
+          .from('triage_cases')
+          .update({ status: 'completed' })
+          .eq('id', form.patientId);
+
+        if (statusError) throw statusError;
+      }
+
+      navigate('/dashboard/records'); // Redirect to records list after success
+
+    } catch (err) {
+      console.error('Error saving record:', err);
+      setError(err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -122,7 +162,8 @@ function AddMedicalRecordForm({ onSubmit, onCancel }) {
         </button>
       </div>
     </form>
+
   );
 }
 
-export default AddMedicalRecordForm;
+export default NewRecord;

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import {
   FileText,
   Search,
@@ -13,6 +14,7 @@ import {
   mockMedicalRecords as fetchMedicalRecords,
   mockPatients as fetchPatients,
 } from "../../data";
+
 import { formatDate } from "../../utils";
 import { Preloader } from "../preloader";
 
@@ -20,6 +22,54 @@ const MedicalRecordsList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedDiagnosis, setSelectedDiagnosis] = useState("all");
+  const [medicalRecords, setMedicalRecords] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch data from Supabase
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch medical records (now including first_name and last_name)
+        const { data: recordsData, error: recordsError } = await supabase
+          .from('medical_records')
+          .select('*');
+        
+        if (recordsError) throw recordsError;
+
+        setMedicalRecords(recordsData || []);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+
+    // Set up realtime subscription
+    const subscription = supabase
+      .channel('medical-records-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'medical_records'
+      }, (payload) => {
+        if (payload.eventType === 'INSERT') {
+          setMedicalRecords(prev => [...prev, payload.new]);
+        } else if (payload.eventType === 'UPDATE') {
+          setMedicalRecords(prev => prev.map(r => r.id === payload.new.id ? payload.new : r));
+        } else if (payload.eventType === 'DELETE') {
+          setMedicalRecords(prev => prev.filter(r => r.id !== payload.old.id));
+        }
+      })
+      .subscribe();
+
+    return () => supabase.removeChannel(subscription);
+  }, []);
 
   const [records, setRecords] = useState([]);
   const [patients, setPatients] = useState([]);
@@ -63,6 +113,7 @@ const MedicalRecordsList = () => {
       (record.notes &&
         record.notes.toLowerCase().includes(searchQuery.toLowerCase()));
 
+
     const matchesDiagnosis =
       selectedDiagnosis === "all" || record.diagnosis === selectedDiagnosis;
 
@@ -79,6 +130,7 @@ const MedicalRecordsList = () => {
     return patients.find((patient) => patient.id === patientId);
   };
 
+
   if (loading) return <Preloader />;
 
   if (error) {
@@ -87,6 +139,7 @@ const MedicalRecordsList = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header and controls */}
       <div className="flex sm:flex-row flex-col sm:justify-between sm:items-center space-y-2 sm:space-y-0">
         <div>
           <h1 className="font-bold text-gray-900 text-2xl">Medical Records</h1>
@@ -101,11 +154,13 @@ const MedicalRecordsList = () => {
             size="sm"
             icon={<Filter className="w-4 h-4" />}
             onClick={() => setFilterOpen(!filterOpen)}
+            className="mr-2"
           >
             Filter
           </Button>
 
           <Link to="/dashboard/newrecord">
+
             <Button
               variant="primary"
               size="sm"
@@ -114,6 +169,7 @@ const MedicalRecordsList = () => {
               New Record
             </Button>
           </Link>
+
         </div>
       </div>
 
@@ -126,7 +182,7 @@ const MedicalRecordsList = () => {
           <input
             type="text"
             placeholder="Search by patient, diagnosis, or notes..."
-            className="bg-white py-2 pr-4 pl-10 border border-gray-300 focus:border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-gray-700"
+            className="bg-white py-2 pr-4 pl-10 border border-gray-300 focus:border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 w-full text-gray-700"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -159,6 +215,7 @@ const MedicalRecordsList = () => {
         {sortedRecords.length > 0 ? (
           sortedRecords.map((record) => {
             const patient = getPatientDetails(record.patient_id);
+
             return (
               <Card
                 key={record.id}
@@ -171,12 +228,14 @@ const MedicalRecordsList = () => {
                       <Avatar
                         src={patient?.avatar}
                         alt={record?.patient_name || "anon"}
+
                         size="lg"
                         className="mr-4"
                       />
                       <div>
                         <h3 className="font-medium text-gray-900 text-lg">
                           {record.patient_name}
+
                         </h3>
                         <p className="text-gray-500 text-sm">
                           Patient ID: {record.patient_id}
@@ -191,54 +250,34 @@ const MedicalRecordsList = () => {
                     </div>
 
                     <div className="flex-grow">
-                      <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <h4 className="font-medium text-gray-900 text-md">
-                          Diagnosis:
-                        </h4>
-                        <Badge text={record.diagnosis} variant="primary" />
-                      </div>
-
-                      {record.symptoms.length > 0 && (
-                        <div className="mb-3">
-                          <h4 className="mb-1 font-medium text-gray-700 text-sm">
-                            Symptoms:
+                      {record.diagnosis && (
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <h4 className="font-medium text-gray-900 text-md">
+                            Diagnosis:
                           </h4>
-                          <div className="flex flex-wrap gap-1">
-                            {record.symptoms.map((symptom, index) => (
-                              <Badge
-                                key={index}
-                                text={symptom}
-                                variant="neutral"
-                                size="small"
-                              />
-                            ))}
-                          </div>
+                          <Badge text={record.diagnosis} variant="primary" />
                         </div>
                       )}
 
-                      {record.medications.length > 0 && (
+                      {record.treatment && (
                         <div className="mb-3">
                           <h4 className="mb-1 font-medium text-gray-700 text-sm">
-                            Medications:
+                            Treatment:
                           </h4>
-                          <ul className="space-y-1 ml-5 text-gray-700 text-sm list-disc">
-                            {record.medications.map((medication, index) => (
-                              <li key={index}>
-                                <span className="font-medium">
-                                  {medication.name}
-                                </span>{" "}
-                                ({medication.dosage}, {medication.frequency})
-                                <span className="ml-1 text-gray-500 text-xs">
-                                  started {formatDate(medication.startDate)}
-                                  {medication.endDate
-                                    ? `, ended ${formatDate(
-                                        medication.endDate
-                                      )}`
-                                    : ""}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
+                          <p className="bg-gray-50 p-3 rounded-md text-gray-700 text-sm">
+                            {record.treatment}
+                          </p>
+                        </div>
+                      )}
+
+                      {record.medication && (
+                        <div className="mb-3">
+                          <h4 className="mb-1 font-medium text-gray-700 text-sm">
+                            Medication:
+                          </h4>
+                          <p className="bg-gray-50 p-3 rounded-md text-gray-700 text-sm">
+                            {record.medication}
+                          </p>
                         </div>
                       )}
 
@@ -257,9 +296,9 @@ const MedicalRecordsList = () => {
 
                   <div className="flex justify-between items-center mt-4 pt-3 border-gray-100 border-t">
                     <div className="text-gray-500 text-sm">
-                      Recorded by: {record.doctorName}
+                      Recorded on: {formatDate(record.created_at)}
                     </div>
-                    <div className="flex space-x-2">
+                    <div className="flex gap-3">
                       <Button
                         variant="secondary"
                         size="sm"
@@ -268,7 +307,7 @@ const MedicalRecordsList = () => {
                         View Full Record
                       </Button>
                       <Button
-                        variant="primary"
+                        variant="danger"
                         size="sm"
                         icon={<FilePlus className="w-4 h-4" />}
                       >

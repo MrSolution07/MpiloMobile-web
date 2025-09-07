@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { MapPin, Navigation, History, Route, ArrowRight, Clock, Car } from 'lucide-react';
+import { Map } from "../../components/map";
+
 
 const Index = () => {
   const [currentLocation, setCurrentLocation] = useState('');
@@ -192,7 +194,7 @@ const Index = () => {
             <div className="rounded-lg border bg-white text-gray-900 shadow-sm">
               <div className="flex flex-col space-y-1.5 p-4">
                 <h3 className="text-lg font-semibold leading-none tracking-tight flex items-center gap-2">
-                  <Navigation className="h-5 w-5 text-blue-600" />
+                  <Navigation className="h-5 w-5 text-red-600" />
                   Route Planning
                 </h3>
               </div>
@@ -252,7 +254,7 @@ const Index = () => {
                 <button
                   onClick={calculateRoute}
                   disabled={!currentLocation || !destination}
-                  className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 w-full"
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-red-600 text-white hover:bg-red-700 h-10 px-4 py-2 w-full"
                 >
                   <Route className="h-4 w-4 mr-2" />
                   Calculate Route
@@ -313,13 +315,13 @@ const Index = () => {
             <div className="rounded-lg border bg-white text-gray-900 shadow-sm">
               <div className="flex flex-col space-y-1.5 p-4">
                 <h3 className="text-lg font-semibold leading-none tracking-tight flex items-center gap-2">
-                  <Car className="h-5 w-5 text-purple-600" />
+                  <Car className="h-5 w-5 text-red-600" />
                   Travel Statistics
                 </h3>
               </div>
               <div className="p-4 pt-0">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-purple-600">{totalDistance.toFixed(1)} km</div>
+                  <div className="text-3xl font-bold text-red-600">{totalDistance.toFixed(1)} km</div>
                   <p className="text-sm text-gray-600">Total Distance Travelled</p>
                 </div>
               </div>
@@ -330,7 +332,7 @@ const Index = () => {
           <div className="lg:col-span-2 space-y-4">
             <div className="rounded-lg border bg-white text-gray-900 shadow-sm">
               <div className="p-0">
-                <div ref={mapRef} className="w-full h-[400px] rounded-lg" />
+                <Map />
               </div>
             </div>
 
