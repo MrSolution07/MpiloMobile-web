@@ -4,7 +4,8 @@
 import React, { useState } from 'react';
 import { supabase } from '../../services/supabaseClient';
 import { useNavigate } from 'react-router-dom';
-import { AlertTriangle, Heart, Activity, Thermometer, Droplet } from 'lucide-react';
+import { AlertTriangle, Heart, Activity, Thermometer, Droplet, Brain, Loader2 } from 'lucide-react';
+import OpenAIService from '../../services/openaiService';
 
 function NewTriageForm() {
   const navigate = useNavigate();
@@ -26,6 +27,9 @@ function NewTriageForm() {
 
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
+  const [possibleSicknesses, setPossibleSicknesses] = useState('');
+  const [isGeneratingSuggestion, setIsGeneratingSuggestion] = useState(false);
+  const [showPossibleSicknesses, setShowPossibleSicknesses] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -110,10 +114,57 @@ function NewTriageForm() {
     return isValid;
   };
 
+  const generatePossibleSicknesses = async () => {
+    
+    const requiredVitals = ['heart_rate', 'blood_pressure', 'temperature', 'oxygen_saturation', 'respiratory_rate', 'pain_level'];
+    const hasRequiredVitals = requiredVitals.every(field => form[field] && form[field].trim() !== '');
+    
+    if (!hasRequiredVitals) {
+      alert('Please fill in all vital signs before generating possible sicknesses.');
+      return;
+    }
+
+    if (!form.chief_complaint.trim()) {
+      alert('Please provide a chief complaint before generating possible sicknesses.');
+      return;
+    }
+
+    setIsGeneratingSuggestion(true);
+    setShowPossibleSicknesses(true);
+
+    try {
+      const vitalSigns = {
+        heart_rate: form.heart_rate,
+        blood_pressure: form.blood_pressure,
+        temperature: form.temperature,
+        oxygen_saturation: form.oxygen_saturation,
+        respiratory_rate: form.respiratory_rate,
+        pain_level: form.pain_level
+      };
+
+      const result = await OpenAIService.generateMedicalSuggestion(
+        vitalSigns,
+        form.chief_complaint,
+        form.notes
+      );
+
+      if (result.success) {
+        setPossibleSicknesses(result.suggestion);
+      } else {
+        setPossibleSicknesses(`Error: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error generating possible sicknesses:', error);
+      setPossibleSicknesses('Error generating possible sicknesses. Please try again.');
+    } finally {
+      setIsGeneratingSuggestion(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Mark all fields as touched
+    //
     const allTouched = {};
     Object.keys(form).forEach(field => {
       allTouched[field] = true;
@@ -415,6 +466,63 @@ function NewTriageForm() {
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
               placeholder="Any additional observations or information..."
             />
+          </div>
+
+          {/* AI Medical Diagnosis */}
+          <div className="md:col-span-2">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-medium text-gray-900 text-lg flex items-center">
+                <Brain className="mr-2 w-5 h-5 text-blue-600" />
+                Medical Diagnosis Assistant
+              </h3>
+              <button
+                type="button"
+                onClick={generatePossibleSicknesses}
+                disabled={isGeneratingSuggestion}
+                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {isGeneratingSuggestion ? (
+                  <>
+                    <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+                    Analyzing...
+                  </>
+                ) : (
+                  <>
+                    <Brain className="mr-2 w-4 h-4" />
+                    See Possible Sicknesses
+                  </>
+                )}
+              </button>
+            </div>
+            
+            {showPossibleSicknesses && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-start">
+                  <Brain className="mr-2 w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1">
+                    <h4 className="font-medium text-blue-900 mb-3">Top 3 Possible Medical Conditions</h4>
+                    <div className="text-sm text-blue-800">
+                      {isGeneratingSuggestion ? (
+                        <div className="flex items-center">
+                          <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+                          Analyzing symptoms and vital signs...
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          {possibleSicknesses ? (
+                            <div className="whitespace-pre-wrap">
+                              {possibleSicknesses}
+                            </div>
+                          ) : (
+                            <p className="text-blue-600">Click "See Possible Sicknesses" to analyze the patient's condition.</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
