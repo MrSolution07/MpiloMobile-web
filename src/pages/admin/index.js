@@ -7,6 +7,6 @@ export { default as AdminPatients } from "./AdminPatients";
 export { default as AdminRecords } from "./AdminRecords";
 export { default as AdminAddPatient } from "./AdminAddPatient";
 export { default as AdminAddRecord } from "./AdminAddRecord";
-export {default as AdminSettings} from "./AdminSettings";
+export { default as AdminSettings } from "./AdminSettings";
 export { default as AdminProfile } from "./AdminProfile";
-export {default as Routes} from "./Routes";
+export { default as Routes } from "./AdminRoutes";
