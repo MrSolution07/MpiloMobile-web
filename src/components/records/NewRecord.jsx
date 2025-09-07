@@ -1,27 +1,18 @@
-import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { supabase } from "../../services/supabaseClient";
-import { Button } from "../ui";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-function NewRecord() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { patientData, fromTriage } = location.state || {};
 
   const [form, setForm] = useState({
-    patientId: patientData?.id || '',
-    firstName: patientData?.firstName || '',
-    lastName: patientData?.lastName || '',
-    diagnosis: '',
-    treatment: '',
-    medication: '',
-    notes: '',
-    date: new Date().toISOString().split('T')[0],
-    vitalSigns: patientData?.vitalSigns || {}
+    patientId: "",
+    diagnosis: "",
+    treatment: "",
+    medication: "",
+    notes: "",
+    date: new Date().toISOString().split("T")[0], // today’s date
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,162 +64,105 @@ function NewRecord() {
   };
 
   return (
-    <div className="space-y-6 p-6">
-      <h1 className="text-2xl font-bold">New Medical Record</h1>
-      
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          {error}
-        </div>
-      )}
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4 p-4 bg-white border rounded-md shadow-sm"
+    >
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Patient ID / Name
+        </label>
+        <input
+          type="text"
+          name="patientId"
+          value={form.patientId}
+          onChange={handleChange}
+          required
+          className="mt-1 w-full rounded-md border px-3 py-2"
+        />
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Patient Info (read-only) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Patient ID</label>
-            <input
-              type="text"
-              value={form.patientId}
-              readOnly
-              className="mt-1 w-full rounded-md border-gray-300 bg-gray-100 p-2"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">First Name</label>
-            <input
-              type="text"
-              value={form.firstName}
-              readOnly
-              className="mt-1 w-full rounded-md border-gray-300 bg-gray-100 p-2"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Last Name</label>
-            <input
-              type="text"
-              value={form.lastName}
-              readOnly
-              className="mt-1 w-full rounded-md border-gray-300 bg-gray-100 p-2"
-            />
-          </div>
-        </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Diagnosis
+        </label>
+        <input
+          type="text"
+          name="diagnosis"
+          value={form.diagnosis}
+          onChange={handleChange}
+          required
+          className="mt-1 w-full rounded-md border px-3 py-2"
+        />
+      </div>
 
-        {/* Vital Signs (read-only) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-md">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Heart Rate</label>
-            <input
-              type="text"
-              value={form.vitalSigns.heartRate}
-              readOnly
-              className="mt-1 w-full rounded-md border-gray-300 bg-gray-100 p-2"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Blood Pressure</label>
-            <input
-              type="text"
-              value={form.vitalSigns.bloodPressure}
-              readOnly
-              className="mt-1 w-full rounded-md border-gray-300 bg-gray-100 p-2"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Temperature (°C)</label>
-            <input
-              type="text"
-              value={form.vitalSigns.temperature}
-              readOnly
-              className="mt-1 w-full rounded-md border-gray-300 bg-gray-100 p-2"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Oxygen Saturation</label>
-            <input
-              type="text"
-              value={form.vitalSigns.oxygenSaturation}
-              readOnly
-              className="mt-1 w-full rounded-md border-gray-300 bg-gray-100 p-2"
-            />
-          </div>
-        </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Treatment Plan
+        </label>
+        <textarea
+          name="treatment"
+          value={form.treatment}
+          onChange={handleChange}
+          required
+          className="mt-1 w-full rounded-md border px-3 py-2"
+        />
+      </div>
 
-        {/* Medical Record Fields */}
-        <div className="grid grid-cols-1 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Date</label>
-            <input
-              type="date"
-              name="date"
-              value={form.date}
-              onChange={handleChange}
-              className="mt-1 w-full rounded-md border-gray-300 p-2"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Diagnosis</label>
-            <input
-              type="text"
-              name="diagnosis"
-              value={form.diagnosis}
-              onChange={handleChange}
-              className="mt-1 w-full rounded-md border-gray-300 p-2"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Treatment</label>
-            <textarea
-              name="treatment"
-              value={form.treatment}
-              onChange={handleChange}
-              className="mt-1 w-full rounded-md border-gray-300 p-2"
-              rows={3}
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Medication</label>
-            <input
-              type="text"
-              name="medication"
-              value={form.medication}
-              onChange={handleChange}
-              className="mt-1 w-full rounded-md border-gray-300 p-2"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Notes</label>
-            <textarea
-              name="notes"
-              value={form.notes}
-              onChange={handleChange}
-              className="mt-1 w-full rounded-md border-gray-300 p-2"
-              rows={3}
-            />
-          </div>
-        </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Medication Prescribed
+        </label>
+        <input
+          type="text"
+          name="medication"
+          value={form.medication}
+          onChange={handleChange}
+          className="mt-1 w-full rounded-md border px-3 py-2"
+        />
+      </div>
 
-        <div className="flex justify-end space-x-2">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => navigate(-1)} // Go back
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            variant="primary"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Saving...' : 'Save Record'}
-          </Button>
-        </div>
-      </form>
-    </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Doctor's Notes
+        </label>
+        <textarea
+          name="notes"
+          value={form.notes}
+          onChange={handleChange}
+          className="mt-1 w-full rounded-md border px-3 py-2"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Date</label>
+        <input
+          type="date"
+          name="date"
+          value={form.date}
+          onChange={handleChange}
+          className="mt-1 w-full rounded-md border px-3 py-2"
+        />
+      </div>
+
+      <div className="flex justify-end space-x-2">
+        <button
+          type="button"
+          // onClick={onCancel}
+          onClick={() => navigate("/dashboard/records")}
+          className="rounded-md border px-4 py-2 hover:bg-gray-100"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="rounded-md bg-[#274D60] text-white px-4 py-2 hover:bg-blue-700"
+        >
+          Save Record
+        </button>
+      </div>
+    </form>
+
   );
 }
 

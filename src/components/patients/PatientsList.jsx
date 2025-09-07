@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
 import { useNavigate, Link } from "react-router-dom";
 import { Search, Plus, Filter, UserX } from "lucide-react";
 import {
@@ -14,6 +15,8 @@ import {
   TableCell,
   TableHeaderCell,
 } from "../ui";
+import { mockPatients as fetchPatients } from "../../data";
+
 import { formatDate } from "../../utils";
 import { supabase } from "../../services/supabaseClient";
 
@@ -67,6 +70,26 @@ const PatientsList = () => {
     fetchPatients();
   }, []);
 
+  const [patients, setPatients] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true);
+
+      try {
+        const data = await fetchPatients();
+        setPatients(data);
+      } catch (error) {
+        console.error("Error loading patients:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+  }, []);
+
   const handleSort = (field) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -78,12 +101,13 @@ const PatientsList = () => {
 
   const filteredPatients = patients.filter((patient) => {
     const matchesSearch =
-      patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      patient.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      patient.phone.includes(searchQuery);
+      patient?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      patient?.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      patient?.phone?.includes(searchQuery);
 
     const matchesStatus =
-      statusFilter === "all" || patient.status.toLowerCase() === statusFilter.toLowerCase();
+      statusFilter === "all" || patient?.status === statusFilter;
+
 
     return matchesSearch && matchesStatus;
   });
@@ -109,7 +133,7 @@ const PatientsList = () => {
   });
 
   const handlePatientClick = (patientId) => {
-    navigate(`/patients/${patientId}`);
+    navigate(`/dashboard/patients/${patientId}`);
   };
 
   if (loading) {
@@ -148,12 +172,13 @@ const PatientsList = () => {
           >
             Filter
           </Button>
-          <Link to="/dashboard/patients/add">
+
+          <Link to="/dashboard/addpatient">
             <Button
-              variant="danger"
+              variant="primary"
               size="sm"
               icon={<Plus className="w-4 h-4" />}
-              className="ml-2"
+
             >
               Add Patient
             </Button>
@@ -232,7 +257,11 @@ const PatientsList = () => {
       {/* Patients Table */}
       <Card>
         <CardContent className="p-0">
-          {sortedPatients.length > 0 ? (
+          {loading ? (
+            <div className="py-10 text-center text-gray-500">
+              Loading patients...
+            </div>
+          ) : sortedPatients.length > 0 ? (
             <Table striped hoverable>
               <TableHead>
                 <TableRow>
@@ -258,41 +287,42 @@ const PatientsList = () => {
               <TableBody>
                 {sortedPatients.map((patient) => (
                   <TableRow
-                    key={patient.id}
-                    onClick={() => handlePatientClick(patient.id)}
-                    className="cursor-pointer"
+                    key={patient?.id}
+                    onClick={() => handlePatientClick(patient?.id)}
+
                   >
                     <TableCell>
                       <div className="flex items-center">
                         <Avatar
-                          src={patient.avatar}
-                          alt={patient.name}
+                          src={patient?.avatar}
+                          alt={patient?.name}
                           size="sm"
                           className="mr-3"
                         />
                         <div>
                           <p className="font-medium text-gray-900">
-                            {patient.name}
+                            {patient?.name}
                           </p>
                           <p className="text-gray-500 text-xs">
-                            {patient.gender}
+                            {patient?.gender}
                           </p>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>{patient.age}</TableCell>
+                    <TableCell>{patient?.age}</TableCell>
                     <TableCell>
-                      <p className="text-sm">{patient.phone}</p>
-                      <p className="text-gray-500 text-xs">{patient.email}</p>
+                      <p className="text-sm">{patient?.phone}</p>
+                      <p className="text-gray-500 text-xs">{patient?.email}</p>
                     </TableCell>
-                    <TableCell>{formatDate(patient.lastVisit)}</TableCell>
+                    <TableCell>{formatDate(patient?.lastVisit)}</TableCell>
                     <TableCell>
                       <Badge
-                        text={patient.status}
+                        text={patient?.status}
                         variant={
-                          patient.status.toLowerCase() === "stable"
+                          patient?.status === "stable"
                             ? "success"
-                            : patient.status.toLowerCase() === "moderate"
+                            : patient?.status === "moderate"
+
                             ? "warning"
                             : "danger"
                         }

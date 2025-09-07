@@ -22,8 +22,8 @@ function Login() {
 
     try {
       setLoading(true);
-      await login(email.trim().toLowerCase(), password);
-      navigate("/UserDashboard");
+      await login(email, password);
+      navigate("/dashboard");
     } catch (err) {
       setError(err.message);
     } finally {

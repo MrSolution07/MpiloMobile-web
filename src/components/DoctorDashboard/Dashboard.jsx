@@ -1,116 +1,82 @@
-// Dashboard.jsx
-import { useState, useEffect } from "react";
+import { Calendar, MessageSquare, AlertTriangle, Users } from "lucide-react";
 import {
-  Calendar,
-  MessageSquare,
-  AlertTriangle,
-  Users,
-} from "lucide-react";
-import { supabase } from "../../services/supabaseClient";
+  getDashboardStats,
+  mockAppointments as fetchAppointments,
+  mockMessages as fetchMessages,
+  mockTriageCases as fetchTriageCases,
+} from "../../data";
 import { isToday } from "../../utils";
 import StatCard from "./StatCard";
 import UpcomingAppointments from "./UpcomingAppointments";
 import RecentMessages from "./RecentMessages";
 import TriageQueue from "./TriageQueue";
+import { useAuth } from "../../context";
+import { useEffect, useState } from "react";
 
 const Dashboard = () => {
+  const { user } = useAuth();
+
   const [stats, setStats] = useState({
     appointmentsToday: 0,
     pendingMessages: 0,
     criticalPatients: 0,
-    triageCases: 0
+    triageCases: 0,
   });
   const [todaysAppointments, setTodaysAppointments] = useState([]);
   const [unreadMessages, setUnreadMessages] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [activeTriageCases, setActiveTriageCases] = useState([]);
+  const userId = user?.id || "u1";
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch critical patients (high priority AND waiting status)
-        const { count: criticalPatientsCount } = await supabase
-          .from('triage_cases')
-          .select('*', { count: 'exact', head: true })
-          .eq('priority', 'high')
-          .eq('status', 'waiting');
-        
-        // Fetch waiting triage cases count (for the stat card)
-        const { count: waitingTriageCount } = await supabase
-          .from('triage_cases')
-          .select('*', { count: 'exact', head: true })
-          .eq('status', 'waiting');
-        
-        // Fetch today's appointments
-        const today = new Date().toISOString().split('T')[0];
-        const { data: appointments } = await supabase
-          .from('appointments')
-          .select(`
-            *,
-            patient:patient_id (first_name, last_name)
-          `)
-          .eq('date', today)
-          .order('time', { ascending: true });
-        
-        // Fetch unread messages
-        const { data: messages } = await supabase
-          .from('messages')
-          .select('*')
-          .eq('read', false)
-          .eq('recipient_id', 'u1') // Replace with current user ID
-          .order('timestamp', { ascending: false });
-        
-        setStats({
-          appointmentsToday: appointments?.length || 0,
-          pendingMessages: messages?.length || 0,
-          criticalPatients: criticalPatientsCount || 0,
-          triageCases: waitingTriageCount || 0
-        });
-        
-        setTodaysAppointments(appointments || []);
-        setUnreadMessages(messages || []);
-        
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    async function loadData() {
+      // fetch stats
+      const dashboardStats = await getDashboardStats(userId);
+      setStats(dashboardStats);
 
-    fetchDashboardData();
+      // fetch appointments
+      const appointments = await fetchAppointments();
+      setTodaysAppointments(
+        appointments
+          .filter((appointment) => isToday(new Date(appointment.date)))
+          .sort((a, b) => a.time.localeCompare(b.time))
+      );
 
-    // Set up realtime subscriptions
-    const appointmentsSubscription = supabase
-      .channel('appointments-changes')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'appointments'
-      }, (payload) => {
-        fetchDashboardData();
-      })
-      .subscribe();
+      // fetch messages
+      const messages = await fetchMessages(userId);
+      setUnreadMessages(
+        messages
+          .filter((message) => !message.read && message.recipient_id === userId)
+          .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+      );
 
-    return () => {
-      supabase.removeChannel(appointmentsSubscription);
-    };
-  }, []);
+      // fetch triage cases
+      const triageCases = await fetchTriageCases();
+      setActiveTriageCases(
+        triageCases
+          .filter(
+            (triage) =>
+              triage.status === "waiting" || triage.status === "in-progress"
+          )
+          .sort((a, b) => {
+            const priorityOrder = { high: 0, medium: 1, low: 2 };
+            if (a.priority !== b.priority) {
+              return priorityOrder[a.priority] - priorityOrder[b.priority];
+            }
+            return new Date(a.arrival_time) - new Date(b.arrival_time);
+          })
+      );
+    }
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
+    loadData();
+  }, [userId]);
+
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="font-bold text-gray-900 text-2xl">Dashboard</h1>
         <p className="mt-1 text-gray-500 text-sm">
-          Welcome back, Dr. Johnson. Here's what's happening today.
+          Welcome back, {user?.email}. Here's what's happening today.
         </p>
       </div>
 

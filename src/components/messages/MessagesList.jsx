@@ -1,13 +1,18 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { 
-  MessageSquare, 
-  Search, 
-  Plus, 
-  Filter, 
-  Mail, 
-  MoreVertical,
-  X
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import { MessageSquare, Search, Plus, Filter, Mail } from "lucide-react";
+import { mockMessages as fetchMessages, currentUser } from "../../data";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Button,
+  Badge,
+  Avatar,
+} from "../ui";
+import { formatDateTime } from "../../utils";
+import { useAuth } from "../../context";
+
 
 // Mock current user - replace with actual auth
 const currentUser = {
@@ -16,13 +21,51 @@ const currentUser = {
   avatar: "https://www.gravatar.com/avatar/?d=mp"
 };
 
-// Avatar component
-const Avatar = ({ src, alt, size = "md", className = "" }) => {
-  const sizeClasses = {
-    sm: "w-8 h-8",
-    md: "w-10 h-10", 
-    lg: "w-12 h-12"
-  };
+  const { user } = useAuth();
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    async function loadData() {
+      setLoading(true);
+
+      try {
+        const data = await fetchMessages(user.id);
+        setMessages(data || []);
+      } catch (error) {
+        console.error("Error loading messages:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+  }, [user?.id]);
+
+  // Filter messages
+  const filteredMessages = messages.filter((message) => {
+    // Only show messages to/from current user
+    const isRelevantToUser =
+      message?.recipient_id === user.id || message?.sender_id === user.id;
+
+    // Apply search filter
+    const matchesSearch =
+      message?.sender_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      message?.content?.toLowerCase().includes(searchQuery.toLowerCase());
+
+    // Apply status filter
+    const matchesFilter =
+      filter === "all" ||
+      (filter === "unread" &&
+        !message?.read &&
+        message?.recipient_id === user.id) ||
+      (filter === "urgent" && message?.urgent);
+
+    return isRelevantToUser && matchesSearch && matchesFilter;
+  });
+
 
   return (
     <div className={`relative ${className}`}>
@@ -459,51 +502,85 @@ function MessagesList() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Conversations List */}
-        <div className="w-1/3 bg-white border-r border-gray-200 flex flex-col">
-          <div className="p-4 border-b border-gray-200">
-            <h2 className="font-semibold text-gray-900">
-              Conversations ({filteredConversations.length})
-            </h2>
-          </div>
-          
-          <div className="flex-1 overflow-y-auto">
-            {filteredConversations.length > 0 ? (
-              filteredConversations.map((conversation) => (
-                <div
-                  key={conversation.id}
-                  className={`p-4 border-b border-gray-100 cursor-pointer transition-colors ${
-                    selectedConversation?.id === conversation.id
-                      ? "bg-red-50 border-red-200"
-                      : "hover:bg-gray-50"
-                  }`}
-                  onClick={() => handleConversationSelect(conversation)}
-                >
-                  <div className="flex items-start space-x-3">
-                    <Avatar
-                      src={conversation.participantAvatar}
-                      alt={conversation.participantName}
-                      size="md"
-                    />
-                    
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-center">
-                        <p className="font-semibold text-gray-900 truncate">
-                          {conversation.participantName}
+      {/* Messages List and Detail View */}
+      <div className="gap-6 grid grid-cols-1 lg:grid-cols-3">
+        {/* Messages List */}
+        <div className="lg:col-span-1">
+          <Card className="h-full">
+            <CardHeader className="border-gray-100 border-b">
+              <CardTitle className="flex items-center font-medium text-gray-900 text-lg">
+                <MessageSquare className="mr-2 w-5 h-5 text-blue-600" />
+                Messages ({sortedMessages.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0 max-h-[calc(100vh-300px)] overflow-y-auto">
+              {loading ? (
+                <p className="p-4 text-gray-500 text-sm">Loading messages...</p>
+              ) : sortedMessages.length > 0 ? (
+                <div className="divide-y divide-gray-100">
+                  {sortedMessages.map((message) => (
+                    <div
+                      key={message?.id}
+                      className={`
+                        flex items-start p-4 cursor-pointer transition-colors
+                        ${
+                          selectedMessage?.id === message?.id
+                            ? "bg-blue-50"
+                            : "hover:bg-gray-50"
+                        }
+                        ${
+                          !message?.read && message?.recipient_id === user.id
+                            ? "bg-blue-50"
+                            : ""
+                        }
+                      `}
+                      onClick={() => handleMessageSelect(message)}
+                    >
+                      <Avatar
+                        // src={message?.sender_avatar}
+                        alt={message?.sender_name || "anon"}
+                        size="md"
+                        className="flex-shrink-0 mr-3"
+                      />
+
+                      <div className="flex-grow min-w-0">
+                        <div className="flex justify-between items-center">
+                          <p
+                            className={`text-sm font-medium ${
+                              !message?.read &&
+                              message?.recipient_id === user.id
+                                ? "text-blue-800"
+                                : "text-gray-900"
+                            } truncate`}
+                          >
+                            {message?.sender_name}
+                          </p>
+                          <p className="ml-2 text-gray-500 text-xs whitespace-nowrap">
+                            {formatDateTime(message?.timestamp)?.split(",")[0]}
+                          </p>
+                        </div>
+                        <p
+                          className={`text-xs ${
+                            !message?.read && message?.recipient_id === user.id
+                              ? "text-blue-700 font-medium"
+                              : "text-gray-700"
+                          } mt-1 line-clamp-2`}
+                        >
+                          {message?.content}
                         </p>
-                        <div className="flex items-center space-x-2">
-                          {conversation.lastMessage && (
-                            <span className="text-xs text-gray-500">
-                              {formatTime(conversation.lastMessage.timestamp)}
-                            </span>
+                        <div className="flex items-center mt-1">
+                          {message?.urgent && (
+                            <Badge
+                              text="Urgent"
+                              variant="danger"
+                              size="small"
+                            />
                           )}
-                          {conversation.unreadCount > 0 && (
-                            <span className="bg-red-600 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
-                              {conversation.unreadCount}
-                            </span>
-                          )}
+                          {!message?.read &&
+                            message?.recipient_id === user.id && (
+                              <span className="inline-block bg-blue-600 ml-auto rounded-full w-2 h-2"></span>
+                            )}
+
                         </div>
                       </div>
                       
@@ -530,24 +607,40 @@ function MessagesList() {
           </div>
         </div>
 
-        {/* Message View */}
-        <div className="flex-1 flex flex-col">
-          {selectedConversation ? (
-            <>
-              {/* Message Header */}
-              <div className="bg-white border-b border-gray-200 p-4">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center space-x-3">
-                    <Avatar
-                      src={selectedConversation.participantAvatar}
-                      alt={selectedConversation.participantName}
-                      size="md"
-                    />
-                    <div>
-                      <h3 className="font-semibold text-gray-900">
-                        {selectedConversation.participantName}
-                      </h3>
+        {/* Message Detail View */}
+        <div className="lg:col-span-2">
+          <Card className="h-full">
+            {selectedMessage ? (
+              <>
+                <CardHeader className="border-gray-100 border-b">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center">
+                      <Avatar
+                        // src={selectedMessage?.sender_avatar}
+                        alt={selectedMessage?.sender_name || "anon"}
+                        size="md"
+                        className="mr-3"
+                      />
+                      <div>
+                        <h3 className="font-medium text-gray-900 text-lg">
+                          {selectedMessage?.sender_name}
+                        </h3>
+                        <p className="text-gray-500 text-sm">
+                          {formatDateTime(selectedMessage?.timestamp)}
+                        </p>
+                      </div>
                     </div>
+                    {selectedMessage?.urgent && (
+                      <Badge text="Urgent" variant="danger" />
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="max-w-none prose">
+                    <p className="text-gray-800 whitespace-pre-wrap">
+                      {selectedMessage?.content}
+                    </p>
+
                   </div>
                 </div>
               </div>
