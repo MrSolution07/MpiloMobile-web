@@ -17,46 +17,78 @@ import {
   useMap,
 } from "react-leaflet";
 import L from "leaflet";
-
-// predetermined places with coordinates
-const PLACES = [
-  { name: "Clinic 1", coords: { lat: -25.748, lng: 28.229 } },
-  { name: "Clinic 2", coords: { lat: -25.746, lng: 28.221 } },
-  { name: "Clinic 3", coords: { lat: -25.745, lng: 28.228 } },
-];
+import { supabase } from "../../services";
 
 // fit map bounds helper
-const FitBounds = ({ bounds }) => {
+const FitBounds = ({ bounds, padding = [32, 32], maxZoom = 15 }) => {
   const map = useMap();
-  if (bounds && bounds.length > 0) map.fitBounds(bounds);
+  useEffect(() => {
+    if (bounds && bounds.isValid()) {
+      map.fitBounds(bounds, { padding, maxZoom });
+    }
+  }, [map, bounds, padding, maxZoom]);
   return null;
 };
 
 const AdminRoutes = () => {
+  const [places, setPlaces] = useState([]);
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
-  const [routeHistory, setRouteHistory] = useState(() => {
-    const saved = localStorage.getItem("clinicRouteHistory");
-    return saved ? JSON.parse(saved) : [];
-  });
-  const [totalDistance, setTotalDistance] = useState(() => {
-    const saved = localStorage.getItem("totalDistance");
-    return saved ? parseFloat(saved) : 0;
-  });
+  const [routeHistory, setRouteHistory] = useState([]);
+  const [totalDistance, setTotalDistance] = useState(0);
   const [currentRoute, setCurrentRoute] = useState(null);
 
-  const [routeCoords, setRouteCoords] = useState([]); // Polyline coordinates
+  const [routeCoords, setRouteCoords] = useState([]); // polyline coordinates
+
+  const [loading, setLoading] = useState(false);
+
+  // fetch places + routes
+  useEffect(() => {
+    const loadData = async () => {
+      const { data: placesData, error: placesError } = await supabase
+        .from("places")
+        .select("*")
+        .order("name");
+
+      if (placesError) {
+        console.error("Error fetching places:", placesError);
+      } else {
+        setPlaces(placesData);
+      }
+
+      const { data: routesData, error: routesError } = await supabase
+        .from("routes")
+        .select("*, from:from_id(name), to:to_id(name)")
+        .order("created_at", { ascending: false });
+
+      if (routesError) {
+        console.error("Error fetching routes:", routesError);
+      } else {
+        setRouteHistory(routesData);
+        const total = routesData.reduce(
+          (sum, r) => sum + parseFloat(r.distance_km),
+          0
+        );
+        setTotalDistance(total);
+      }
+    };
+
+    loadData();
+  }, []);
 
   // fetch route from OSRM
   const calculateRoute = async () => {
     if (!origin || !destination) return;
-    const from = PLACES.find((p) => p.name === origin)?.coords;
-    const to = PLACES.find((p) => p.name === destination)?.coords;
+    setLoading(true);
+
+    const from = places.find((p) => p.id === origin);
+    const to = places.find((p) => p.id === destination);
     if (!from || !to) return;
 
     const url = `https://router.project-osrm.org/route/v1/driving/${from.lng},${from.lat};${to.lng},${to.lat}?overview=full&geometries=geojson`;
     const res = await fetch(url);
     const data = await res.json();
+
     if (data.routes && data.routes.length > 0) {
       const route = data.routes[0];
       const coords = route.geometry.coordinates.map(([lng, lat]) => ({
@@ -75,25 +107,39 @@ const AdminRoutes = () => {
         duration: `${durationMin} min`,
       });
     }
+
+    setLoading(false);
   };
 
-  // save route to history
-  const saveRoute = () => {
+  // save route to supabase
+  const saveRoute = async () => {
     if (!currentRoute) return;
-    const newHistory = [
-      { id: Date.now(), ...currentRoute, timestamp: new Date() },
-      ...routeHistory,
-    ];
-    setRouteHistory(newHistory);
-    localStorage.setItem("clinicRouteHistory", JSON.stringify(newHistory));
+    const { from, to, distance, duration } = currentRoute;
 
-    // update total distance
-    const distanceValue = parseFloat(
-      currentRoute.distance.replace(/[^\d.]/g, "")
-    );
-    const newTotal = totalDistance + distanceValue;
-    setTotalDistance(newTotal);
-    localStorage.setItem("totalDistance", newTotal.toString());
+    const distanceKm = parseFloat(distance.replace(/[^\d.]/g, "")) || 0;
+    const durationMin = parseFloat(duration.replace(/[^\d.]/g, "")) || 0;
+
+    const { data, error } = await supabase
+      .from("routes")
+      .insert([
+        {
+          from_id: from,
+          to_id: to,
+          distance_km: distanceKm,
+          duration_min: durationMin,
+        },
+      ])
+      .select("*, from:from_id(name), to:to_id(name)");
+
+    if (error) {
+      console.error("Error saving route:", error);
+      return;
+    }
+
+    // update state
+    const newRoute = data[0];
+    setRouteHistory([newRoute, ...routeHistory]);
+    setTotalDistance(totalDistance + parseFloat(distanceKm));
 
     // clear current selections
     setOrigin("");
@@ -102,7 +148,26 @@ const AdminRoutes = () => {
     setRouteCoords([]);
   };
 
-  const bounds = routeCoords.length > 0 ? L.latLngBounds(routeCoords) : null;
+  const selectedPoints = [];
+  const fromSel = origin ? places.find((p) => p.id === origin) : null;
+  if (fromSel) selectedPoints.push([fromSel.lat, fromSel.lng]);
+
+  const toSel = destination ? places.find((p) => p.id === destination) : null;
+  if (toSel) selectedPoints.push([toSel.lat, toSel.lng]);
+
+  // decide which points to use for bounds
+  const boundsPoints =
+    routeCoords.length > 0
+      ? routeCoords.map((p) => [p.lat, p.lng]) // 1) use the route polyline
+      : selectedPoints.length > 0
+      ? selectedPoints // 2) or the selected places
+      : places.map((p) => [p.lat, p.lng]); // 3) or all places (initial)
+
+  // make bounds (or null if no data yet)
+  const bounds =
+    boundsPoints && boundsPoints.length > 0
+      ? L.latLngBounds(boundsPoints)
+      : null;
 
   return (
     <div className="min-h-screen bg-white">
@@ -138,9 +203,9 @@ const AdminRoutes = () => {
                     className="w-full border rounded-md px-3 py-2"
                   >
                     <option value="">Select origin</option>
-                    {PLACES.map((place) => (
-                      <option key={place.name} value={place.name}>
-                        {place.name}
+                    {places.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
                       </option>
                     ))}
                   </select>
@@ -156,9 +221,9 @@ const AdminRoutes = () => {
                     className="w-full border rounded-md px-3 py-2"
                   >
                     <option value="">Select destination</option>
-                    {PLACES.map((place) => (
-                      <option key={place.name} value={place.name}>
-                        {place.name}
+                    {places.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
                       </option>
                     ))}
                   </select>
@@ -166,12 +231,11 @@ const AdminRoutes = () => {
 
                 <button
                   onClick={calculateRoute}
-                  // disabled={!currentLocation || !destination}
                   disabled={!origin || !destination}
                   className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 w-full"
                 >
                   <Route className="h-4 w-4 mr-2" />
-                  Calculate Route
+                  {loading ? "Calculating" : "Calculate"} Route
                 </button>
               </div>
             </div>
@@ -183,7 +247,7 @@ const AdminRoutes = () => {
                   <ArrowRight className="animate-bounce" /> Recommended Route
                 </h4>
                 <div>
-                  {currentRoute.from} → {currentRoute.to} •{" "}
+                  {currentRoute.from.name} → {currentRoute.to.name} •{" "}
                   {currentRoute.distance} • {currentRoute.duration}
                 </div>
                 <button
@@ -196,41 +260,46 @@ const AdminRoutes = () => {
             )}
 
             {/* Stats */}
-            <div className="rounded-lg border bg-white text-gray-900 shadow-sm">
-              <div className="flex flex-col space-y-1.5 p-4">
-                <h3 className="text-lg font-semibold leading-none tracking-tight flex items-center gap-2">
-                  <Car className="h-5 w-5 text-purple-600" />
-                  Travel Statistics
-                </h3>
-              </div>
-              <div className="p-4 pt-0">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-purple-600">
-                    {totalDistance.toFixed(1)} km
+            {totalDistance > 0 && (
+              <div className="rounded-lg border bg-white text-gray-900 shadow-sm">
+                <div className="flex flex-col space-y-1.5 p-4">
+                  <h3 className="text-lg font-semibold leading-none tracking-tight flex items-center gap-2">
+                    <Car className="h-5 w-5 text-purple-600" />
+                    Travel Statistics
+                  </h3>
+                </div>
+                <div className="p-4 pt-0">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-purple-600">
+                      {totalDistance.toFixed(1)} km
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      Total Distance Travelled
+                    </p>
                   </div>
-                  <p className="text-sm text-gray-600">
-                    Total Distance Travelled
-                  </p>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Map and History Panel */}
           <div className="lg:col-span-2 space-y-4">
             <div className="rounded-lg border bg-white shadow-sm h-[400px]">
               <MapContainer
-                center={{ lat: -25.747, lng: 28.225 }}
+                center={{ lat: -26.2041, lng: 28.0473 }} // fallback (Johannesburg)
                 zoom={14}
                 className="w-full h-full rounded-lg"
               >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                {PLACES.map((p) => (
-                  <Marker key={p.name} position={p.coords} />
+
+                {places.map((p) => (
+                  <Marker key={p.id} position={{ lat: p.lat, lng: p.lng }} />
                 ))}
+
                 {routeCoords.length > 0 && (
                   <Polyline positions={routeCoords} color="blue" />
                 )}
+
                 {bounds && <FitBounds bounds={bounds} />}
               </MapContainer>
             </div>
@@ -250,18 +319,18 @@ const AdminRoutes = () => {
                   </p>
                 ) : (
                   <div className="space-y-3 max-h-64 overflow-y-auto">
-                    {routeHistory.map((route) => (
-                      <div key={route.id} className="p-3 border rounded-lg">
+                    {routeHistory.map((r) => (
+                      <div key={r.id} className="p-3 border rounded-lg">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="text-sm font-medium text-gray-900">
-                              {route.from} → {route.to}
+                              {r.from.name} → {r.to.name}
                             </div>
                             <div className="flex items-center gap-4 mt-1 text-xs text-gray-500">
-                              <span>{route.distance}</span>
-                              <span>{route.duration}</span>
+                              <span>{r.distance_km}</span>
+                              <span>{r.duration_min}</span>
                               <span>
-                                {new Date(route.timestamp).toLocaleDateString()}
+                                {new Date(r.created_at).toLocaleDateString()}
                               </span>
                             </div>
                           </div>
