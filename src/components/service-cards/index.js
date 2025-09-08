@@ -1,1 +1,1 @@
-export {default as ServiceCards} from './ServiceCards'
+export {default as ServiceCards} from './ServiceCards';

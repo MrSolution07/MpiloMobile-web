@@ -1,15 +1,12 @@
+// Dashboard.jsx
+import { useState, useEffect } from "react";
 import {
   Calendar,
   MessageSquare,
   AlertTriangle,
   Users,
 } from "lucide-react";
-import {
-  getDashboardStats,
-  mockAppointments,
-  mockMessages,
-  mockTriageCases,
-} from "../../data";
+import { supabase } from "../../services/supabaseClient";
 import { isToday } from "../../utils";
 import StatCard from "./StatCard";
 import UpcomingAppointments from "./UpcomingAppointments";
@@ -17,31 +14,96 @@ import RecentMessages from "./RecentMessages";
 import TriageQueue from "./TriageQueue";
 
 const Dashboard = () => {
-  const stats = getDashboardStats();
+  const [stats, setStats] = useState({
+    appointmentsToday: 0,
+    pendingMessages: 0,
+    criticalPatients: 0,
+    triageCases: 0
+  });
+  const [todaysAppointments, setTodaysAppointments] = useState([]);
+  const [unreadMessages, setUnreadMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Filter today's appointments
-  const todaysAppointments = mockAppointments
-    .filter((appointment) => isToday(appointment.date))
-    .sort((a, b) => a.time.localeCompare(b.time));
-
-  // Filter unread messages
-  const unreadMessages = mockMessages
-    .filter((message) => !message.read && message.recipientId === "u1")
-    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-  // Get active triage cases
-  const activeTriageCases = mockTriageCases
-    .filter(
-      (triage) => triage.status === "waiting" || triage.status === "in-progress"
-    )
-    .sort((a, b) => {
-      // Sort by priority first, then by arrival time
-      if (a.priority !== b.priority) {
-        const priorityOrder = { high: 0, medium: 1, low: 2 };
-        return priorityOrder[a.priority] - priorityOrder[b.priority];
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch critical patients (high priority AND waiting status)
+        const { count: criticalPatientsCount } = await supabase
+          .from('triage_cases')
+          .select('*', { count: 'exact', head: true })
+          .eq('priority', 'high')
+          .eq('status', 'waiting');
+        
+        // Fetch waiting triage cases count (for the stat card)
+        const { count: waitingTriageCount } = await supabase
+          .from('triage_cases')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'waiting');
+        
+        // Fetch today's appointments
+        const today = new Date().toISOString().split('T')[0];
+        const { data: appointments } = await supabase
+          .from('appointments')
+          .select(`
+            *,
+            patient:patient_id (first_name, last_name)
+          `)
+          .eq('date', today)
+          .order('time', { ascending: true });
+        
+        // Fetch unread messages
+        const { data: messages } = await supabase
+          .from('messages')
+          .select('*')
+          .eq('read', false)
+          .eq('recipient_id', 'u1') // Replace with current user ID
+          .order('timestamp', { ascending: false });
+        
+        setStats({
+          appointmentsToday: appointments?.length || 0,
+          pendingMessages: messages?.length || 0,
+          criticalPatients: criticalPatientsCount || 0,
+          triageCases: waitingTriageCount || 0
+        });
+        
+        setTodaysAppointments(appointments || []);
+        setUnreadMessages(messages || []);
+        
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      } finally {
+        setLoading(false);
       }
-      return new Date(a.arrivalTime) - new Date(b.arrivalTime);
-    });
+    };
+
+    fetchDashboardData();
+
+    // Set up realtime subscriptions
+    const appointmentsSubscription = supabase
+      .channel('appointments-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'appointments'
+      }, (payload) => {
+        fetchDashboardData();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(appointmentsSubscription);
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -76,16 +138,16 @@ const Dashboard = () => {
         />
 
         <StatCard
-          title="Critical Patients"
+          title="Critical Patients Waiting"
           value={stats.criticalPatients}
           icon={<Users className="w-6 h-6 text-red-600" />}
-          linkTo="/dashboard/patients"
+          linkTo="/dashboard/triage"
           cardColor="bg-red-50 border-red-200"
           iconColor="text-red-600"
         />
 
         <StatCard
-          title="Triage Cases"
+          title="Triage Cases Waiting"
           value={stats.triageCases}
           icon={<AlertTriangle className="w-6 h-6 text-yellow-600" />}
           trend="up"
@@ -99,7 +161,7 @@ const Dashboard = () => {
       <div className="gap-6 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
         <UpcomingAppointments appointments={todaysAppointments} />
         <RecentMessages messages={unreadMessages} />
-        <TriageQueue triageCases={activeTriageCases} />
+        <TriageQueue />
       </div>
     </div>
   );

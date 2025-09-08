@@ -1,46 +1,84 @@
-import { Link } from "react-router-dom";
 import { RiAdminFill } from "react-icons/ri";
 import { FaUser, FaLock, FaSignInAlt } from "react-icons/fa";
+import { useState } from "react";
+import { User, LogIn } from "lucide-react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../../context";
 
 function Login() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      setLoading(true);
+      await login(email.trim().toLowerCase(), password);
+      navigate("/UserDashboard");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-md p-6">
+    <div className="flex justify-center items-center bg-gray-100 px-4 min-h-screen">
+      <div className="bg-white shadow-md p-6 rounded-xl w-full max-w-md">
         <div className="flex justify-center mb-6">
           <Link to="/">
             <img
               src="../assets/images/mpiloLogo.png"
               alt="Mpilo Logo"
-              className="h-14 w-auto"
+              className="w-auto h-14"
             />
           </Link>
         </div>
 
-        <div className="text-center mb-6">
-          <h2 className="text-xl font-bold text-gray-800">
+        <div className="mb-6 text-center">
+          <h2 className="font-bold text-gray-800 text-xl">
             Healthcare Practitioner Login
           </h2>
-          <p className="text-sm text-gray-500">
+          <p className="text-gray-500 text-sm">
             Sign in to continue to Mpilo Mobile
           </p>
         </div>
 
-        <form className="space-y-4">
-          {/* Username */}
+        <div className="flex items-center justify-center bg-green-50 rounded-xl px-4 py-2 mb-5 shadow-inner">
+          <span className="flex items-center gap-2 text-green-800 font-medium text-sm">
+            <User size={16} /> Patient Portal
+          </span>
+        </div>
+
+        {/* Form */}
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          {/* Email */}
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
+              className="block font-medium text-gray-700 text-sm"
             >
               Email
             </label>
-            <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 bg-white">
-              <FaUser className="text-gray-400 mr-2" />
+            <div className="flex items-center bg-white mt-1 px-3 py-2 border border-gray-300 rounded-md">
+              <FaUser className="mr-2 text-gray-400" />
               <input
                 id="email"
                 type="text"
                 placeholder="Enter email"
                 className="w-full outline-none bg-transparent text-sm"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
           </div>
@@ -53,53 +91,61 @@ function Login() {
             >
               Password
             </label>
-            <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 bg-white">
-              <FaLock className="text-gray-400 mr-2" />
+            <div className="flex items-center bg-white mt-1 px-3 py-2 border border-gray-300 rounded-md">
+              <FaLock className="mr-2 text-gray-400" />
               <input
                 id="userpassword"
                 type="password"
                 placeholder="Enter password"
                 className="w-full outline-none bg-transparent text-sm"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="focus:outline-none text-gray-400 ml-2"
+              >
+                {showPassword ? <FaEyeSlash size={20}/> : <FaEye size={20} />}
+              </button>
             </div>
           </div>
 
-            <div className="flex justify-between items-center text-sm mt-2">
+          {/* Remember & Forgot */}
+          <div className="flex justify-between items-center text-sm">
             <label className="flex items-center text-gray-600">
-              <input type="checkbox" className="form-checkbox text-[#274D60] mr-2" />
-              Remember me
+              <input type="checkbox" className="form-checkbox text-white mr-2" />
+              Remember Me
             </label>
-            <Link to="/forgot-password" className="text-primary hover:underline">
-              Forgot password?
+            <Link to="/forgot-password" className="text-primary font-medium hover:underline">
+              Forgot Password?
             </Link>
           </div>
 
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+
           {/* Login Button */}
-          <Link to="/Dashboard">
           <button
             type="submit"
-            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#274D60] to-[#274D60] text-white py-2 rounded-md hover:opacity-90 transition"
+            disabled={loading}
+            className="w-full bg-green-500 text-white hover:opacity-90 font-semibold py-2 rounded-[0.8rem] transition flex items-center justify-center gap-2 border border-gray-300"
           >
-            Log In <FaSignInAlt />
+            {loading ? "Logging in..." : "Patient Login"} <LogIn size={16} />
           </button>
-          </Link>
         </form>
 
-        {/* Register & Admin */}
-        <div className="mt-6 text-center text-sm text-gray-600">
-          Don't have an account?
-          <Link to="/Register" className="text-primary ml-1 hover:underline">
-            Register
-          </Link>
-        </div>
+        <div className="text-center mt-6 text-sm">
+          <p className="text-gray-500">
+            Don't have an account?
+            <Link
+              to="/Register"
+              className="ml-1 px-1 py-1 rounded-md text-primary font-medium hover:opacity-90"
+            >
+              Register
+            </Link>
+          </p>
 
-        <div className="mt-4 flex justify-center">
-          <Link to="/AdminLogin">
-            <button className="flex items-center gap-2 px-4 py-2 border border-[#274D60] text-[#274D60] rounded-md hover:bg-blue-50 transition">
-              <RiAdminFill className="text-lg" />
-              I'm an Admin
-            </button>
-          </Link>
         </div>
       </div>
     </div>

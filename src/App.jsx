@@ -1,8 +1,10 @@
+
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "./components/admin/ui/toaster";
 import { Toaster as Sonner } from "./components/admin/ui/sonner";
 import { TooltipProvider } from "./components/admin/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AuthProvider } from "./context";
 
 // Main site pages
 import {
@@ -13,20 +15,22 @@ import {
   Gallery,
   Contact,
   Error,
+  UserDashboard,
+  
 } from "./pages";
 
-import { Register, Login, AdminLogin, ForgotPassword } from "./components/auth";
+import { Register, Login, AdminLogin, DoctorLogin, ForgotPassword } from "./components/auth";
 
 // Dashboard layout and pages
 import { Layout, AdminLayout } from "./components/layout";
 import { Dashboard } from "./components/DoctorDashboard";
-import { AppointmentsList,NewAppointment } from "./components/appointments";
+import { AppointmentsList, NewAppointment } from "./components/appointments";
 import { MessagesList } from "./components/messages";
-import { PatientsList, PatientDetails,AddPatient } from "./components/patients";
+import { PatientsList, PatientDetails, AddPatient } from "./components/patients";
 import { TriageList, NewTriage } from "./components/triage";
 import { MedicalRecordsList, NewRecord } from "./components/records";
 import { DoctorSettings } from "./components/settings";
-import {DoctorProfile} from "./components/profile";
+import { DoctorProfile } from "./components/profile";
 
 // Admin dashboard pages
 import {
@@ -41,6 +45,7 @@ import {
   AdminMessages,
   AdminSettings,
   AdminProfile,
+  AdminInventory,
   Routes
 } from "./pages/admin";
 
@@ -85,8 +90,16 @@ const router = createBrowserRouter([
     element: <AdminLogin />,
   },
   {
+    path: "/doctorlogin",
+    element: <DoctorLogin />,
+  },
+  {
     path: "/forgot-password",
     element: <ForgotPassword />,
+  },
+  {
+    path: "/Userdashboard",
+    element: <UserDashboard />,
   },
 
   // Dashboard routes (nested under /dashboard path)
@@ -103,7 +116,7 @@ const router = createBrowserRouter([
         element: <AppointmentsList />,
       },
       {
-        path: "newappointment",
+        path: "appointments/new",
         element: <NewAppointment />,
       },
       {
@@ -119,7 +132,7 @@ const router = createBrowserRouter([
         element: <PatientDetails />,
       },
       {
-        path: "addpatient",
+        path: "patients/add",
         element: <AddPatient />,
       },
       {
@@ -127,7 +140,7 @@ const router = createBrowserRouter([
         element: <TriageList />,
       },
       {
-        path: "newtriage",
+        path: "triage/new",
         element: <NewTriage />,
       },
       {
@@ -135,18 +148,17 @@ const router = createBrowserRouter([
         element: <MedicalRecordsList />,
       },
       {
-        path: "newrecord",
+        path: "records/new",
         element: <NewRecord />,
       },
       {
-        path:"settings",
-        element: <DoctorSettings/>
+        path: "settings",
+        element: <DoctorSettings />
       },
       {
         path: "profile",
         element: <DoctorProfile />,
       },
-
     ],
   },
 
@@ -207,6 +219,10 @@ const router = createBrowserRouter([
         path: "adminprofile",
         element: <AdminProfile />,
       },
+      {
+        path: "admininventory",
+        element: <AdminInventory />,
+      },
     ],
   },
 
@@ -216,13 +232,15 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <RouterProvider router={router} />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <RouterProvider router={router} />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </AuthProvider>
   );
 }
 

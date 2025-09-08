@@ -110,3 +110,7 @@ html, body {
 #btnReset:hover {
   background-color: #17a2b8;
 }
+
+button {
+  border-radius: 1rem !important;
+}
