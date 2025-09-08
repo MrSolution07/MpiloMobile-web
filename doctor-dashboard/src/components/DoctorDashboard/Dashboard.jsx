@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { supabase } from "../../services/supabaseClient";
 import { useAuth } from "../../context/AuthProvider";
+import { useDoctorAppointments } from "../../hooks/useDoctorAppointments";
 import StatCard from "./StatCard";
 import UpcomingAppointments from "./UpcomingAppointments";
 import RecentMessages from "./RecentMessages";
@@ -15,6 +16,8 @@ import TriageQueue from "./TriageQueue";
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const { appointments, loading: appointmentsLoading } = useDoctorAppointments();
+  
   const [stats, setStats] = useState({
     appointmentsToday: 0,
     pendingMessages: 0,
@@ -26,7 +29,20 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [doctorName, setDoctorName] = useState('');
 
-  
+  // Calculate today's appointments from the hook
+  useEffect(() => {
+    if (appointments && appointments.length > 0) {
+      const today = new Date().toISOString().split('T')[0];
+      const todayApps = appointments.filter(app => app.date === today);
+      
+      setTodaysAppointments(todayApps);
+      setStats(prev => ({
+        ...prev,
+        appointmentsToday: todayApps.length
+      }));
+    }
+  }, [appointments]);
+
   useEffect(() => {
     const fetchDoctorName = async () => {
       if (user?.email) {
@@ -74,33 +90,21 @@ const Dashboard = () => {
           .select('*', { count: 'exact', head: true })
           .eq('status', 'waiting');
         
-        // Fetch today's appointments
-        const today = new Date().toISOString().split('T')[0];
-        const { data: appointments } = await supabase
-          .from('appointments')
-          .select(`
-            *,
-            patient:patient_id (first_name, last_name)
-          `)
-          .eq('date', today)
-          .order('time', { ascending: true });
-        
         // Fetch unread messages
         const { data: messages } = await supabase
           .from('messages')
           .select('*')
           .eq('read', false)
-          .eq('recipient_id', 'u1') // Replace with current user ID
+          .eq('recipient_id', user?.id) // Use current user ID
           .order('timestamp', { ascending: false });
         
-        setStats({
-          appointmentsToday: appointments?.length || 0,
+        setStats(prev => ({
+          ...prev,
           pendingMessages: messages?.length || 0,
           criticalPatients: criticalPatientsCount || 0,
           triageCases: waitingTriageCount || 0
-        });
+        }));
         
-        setTodaysAppointments(appointments || []);
         setUnreadMessages(messages || []);
         
       } catch (error) {
@@ -110,7 +114,9 @@ const Dashboard = () => {
       }
     };
 
-    fetchDashboardData();
+    if (user?.id) {
+      fetchDashboardData();
+    }
 
     // Set up realtime subscriptions
     const appointmentsSubscription = supabase
@@ -120,16 +126,48 @@ const Dashboard = () => {
         schema: 'public',
         table: 'appointments'
       }, () => {
-        fetchDashboardData();
+        // The useDoctorAppointments hook will handle real-time updates
+      })
+      .subscribe();
+
+    const triageSubscription = supabase
+      .channel('triage-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'triage_cases'
+      }, () => {
+        // Refresh triage data
+        if (user?.id) {
+          fetchDashboardData();
+        }
+      })
+      .subscribe();
+
+    const messagesSubscription = supabase
+      .channel('messages-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'messages'
+      }, () => {
+        // Refresh messages data
+        if (user?.id) {
+          fetchDashboardData();
+        }
       })
       .subscribe();
 
     return () => {
       supabase.removeChannel(appointmentsSubscription);
+      supabase.removeChannel(triageSubscription);
+      supabase.removeChannel(messagesSubscription);
     };
-  }, []);
+  }, [user?.id]);
 
-  if (loading) {
+  const isLoading = loading || appointmentsLoading;
+
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
