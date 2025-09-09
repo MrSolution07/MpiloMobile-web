@@ -16,7 +16,7 @@ const UpcomingAppointments = ({ appointments }) => {
     <Card className="flex flex-col h-full">
       <CardHeader className="flex flex-row justify-between items-center pb-2">
         <CardTitle className="flex items-center font-semibold text-gray-900 text-lg">
-          <Calendar className="mr-2 w-5 h-5 text-blue-600" />
+          <Calendar className="mr-2 w-5 h-5 text-[#274D60]" />
           Today's Appointments
         </CardTitle>
         <Badge text={`${appointments.length} total`} variant="primary" />
@@ -88,7 +88,7 @@ const UpcomingAppointments = ({ appointments }) => {
         <Button
           variant="ghost"
           size="sm"
-          className="justify-center w-full text-blue-600 hover:text-blue-800"
+          className="justify-center w-full text-[#274D60] hover:text-blue-800"
           icon={<ArrowRight className="w-4 h-4" />}
           iconPosition="right"
         >

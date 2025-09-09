@@ -4,6 +4,8 @@ import { FaCalendarAlt, FaClock, FaUserMd, FaMapMarkerAlt, FaVideo, FaPhone, FaN
 import { supabase } from "../../services/supabaseClient";
 import { useAuth } from "../../context/AuthProvider";
 import { useAppointmentBooking } from "../../hooks/useAppointmentBooking";
+import profile from "../../../public/assets/images/profileImg.png";
+
 
 export default function AppointmentDetails() {
   const { id } = useParams();
@@ -56,7 +58,7 @@ export default function AppointmentDetails() {
           date: new Date(data.scheduled_datetime).toLocaleDateString(),
           time: new Date(data.scheduled_datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           type: data.appointment_type || "In-Person",
-          avatar: data.doctors?.profile_image_url || "https://www.gravatar.com/avatar/?d=mp",
+          avatar: data.doctors?.profile_image_url || profile,
           status: data.status,
           notes: data.reason_for_visit,
           symptoms: data.symptoms,

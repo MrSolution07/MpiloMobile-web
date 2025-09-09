@@ -8,12 +8,14 @@ import {
   MoreVertical,
   X
 } from "lucide-react";
+import profile from "../../../public/assets/images/profileImg.png";
+
 
 // Mock current user - replace with actual auth
 const currentUser = {
   id: "user-1",
   name: "Dr. Sarah Johnson",
-  avatar: "https://www.gravatar.com/avatar/?d=mp"
+  avatar: profile
 };
 
 // Avatar component
@@ -128,19 +130,19 @@ function MessagesList() {
     {
       id: "user-2",
       name: "John Smith",
-      avatar: "https://www.gravatar.com/avatar/?d=mp",
+      avatar: profile,
       role: "Patient"
     },
     {
       id: "user-3", 
       name: "Dr. Mike Wilson",
-      avatar: "https://www.gravatar.com/avatar/?d=mp",
+      avatar: profile,
       role: "Colleague"
     },
     {
       id: "user-4",
       name: "Sarah Davis",
-      avatar: "https://www.gravatar.com/avatar/?d=mp",
+      avatar: profile,
       role: "Patient"
     }
   ];
@@ -153,7 +155,7 @@ function MessagesList() {
         id: "conv-1",
         participantId: "user-2",
         participantName: "John Smith",
-        participantAvatar: "https://www.gravatar.com/avatar/?d=mp",
+        participantAvatar: profile,
         lastMessage: {
           id: "msg-1",
           senderId: "user-2",
@@ -169,7 +171,7 @@ function MessagesList() {
         id: "conv-2",
         participantId: "user-3",
         participantName: "Dr. Mike Wilson",
-        participantAvatar: "https://www.gravatar.com/avatar/?d=mp",
+        participantAvatar: profile,
         lastMessage: {
           id: "msg-2",
           senderId: "user-3",

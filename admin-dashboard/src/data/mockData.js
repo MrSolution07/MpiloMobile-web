@@ -1,10 +1,12 @@
+import profile from "../../public/assets/images/profileImg.png";
+
 export const currentUser = {
   id: 'u1',
   name: 'Dr. Sarah Johnson',
   role: 'doctor',
   department: 'Family Medicine',
   email: 'sarah.johnson@mediclinic.com',
-  avatar: 'https://www.gravatar.com/avatar/?d=mp'
+  avatar: profile
 };
 
 export const mockPatients = [
@@ -20,7 +22,7 @@ export const mockPatients = [
     insuranceNumber: 'BC123456789',
     lastVisit: '2023-11-15',
     status: 'stable',
-    avatar: 'https://www.gravatar.com/avatar/?d=mp'
+    avatar: profile
   },
   {
     id: 'p2',
@@ -34,7 +36,7 @@ export const mockPatients = [
     insuranceNumber: 'AE987654321',
     lastVisit: '2023-12-03',
     status: 'moderate',
-    avatar: 'https://www.gravatar.com/avatar/?d=mp'
+    avatar: profile
   },
   {
     id: 'p3',
@@ -48,7 +50,7 @@ export const mockPatients = [
     insuranceNumber: 'MC456789012',
     lastVisit: '2023-12-10',
     status: 'critical',
-    avatar: 'https://www.gravatar.com/avatar/?d=mp'
+    avatar: profile
   },
   {
     id: 'p4',
@@ -62,7 +64,7 @@ export const mockPatients = [
     insuranceNumber: 'CI234567890',
     lastVisit: '2023-12-15',
     status: 'stable',
-    avatar: 'https://www.gravatar.com/avatar/?d=mp'
+    avatar: profile
   },
   {
     id: 'p5',
@@ -76,7 +78,7 @@ export const mockPatients = [
     insuranceNumber: 'UH876543210',
     lastVisit: '2023-12-18',
     status: 'moderate',
-    avatar: 'https://www.gravatar.com/avatar/?d=mp'
+    avatar: profile
   }
 ];
 
@@ -152,7 +154,7 @@ export const mockMessages = [
     id: 'm1',
     senderId: 'p1',
     senderName: 'John Smith',
-    senderAvatar: 'https://www.gravatar.com/avatar/?d=mp',
+    senderAvatar: profile,
     recipientId: 'u1',
     recipientName: 'Dr. Sarah Johnson',
     timestamp: '2024-06-09T09:45:00',
@@ -164,7 +166,7 @@ export const mockMessages = [
     id: 'm2',
     senderId: 'p3',
     senderName: 'Michael Rodriguez',
-    senderAvatar: 'https://www.gravatar.com/avatar/?d=mp',
+    senderAvatar: profile,
     recipientId: 'u1',
     recipientName: 'Dr. Sarah Johnson',
     timestamp: '2024-06-09T11:23:00',
@@ -187,7 +189,7 @@ export const mockMessages = [
     id: 'm4',
     senderId: 'p4',
     senderName: 'Sarah Williams',
-    senderAvatar: 'https://www.gravatar.com/avatar/?d=mp',
+    senderAvatar: profile,
     recipientId: 'u1',
     recipientName: 'Dr. Sarah Johnson',
     timestamp: '2024-06-09T16:30:00',

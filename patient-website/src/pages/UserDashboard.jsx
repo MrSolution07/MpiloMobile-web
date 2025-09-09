@@ -104,7 +104,7 @@
 //     date: appt.date,
 //     time: appt.time,
 //     type: appt.type || "In-Person",
-//     avatar: appt.doctor_avatar || "https://www.gravatar.com/avatar/?d=mp"
+//     avatar: appt.doctor_avatar || profile
 //   })) : [];
 
 //   // Map doctors to UI format
@@ -113,7 +113,7 @@
 //     name: doc.name,
 //     specialty: doc.specialty,
 //     nextAvailable: doc.next_available,
-//     avatar: doc.avatar || "https://www.gravatar.com/avatar/?d=mp"
+//     avatar: doc.avatar || profile
 //   })) : [];
 
 //   // Map recent activity to UI format
@@ -200,7 +200,7 @@
 //               <div className="flex items-center space-x-3">
 //                 <img
 //                   className="h-8 w-8 rounded-full"
-//                   src="https://www.gravatar.com/avatar/?d=mp"
+//                   src=profile
 //                   alt="User avatar"
 //                 />
 //                 <span className="hidden sm:block text-sm font-medium text-gray-700">Major Tech</span>
@@ -621,6 +621,8 @@ import { useBookings } from "../hooks/useBookings";
 import { useAppointmentBooking } from "../hooks/useAppointmentBooking";
 import { useAuth } from "../context/AuthProvider";
 import { RecordPdf } from "../components/records/RecordPdf";
+import profile from "../../public/assets/images/profileImg.png";
+
 
 function PatientDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -730,7 +732,7 @@ const handleBookAppointment = (doctor) => {
     date: new Date(appt.scheduled_datetime).toLocaleDateString(),
     time: new Date(appt.scheduled_datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     type: appt.appointment_type || "In-Person",
-    avatar: appt.doctors?.profile_image_url || "https://www.gravatar.com/avatar/?d=mp",
+    avatar: appt.doctors?.profile_image_url || profile,
     status: appt.status
   }));
 
@@ -742,7 +744,7 @@ const handleBookAppointment = (doctor) => {
     date: new Date(appt.scheduled_datetime).toLocaleDateString(),
     time: new Date(appt.scheduled_datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     type: appt.appointment_type || "In-Person",
-    avatar: appt.doctors?.profile_image_url || "https://www.gravatar.com/avatar/?d=mp",
+    avatar: appt.doctors?.profile_image_url || profile,
     status: appt.status
   }));
 
@@ -752,7 +754,7 @@ const handleBookAppointment = (doctor) => {
     name: doc.name,
     specialty: doc.specialty,
     nextAvailable: doc.is_available ? 'Today' : 'Not available',
-    avatar: doc.profile_image_url || "https://www.gravatar.com/avatar/?d=mp",
+    avatar: doc.profile_image_url || profile,
     rating: doc.rating,
     experience: doc.experience_years,
     fee: doc.consultation_fee,
@@ -875,7 +877,7 @@ const handleBookAppointment = (doctor) => {
               <div className="flex items-center space-x-3">
                 <img
                   className="h-8 w-8 rounded-full"
-                  src="https://www.gravatar.com/avatar/?d=mp"
+                  src={profile}
                   alt="User avatar"
                 />
                 <span className="hidden sm:block text-sm font-medium text-gray-700">
@@ -1133,7 +1135,7 @@ const handleBookAppointment = (doctor) => {
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
               <div className="flex items-center space-x-4">
                 <img 
-                  src={doctor.profile_image_url || "https://www.gravatar.com/avatar/?d=mp"} 
+                  src={doctor.profile_image_url || profile} 
                   alt={doctor.name} 
                   className="w-16 h-16 rounded-full object-cover" 
                 />

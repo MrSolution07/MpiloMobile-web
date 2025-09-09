@@ -3,6 +3,8 @@ import { contacts, currentUser } from "./MessagesAvatar";
 import HeaderWithSearchFilter from "./MessagesHeader";
 import MessagePanel from "./MessagePanel";
 import { NewMessageModal } from "./MessageModal";
+import profile from "../../public/assets/images/profileImg.png";
+
 
 function MessagesList() {
   const [conversations, setConversations] = useState([]);
@@ -26,7 +28,7 @@ function MessagesList() {
         id: "conv-1",
         participantId: "user-2",
         participantName: "John Smith",
-        participantAvatar: "https://www.gravatar.com/avatar/?d=mp",
+        participantAvatar: profile,
         lastMessage: {
           id: "msg-1",
           senderId: "user-2",
@@ -42,7 +44,7 @@ function MessagesList() {
         id: "conv-2",
         participantId: "user-3",
         participantName: "Dr. Mike Wilson",
-        participantAvatar: "https://www.gravatar.com/avatar/?d=mp",
+        participantAvatar: profile,
         lastMessage: {
           id: "msg-2",
           senderId: "user-3",

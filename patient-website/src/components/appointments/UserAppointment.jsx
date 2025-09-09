@@ -125,6 +125,8 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppointmentBooking } from "../../hooks/useAppointmentBooking";
 import { useAuth } from "../../context/AuthProvider";
+import profile from "../../../public/assets/images/profileImg.png";
+
 
 export default function NewAppointment() {
   const [form, setForm] = useState({
@@ -187,7 +189,7 @@ export default function NewAppointment() {
       {/* Doctor Information Header */}
       <div className="flex items-center space-x-4 mb-6 p-4 bg-gray-50 rounded-lg">
         <img 
-          src={doctor.avatar || "https://www.gravatar.com/avatar/?d=mp"} 
+          src={doctor.avatar || profile} 
           alt={doctor.name} 
           className="w-16 h-16 rounded-full object-cover" 
         />

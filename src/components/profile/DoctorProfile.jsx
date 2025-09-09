@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import profile from "../../../public/assets/images/profileImg.png";
+
 
 export default function DoctorProfile() {
   const doctor = {
@@ -7,7 +9,7 @@ export default function DoctorProfile() {
     phone: '+27 12 345 6789',
     specialization: 'General Practitioner',
     status: 'Available',
-    imageUrl: 'https://www.gravatar.com/avatar/?d=mp', // placeholder picture
+    imageUrl: profile, // placeholder picture
   };
 
   return (

@@ -42,7 +42,7 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
       )}
     </div>
 
-    <div className={`flex-1 ${isSearchActive ? "flex" : "hidden sm:flex"} justify-center`}>
+    {/* <div className={`flex-1 ${isSearchActive ? "flex" : "hidden sm:flex"} justify-center`}>
       <div className="relative w-full max-w-md">
         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
           <Search className="w-5 h-5 text-gray-400" />
@@ -63,7 +63,7 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
           </button>
         )}
       </div>
-    </div>
+    </div> */}
 
     <div className="flex items-center gap-4">
       <div className="relative">

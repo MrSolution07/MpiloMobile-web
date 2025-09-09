@@ -3,6 +3,8 @@ import { Bell, Search, Menu, X } from "lucide-react";
 import { Avatar } from "../ui";
 import { useAuth } from "../../context/AuthProvider";
 import { supabase } from "../../services/supabaseClient";
+import profile from "../../../public/assets/images/profileImg.png";
+
 
 function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
   const { user, logout } = useAuth();
@@ -155,7 +157,7 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
           aria-label="User menu"
         >
           <Avatar
-            src="https://www.gravatar.com/avatar/?d=mp"
+            src= {profile}
             alt={doctorProfile.name}
             size="sm"
             status="online"

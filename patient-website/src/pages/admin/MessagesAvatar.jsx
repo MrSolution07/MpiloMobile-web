@@ -1,27 +1,29 @@
 // Mock Data, button and badge components
+import profile from "../../../public/assets/images/profileImg.png";
+
 const currentUser = {
   id: "user-1",
   name: "Dr. Sarah Johnson",
-  avatar: "https://www.gravatar.com/avatar/?d=mp"
+  avatar: profile
 };
 
 const contacts = [
   {
     id: "user-2",
     name: "John Smith",
-    avatar: "https://www.gravatar.com/avatar/?d=mp",
+    avatar: profile,
     role: "Patient"
   },
   {
     id: "user-3", 
     name: "Dr. Mike Wilson",
-    avatar: "https://www.gravatar.com/avatar/?d=mp",
+    avatar: profile,
     role: "Colleague"
   },
   {
     id: "user-4",
     name: "Sarah Davis",
-    avatar: "https://www.gravatar.com/avatar/?d=mp",
+    avatar: profile,
     role: "Patient"
   }
 ];

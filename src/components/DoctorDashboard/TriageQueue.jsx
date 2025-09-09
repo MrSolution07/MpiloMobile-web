@@ -87,7 +87,7 @@ const TriageQueue = () => {
     <Card className="flex flex-col h-full">
       <CardHeader className="flex flex-row justify-between items-center pb-2">
         <CardTitle className="flex items-center font-semibold text-gray-900 text-lg">
-          <AlertTriangle className="mr-2 w-5 h-5 text-yellow-600" />
+          <AlertTriangle className="mr-2 w-5 h-5 text-[#274D60]" />
           Triage Queue
         </CardTitle>
         <Badge text={`${triageCases.length} active`} variant="warning" />
@@ -165,7 +165,7 @@ const TriageQueue = () => {
         <Button
           variant="ghost"
           size="sm"
-          className="justify-center w-full text-yellow-600 hover:text-yellow-800"
+          className="justify-center w-full text-[#274D60] hover:text-yellow-800"
           icon={<ArrowRight className="w-4 h-4" />}
           iconPosition="right"
         >

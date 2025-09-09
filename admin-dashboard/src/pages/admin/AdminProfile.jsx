@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import profile from "../../public/assets/images/profileImg.png";
+
 
 export default function AdminProfile() {
   const admin = {
@@ -7,7 +9,7 @@ export default function AdminProfile() {
     phone: '+27 12 345 6789',
     role: 'System Administrator',
     status: 'Active',
-    imageUrl: 'https://www.gravatar.com/avatar/?d=mp',
+    imageUrl: profile,
   };
 
   return (

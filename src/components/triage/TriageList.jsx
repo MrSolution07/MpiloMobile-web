@@ -399,10 +399,10 @@ const TriageList = () => {
       <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
         {/* Waiting Column */}
         <Card>
-          <CardHeader className="bg-red-50 border-b border-red-100">
+          <CardHeader className="border-b border-red-100">
             <div className="flex justify-between items-center">
-              <CardTitle className="flex items-center font-medium text-red-900 text-lg">
-                <Clock className="mr-2 w-5 h-5 text-red-700" />
+              <CardTitle className="flex items-center font-medium text-[#274D60] text-lg">
+                <Clock className="mr-2 w-5 h-5 text-[#274D60]" />
                 Waiting
               </CardTitle>
               <Badge text={`${groupedCases.waiting.length} cases`} variant="danger" />
@@ -427,10 +427,10 @@ const TriageList = () => {
 
         {/* In Progress Column */}
         <Card>
-          <CardHeader className="bg-yellow-50 border-yellow-100 border-b">
+          <CardHeader className="border-yellow-100 border-b">
             <div className="flex justify-between items-center">
-              <CardTitle className="flex items-center font-medium text-yellow-900 text-lg">
-                <AlertTriangle className="mr-2 w-5 h-5 text-yellow-700" />
+              <CardTitle className="flex items-center font-medium text-[#274D60] text-lg">
+                <AlertTriangle className="mr-2 w-5 h-5 text-[#274D60]" />
                 In Progress
               </CardTitle>
               <Badge text={`${groupedCases["in-progress"].length} cases`} variant="warning" />
@@ -455,10 +455,10 @@ const TriageList = () => {
 
         {/* Completed Column */}
         <Card>
-          <CardHeader className="bg-green-50 border-green-100 border-b">
+          <CardHeader className="border-green-100 border-b">
             <div className="flex justify-between items-center">
-              <CardTitle className="flex items-center font-medium text-green-900 text-lg">
-                <User className="mr-2 w-5 h-5 text-green-700" />
+              <CardTitle className="flex items-center font-medium text-[#274D60] text-lg">
+                <User className="mr-2 w-5 h-5 text-[#274D60]" />
                 Completed
               </CardTitle>
               <Badge text={`${groupedCases.completed.length} cases`} variant="success" />

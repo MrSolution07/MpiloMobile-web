@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthProvider';
 import { supabase } from '../../services/supabaseClient';
+import profile from "../../../public/assets/images/profileImg.png";
+
 
 export default function DoctorProfile() {
   const { user } = useAuth();
@@ -11,7 +13,7 @@ export default function DoctorProfile() {
     phone_number: '',
     specialization: '',
     status: 'Available',
-    imageUrl: 'https://www.gravatar.com/avatar/?d=mp',
+    imageUrl: profile,
     doctor_number: '',
     license_number: '',
     hpcsa_number: '',
@@ -44,7 +46,7 @@ export default function DoctorProfile() {
               phone_number: doctorData.phone_number || 'Not provided',
               specialization: doctorData.specialization || 'General Practitioner',
               status: doctorData.is_available ? 'Available' : 'Unavailable',
-              imageUrl: doctorData.profile_image_url || 'https://www.gravatar.com/avatar/?d=mp',
+              imageUrl: doctorData.profile_image_url || profile,
               doctor_number: doctorData.doctor_number || 'Not assigned',
               license_number: doctorData.license_number || 'Not provided',
               hpcsa_number: doctorData.hpcsa_number || 'Not provided',
@@ -65,7 +67,7 @@ export default function DoctorProfile() {
               phone_number: 'Not provided',
               specialization: 'General Practitioner',
               status: 'Available',
-              imageUrl: 'https://www.gravatar.com/avatar/?d=mp',
+              imageUrl: profile,
               doctor_number: 'Not assigned',
               license_number: 'Not provided',
               hpcsa_number: 'Not provided',
@@ -89,7 +91,7 @@ export default function DoctorProfile() {
             phone_number: 'Not provided',
             specialization: 'General Practitioner',
             status: 'Available',
-            imageUrl: 'https://www.gravatar.com/avatar/?d=mp',
+            imageUrl: profile,
             doctor_number: 'Not assigned',
             license_number: 'Not provided',
             hpcsa_number: 'Not provided',

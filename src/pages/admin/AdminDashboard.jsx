@@ -259,8 +259,8 @@ const AdminDashboard = () => {
       {/* Stats Section */}
       <div className="gap-6 grid sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat, index) => (
-          <Card key={index} className="card-hover">
-            <CardContent className="p-6">
+          <Card key={index} className="card-hover border border-gray-200">
+            <CardContent className="p-6 ">
               <div className="flex justify-between items-center">
                 <div>
                   <p className="font-medium text-gray-500 text-sm">{stat.title}</p>
