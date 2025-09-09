@@ -22,11 +22,14 @@ import { useNavigate } from "react-router-dom";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { RecordPdf } from "../components/records/RecordPdf";
 import { useAuth } from "../context";
+import { CallButton } from "../components/shared";
 
 function PatientDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
+
+  console.log(user);
 
   const handleLogout = async () => {
     try {
@@ -530,8 +533,6 @@ function PatientDashboard() {
                 />
               </div>
             </div>
-          </div>
-        )}
 
             <div className="grid gap-4">
               {availableDoctors.map((doctor) => (

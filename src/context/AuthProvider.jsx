@@ -79,12 +79,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = async () => {
-    await supabase.auth.signOut();
-    setSession(null);
-  };
-
-  const register = async (email, password) => {
+  const login = async (email, password) => {
     email = email.trim().toLowerCase();
 
     const { error } = await supabase.auth.signInWithPassword({
@@ -110,7 +105,6 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     register,
-    resetPassword,
   };
 
   return (
