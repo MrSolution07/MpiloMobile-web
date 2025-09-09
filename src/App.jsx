@@ -17,7 +17,7 @@ import {
   UserDashboard,
 } from "./pages";
 
-import { Register, Login, AdminLogin, ForgotPassword } from "./components/auth";
+import { Register, Login, AdminLogin, DoctorLogin, ForgotPassword } from "./components/auth";
 
 // Dashboard layout and pages
 import { Layout, AdminLayout } from "./components/layout";
@@ -95,6 +95,10 @@ const router = createBrowserRouter([
   {
     path: "/adminlogin",
     element: <AdminLogin />,
+  },
+  {
+    path: "/doctorlogin",
+    element: <DoctorLogin />,
   },
   {
     path: "/forgot-password",

@@ -1,17 +1,17 @@
-
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { UserCog, LogIn } from "lucide-react";
 import { TbStethoscope } from "react-icons/tb";
 import { FaSignInAlt, FaEye, FaEyeSlash } from "react-icons/fa";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context";
 import { FaEnvelope } from "react-icons/fa";
 
 function AdminLogin() {
+  const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -32,41 +32,46 @@ function AdminLogin() {
   };
 
   return (
-    <div className="flex justify-center items-center bg-gray-100 min-h-screen">
-      <div className="bg-white shadow-lg p-8 rounded-lg w-full max-w-md">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-6 border border-gray-200">
         <div className="flex justify-center mb-6">
-          <Link to="/">
+          <div>
             <img
               src="../assets/images/mpiloLogo.png"
               alt="Mpilo Logo"
-              className="h-12"
+              className="h-14 w-auto"
               onClick={() => navigate("/")}
             />
-          </Link>
+          </div>
         </div>
 
-        <div className="mb-6 text-center">
-          <h2 className="font-semibold text-gray-800 text-xl">
-            Administrator Login
-          </h2>
-          <p className="text-gray-500 text-sm">
-            Sign in to continue to Mpilo Mobile
-          </p>
+        <div className="text-center mb-4">
+          <h2 className="text-2xl font-extrabold text-gray-800">Admin Access</h2>
+          <p className="text-sm text-gray-500">Sign in to access admin dashboard</p>
         </div>
 
+        <div className="flex items-center justify-center bg-red-50 rounded-xl px-4 py-2 mb-5 shadow-inner">
+          <span className="flex items-center gap-2 text-red-800 font-medium text-sm">
+            <UserCog size={16} /> Administrator Portal
+          </span>
+        </div>
+
+        {/* Form */}
         <form className="space-y-4" onSubmit={handleSubmit}>
+          {/* Email */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               Email
             </label>
-            <div className="flex items-center mt-1 px-3 border rounded-md">
-              <FaEnvelope className="mr-2 text-gray-400" />
-
+            <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 bg-white hover:rounded-none">
               <input
-                type="email"
                 id="email"
-                placeholder="Enter email"
-                className="w-full py-2 outline-none text-sm"
+                type="text"
+                placeholder="Enter admin email"
+                className="w-full outline-none bg-transparent text-sm"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -74,15 +79,19 @@ function AdminLogin() {
             </div>
           </div>
 
+          {/* Password */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="userpassword"
+              className="block text-sm font-medium text-gray-700"
+            >
               Password
             </label>
-            <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 hover:rounded-none">
+            <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 bg-white hover:rounded-none">
               <input
                 id="userpassword"
                 type={showPassword ? "text" : "password"}
-                placeholder="Enter password"
+                placeholder="Enter admin password"
                 className="w-full outline-none bg-transparent text-sm"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -98,34 +107,30 @@ function AdminLogin() {
             </div>
           </div>
 
-          <div className="flex justify-between items-center mt-2 text-sm">
+          {/* Remember & Forgot */}
+          <div className="flex justify-between items-center text-sm">
             <label className="flex items-center text-gray-600">
-              <input
-                type="checkbox"
-                className="mr-2 text-[#274D60] form-checkbox"
-              />
-              Remember me
+              <input type="checkbox" className="form-checkbox text-white mr-2" />
+              Remember Me
             </label>
-            <Link
-              to="/forgot-password"
-              className="text-primary hover:underline"
-            >
-              Forgot password?
+            <Link to="/forgot-password" className="text-primary font-medium hover:underline">
+              Forgot Password?
             </Link>
           </div>
 
           {error && <p className="text-red-500 text-sm">{error}</p>}
 
+          {/* Login Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-red-500 text-white py-2 rounded-[0.8rem] mt-4 hover:opacity-90 transition flex items-center justify-center gap-2"
+            className="w-full bg-red-500 text-white hover:opacity-90 font-semibold py-2 rounded-[0.8rem] transition flex items-center justify-center gap-2 border border-gray-300"
           >
-            {loading ? "Logging in..." : "Log In"} <FaSignInAlt />
+            {loading ? "Logging in..." : "Admin Login"} <LogIn size={16} />
           </button>
         </form>
 
-        <div className="mt-6 text-sm text-center">
+        {/* <div className="text-center mt-6 text-sm">
           <p className="text-gray-500">
             Don't have an account?
             <Link
@@ -135,7 +140,7 @@ function AdminLogin() {
               Register
             </Link>
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
   );

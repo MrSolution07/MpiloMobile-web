@@ -211,7 +211,7 @@ function NewRecord() {
           </div>
         </div>
 
-        <div className="flex justify-end space-x-2">
+        <div className="flex justify-end gap-4 mt-4">
           <Button
             type="button"
             variant="secondary"
@@ -221,7 +221,7 @@ function NewRecord() {
           </Button>
           <Button
             type="submit"
-            variant="primary"
+            variant="danger"
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Saving...' : 'Save Record'}

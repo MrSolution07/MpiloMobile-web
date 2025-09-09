@@ -1,13 +1,12 @@
 import { RiAdminFill } from "react-icons/ri";
 import { FaUser, FaLock, FaSignInAlt } from "react-icons/fa";
 import { useState } from "react";
-import { User, LogIn, UserCog} from "lucide-react";
+import { User, LogIn } from "lucide-react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context";
 
 function Login() {
-  const [isPractitioner, setIsPractitioner] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,11 +23,7 @@ function Login() {
     try {
       setLoading(true);
       await login(email.trim().toLowerCase(), password);
-      if (isPractitioner) {
-        navigate("/Dashboard");
-      } else {
-        navigate("/UserDashboard");
-      }
+      navigate("/UserDashboard");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -58,21 +53,10 @@ function Login() {
           </p>
         </div>
 
-        <div className="flex items-center justify-between bg-gray-100 rounded-xl px-4 py-2 mb-5 shadow-inner">
-          <span className="flex items-center gap-2 text-gray-800 font-medium text-sm">
-            <User size={16} /> Healthcare Practitioner
+        <div className="flex items-center justify-center bg-green-50 rounded-xl px-4 py-2 mb-5 shadow-inner">
+          <span className="flex items-center gap-2 text-green-800 font-medium text-sm">
+            <User size={16} /> Patient Portal
           </span>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              className="sr-only peer"
-              checked={isPractitioner}
-              onChange={() => setIsPractitioner(!isPractitioner)}
-            />
-            <div className={`relative w-11 h-6 peer-focus:outline-none rounded-full transition duration-300 ${isPractitioner ? 'bg-red-600' : 'bg-gray-300'}`}>
-              <div className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform duration-300 shadow-sm ${isPractitioner ? 'translate-x-5' : ''}`}></div>
-            </div>
-          </label>
         </div>
 
         {/* Form */}
@@ -145,19 +129,21 @@ function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-red-500 text-white hover:opacity-90 font-semibold py-2 rounded-[0.8rem] transition flex items-center justify-center gap-2 border border-gray-300"
+            className="w-full bg-green-500 text-white hover:opacity-90 font-semibold py-2 rounded-[0.8rem] transition flex items-center justify-center gap-2 border border-gray-300"
           >
-            {loading ? "Logging in..." : "Login"} <LogIn size={16} />
+            {loading ? "Logging in..." : "Patient Login"} <LogIn size={16} />
           </button>
         </form>
-
-        <div className="flex justify-center mt-4">
-          <Link to="/AdminLogin">
-            <button className="flex items-center gap-2 hover:bg-blue-50 px-4 py-2 border border-[#274D60] rounded-md text-[#274D60] transition">
-              <RiAdminFill className="text-lg" />
-              I'm an Admin
-            </button>
-          </Link>
+        <div className="text-center mt-6 text-sm">
+          <p className="text-gray-500">
+            Don't have an account?
+            <Link
+              to="/Register"
+              className="ml-1 px-1 py-1 rounded-md text-primary font-medium hover:opacity-90"
+            >
+              Register
+            </Link>
+          </p>
         </div>
       </div>
     </div>

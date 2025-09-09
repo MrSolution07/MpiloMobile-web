@@ -2,8 +2,11 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context";
 import { FaSignInAlt, FaEye, FaEyeSlash } from "react-icons/fa";
+import { capitalize } from "../../utils";
 
 function Register() {
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -18,6 +21,7 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     setError("");
 
     if (password !== confirmPassword) {
@@ -26,8 +30,10 @@ function Register() {
     }
 
     try {
-      setLoading(true);
-      await register(email.trim().toLowerCase(), password);
+      const fullName = `${capitalize(firstname.trim())} ${capitalize(
+        lastname.trim()
+      )}`.trim();
+      await register(email.trim().toLowerCase(), password, fullName);
       navigate("/login");
     } catch (error) {
       setError(error.message);
@@ -55,10 +61,53 @@ function Register() {
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
+          {/* First Name */}
           <div>
             <label
               htmlFor="email"
-              className="block font-medium text-gray-700 text-sm"
+              className="block text-sm font-medium text-gray-700"
+            >
+              First Name
+            </label>
+            <div className="flex items-center border border-gray-300 rounded-md px-3 mt-1 hover:rounded-none">
+              <input
+                type="letters"
+                id="firstname"
+                placeholder="Enter first name"
+                className="w-full py-2 outline-none text-sm"
+                value={firstname}
+                onChange={(e) => setFirstname(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          {/* Last Name */}
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Last Name
+            </label>
+            <div className="flex items-center border border-gray-300 rounded-md px-3 mt-1 hover:rounded-none">
+              <input
+                type="letters"
+                id="lastname"
+                placeholder="Enter last name"
+                className="w-full py-2 outline-none text-sm"
+                value={lastname}
+                onChange={(e) => setLastname(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          {/* Email */}
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
             >
               Email
             </label>
@@ -79,7 +128,7 @@ function Register() {
           <div>
             <label
               htmlFor="password"
-              className="block font-medium text-gray-700 text-sm"
+              className="block text-sm font-medium text-gray-700"
             >
               Password
             </label>
@@ -99,7 +148,7 @@ function Register() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="focus:outline-none text-gray-400 ml-2"
               >
-                {showPassword ? <FaEyeSlash size={20}/> : <FaEye size={20} />}
+                {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
               </button>
             </div>
           </div>
@@ -107,7 +156,7 @@ function Register() {
           <div>
             <label
               htmlFor="confirmPassword"
-              className="block font-medium text-gray-700 text-sm"
+              className="block text-sm font-medium text-gray-700"
             >
               Confirm Password
             </label>
@@ -127,7 +176,11 @@ function Register() {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="focus:outline-none text-gray-400 ml-2"
               >
-                {showConfirmPassword ? <FaEyeSlash size={20}/> : <FaEye size={20} />}
+                {showConfirmPassword ? (
+                  <FaEyeSlash size={20} />
+                ) : (
+                  <FaEye size={20} />
+                )}
               </button>
             </div>
           </div>
@@ -136,7 +189,7 @@ function Register() {
           <div>
             <label
               htmlFor="mobileNumber"
-              className="block font-medium text-gray-700 text-sm"
+              className="block text-sm font-medium text-gray-700"
             >
               Mobile Number
             </label>
@@ -154,7 +207,11 @@ function Register() {
           </div>
 
           <div className="flex items-center gap-2 text-sm text-gray-600">
-            <input type="checkbox" id="customSwitchSuccess" className="mt-0.5" />
+            <input
+              type="checkbox"
+              id="customSwitchSuccess"
+              className="mt-0.5"
+            />
             <label htmlFor="customSwitchSuccess" className="flex items-center">
               By registering you agree to the{" "}
               <Link to="#" className="ml-1 text-primary hover:underline">
@@ -178,7 +235,7 @@ function Register() {
           Already have an account?
           <Link
             to="/login"
-            className="ml-2 font-medium text-primary hover:underline"
+            className="ml-2 text-primary font-medium hover:underline"
           >
             Log in
           </Link>

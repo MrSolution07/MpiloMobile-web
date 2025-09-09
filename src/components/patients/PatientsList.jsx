@@ -1,8 +1,3 @@
-
-
-
-
-
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Search, Plus, Filter, UserX } from "lucide-react";
@@ -149,15 +144,17 @@ const PatientsList = () => {
             size="sm"
             icon={<Filter className="w-4 h-4" />}
             onClick={() => setFilterOpen(!filterOpen)}
+            className="mr-2"
           >
             Filter
           </Button>
 
           <Link to="/dashboard/patients/add">
             <Button
-              variant="primary"
+              variant="danger"
               size="sm"
               icon={<Plus className="w-4 h-4" />}
+              className="ml-2"
             >
               Add Patient
             </Button>
@@ -174,7 +171,7 @@ const PatientsList = () => {
           <input
             type="text"
             placeholder="Search patients by name, email, or phone..."
-            className="bg-white py-2 pr-4 pl-10 border border-gray-300 focus:border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-gray-700"
+            className="bg-white py-2 pr-4 pl-10 border border-gray-300 focus:border-gray-300rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 w-full text-gray-700"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />

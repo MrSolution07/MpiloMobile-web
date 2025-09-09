@@ -23,9 +23,41 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
   };
 
   return (
-    <header className="top-0 z-30 bg-white shadow-sm border-gray-200 border-b w-full">
-      <div className="flex flex-wrap justify-between items-center gap-4 px-4 py-2 w-full sm:h-16">
-        <div className="flex items-center gap-2">
+<header className="top-0 z-30 bg-white shadow-sm border-b border-gray-200 w-full">
+  <div className="flex items-center justify-between px-4 py-2 sm:h-16 w-full flex-wrap gap-4">
+    <div className="flex items-center gap-2">
+      <button
+        onClick={toggleSidebar}
+        className="lg:hidden hover:bg-gray-100 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600 hover:text-gray-900"
+        aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
+      >
+        {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+      </button>
+
+      {!isSearchActive && (
+        <button
+          onClick={() => setIsSearchActive(true)}
+          className="sm:hidden hover:bg-gray-100 p-2 rounded-full text-gray-600 hover:text-gray-900"
+          aria-label="Search"
+        >
+          <Search className="w-5 h-5" />
+        </button>
+      )}
+    </div>
+
+    {/* <div className={`flex-1 ${isSearchActive ? "flex" : "hidden sm:flex"} justify-center`}>
+      <div className="relative w-full max-w-md">
+        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <Search className="w-5 h-5 text-gray-400" />
+        </div>
+        <input
+          type="text"
+          placeholder="Search patients, appointments..."
+          className="bg-gray-100 focus:bg-white py-2 pr-10 pl-10 border-none rounded-lg focus:ring-2 focus:ring-blue-500 w-full text-gray-700"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        {isSearchActive && (
           <button
             onClick={toggleSidebar}
             className="lg:hidden hover:bg-gray-100 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600 hover:text-gray-900"
@@ -37,6 +69,9 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
               <Menu className="w-5 h-5" />
             )}
           </button>
+        )}
+      </div>
+    </div> */}
 
           {!isSearchActive && (
             <button

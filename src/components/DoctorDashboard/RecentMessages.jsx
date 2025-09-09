@@ -17,7 +17,7 @@ const RecentMessages = ({ messages }) => {
     <Card className="flex flex-col h-full">
       <CardHeader className="flex flex-row justify-between items-center pb-2">
         <CardTitle className="flex items-center font-semibold text-gray-900 text-lg">
-          <MessageSquare className="mr-2 w-5 h-5 text-purple-600" />
+          <MessageSquare className="mr-2 w-5 h-5 text-[#274D60]" />
           Unread Messages
         </CardTitle>
         <Badge text={`${messages.length} new`} variant="primary" />
@@ -78,7 +78,7 @@ const RecentMessages = ({ messages }) => {
         <Button
           variant="ghost"
           size="sm"
-          className="justify-center w-full text-purple-600 hover:text-purple-800"
+          className="justify-center w-full text-[#274D60]hover:text-purple-800"
           icon={<ArrowRight className="w-4 h-4" />}
           iconPosition="right"
         >

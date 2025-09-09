@@ -310,6 +310,7 @@ const TriageList = () => {
             size="sm"
             icon={<Filter className="w-4 h-4" />}
             onClick={() => setFilterOpen(!filterOpen)}
+            className="mr-2"
           >
             Filter
           </Button>
@@ -319,6 +320,7 @@ const TriageList = () => {
               variant="primary"
               size="sm"
               icon={<Plus className="w-4 h-4" />}
+              className="ml-2 bg-red-600 hover:bg-red-700 text-white border-red-700"
             >
               New Triage Case
             </Button>
@@ -335,7 +337,7 @@ const TriageList = () => {
           <input
             type="text"
             placeholder="Search by patient name or complaint..."
-            className="bg-white py-2 pr-4 pl-10 border border-gray-300 focus:border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-gray-700"
+            className="bg-white py-2 pr-4 pl-10 border border-gray-300 focus:border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 w-full text-gray-700"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -398,13 +400,13 @@ const TriageList = () => {
       <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
         {/* Waiting Column */}
         <Card>
-          <CardHeader className="bg-blue-50 border-b border-blue-100">
+          <CardHeader className="border-b border-red-100">
             <div className="flex justify-between items-center">
-              <CardTitle className="flex items-center font-medium text-blue-900 text-lg">
-                <Clock className="mr-2 w-5 h-5 text-blue-700" />
+              <CardTitle className="flex items-center font-medium text-[#274D60] text-lg">
+                <Clock className="mr-2 w-5 h-5 text-[#274D60]" />
                 Waiting
               </CardTitle>
-              <Badge text={`${groupedCases.waiting.length} cases`} variant="primary" />
+              <Badge text={`${groupedCases.waiting.length} cases`} variant="danger" />
             </div>
           </CardHeader>
           <CardContent className="space-y-4 p-4 max-h-[calc(100vh-300px)] overflow-y-auto">
@@ -415,7 +417,7 @@ const TriageList = () => {
                   triageCase={triageCase}
                   action={() => updateCaseStatus(triageCase.id, 'in-progress')}
                   actionText="Begin Treatment"
-                  actionVariant="primary"
+                  actionVariant="danger"
                 />
               ))
             ) : (
@@ -426,10 +428,10 @@ const TriageList = () => {
 
         {/* In Progress Column */}
         <Card>
-          <CardHeader className="bg-yellow-50 border-yellow-100 border-b">
+          <CardHeader className="border-yellow-100 border-b">
             <div className="flex justify-between items-center">
-              <CardTitle className="flex items-center font-medium text-yellow-900 text-lg">
-                <AlertTriangle className="mr-2 w-5 h-5 text-yellow-700" />
+              <CardTitle className="flex items-center font-medium text-[#274D60] text-lg">
+                <AlertTriangle className="mr-2 w-5 h-5 text-[#274D60]" />
                 In Progress
               </CardTitle>
               <Badge text={`${groupedCases["in-progress"].length} cases`} variant="warning" />
@@ -454,10 +456,10 @@ const TriageList = () => {
 
         {/* Completed Column */}
         <Card>
-          <CardHeader className="bg-green-50 border-green-100 border-b">
+          <CardHeader className="border-green-100 border-b">
             <div className="flex justify-between items-center">
-              <CardTitle className="flex items-center font-medium text-green-900 text-lg">
-                <User className="mr-2 w-5 h-5 text-green-700" />
+              <CardTitle className="flex items-center font-medium text-[#274D60] text-lg">
+                <User className="mr-2 w-5 h-5 text-[#274D60]" />
                 Completed
               </CardTitle>
               <Badge text={`${groupedCases.completed.length} cases`} variant="success" />

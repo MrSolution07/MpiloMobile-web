@@ -1,4 +1,4 @@
-// please note this is for presentation puroposes for Monday and will be reconstructed after
+// Updated PatientDashboard.jsx with PDF download functionality
 
 import { useState } from "react";
 import {
@@ -16,13 +16,73 @@ import {
   FaThermometerHalf,
   FaWeight,
   FaTint,
+  FaDownload,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { CallButton } from "../components/shared";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import { RecordPdf } from "../components/records/RecordPdf";
+import { useAuth } from "../context";
 
 function PatientDashboard() {
-  const [activeTab, setActiveTab] = useState("overview");
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("overview");
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (err) {
+      console.error("Logout failed:", err);
+    } finally {
+      navigate("/login");
+    }
+  };
+
+  // Sample patient data for PDF generation
+  const patientRecordData = {
+    // Patient Information
+    patientName: "Major Tech",
+    dateOfBirth: "1990-01-15",
+    gender: "Male",
+    idNumber: "9001155555083",
+    contactNumber: "+27 82 123 4567",
+    address: "123 Main Street, Johannesburg, Gauteng, 2000",
+    medicalAid: "Discovery Health",
+    medicalAidNumber: "DH123456789",
+
+    // Emergency Contact
+    emergencyContactName: "Jane Tech",
+    emergencyContactRelation: "Spouse",
+    emergencyContactPhone: "+27 83 987 6543",
+
+    // Visit Information
+    visitDate: "2025-07-25",
+    visitTime: "14:30",
+    attendingPhysician: "Dr. Sarah Johnson",
+    department: "General Medicine",
+
+    // Vital Signs
+    bloodPressure: "120/80",
+    heartRate: "72",
+    temperature: "36.5",
+    weight: "75",
+    height: "175",
+    respiratoryRate: "16",
+
+    // Medical Information
+    chiefComplaint: "Annual check-up and routine health assessment",
+    historyOfPresentIllness:
+      "Patient presents for routine annual physical examination. No acute complaints. Reports feeling well overall with good energy levels and no significant changes in health status since last visit.",
+    physicalExamination:
+      "General appearance: Well-appearing, alert, oriented. Vital signs stable. Cardiovascular: Regular rate and rhythm, no murmurs. Respiratory: Clear to auscultation bilaterally. Abdomen: Soft, non-tender. Neurological: Grossly intact.",
+    diagnosis:
+      "Z00.00 - Encounter for general adult medical examination without abnormal findings",
+    treatmentPlan:
+      "Continue current healthy lifestyle. Regular exercise and balanced diet. Annual follow-up recommended.",
+    medications: "Vitamin D3 1000 IU daily, Multivitamin daily",
+    followUpInstructions:
+      "Continue current medications. Return for annual physical examination in 12 months or sooner if any health concerns arise. Maintain healthy diet and regular exercise routine.",
+  };
 
   const upcomingAppointments = [
     {
@@ -128,6 +188,28 @@ function PatientDashboard() {
     },
   ];
 
+  // PDF Download Component
+  const DownloadRecordsButton = () => (
+    <PDFDownloadLink
+      document={<RecordPdf data={patientRecordData} />}
+      fileName={`medical_record_${patientRecordData.patientName}_${
+        new Date().toISOString().split("T")[0]
+      }.pdf`}
+    >
+      {({ loading }) => (
+        <button
+          className={`bg-red-500 text-white px-4 py-2 rounded-[0.8rem] font-medium hover:bg-red-600 transition whitespace-nowrap flex items-center gap-2 ${
+            loading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+          disabled={loading}
+        >
+          <FaDownload className="h-4 w-4" />
+          {loading ? "Preparing..." : "Download Records"}
+        </button>
+      )}
+    </PDFDownloadLink>
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -152,15 +234,17 @@ function PatientDashboard() {
               <div className="flex items-center space-x-3">
                 <img
                   className="h-8 w-8 rounded-full"
-                  src="https://www.gravatar.com/avatar/?d=mp"
+                  src={
+                    user?.avatar_url ?? "https://www.gravatar.com/avatar/?d=mp"
+                  }
                   alt="User avatar"
                 />
                 <span className="hidden sm:block text-sm font-medium text-gray-700">
-                  Major Tech
+                  {user?.display_name}
                 </span>
                 <button
                   className="text-gray-400 hover:text-gray-500"
-                  onClick={() => navigate("/Login")}
+                  onClick={handleLogout}
                 >
                   <FaSignOutAlt className="h-4 w-4" />
                 </button>
@@ -174,6 +258,7 @@ function PatientDashboard() {
         <h1 className="text-sm sm:text-sm md:text-sm lg:text-lg font-semibold text-gray-800">
           Patient Dashboard
         </h1>
+
         {/* Navigation Tabs */}
         <div className="flex flex-wrap gap-6 sm:gap-8 lg:gap-12 mb-8 border-b overflow-x-auto">
           {[
@@ -205,7 +290,7 @@ function PatientDashboard() {
             <div className="lg:col-span-2">
               <div className="bg-gradient-to-r from-[#274D60] to-[#1e3a4a] rounded-xl p-6 text-white mb-6">
                 <h2 className="text-2xl font-bold mb-2">
-                  Welcome back, Major Tech!
+                  Welcome back, {user?.display_name}!
                 </h2>
                 <p className="text-blue-100">
                   You have 1 appointment today and 2 upcoming this week.
@@ -445,6 +530,8 @@ function PatientDashboard() {
                 />
               </div>
             </div>
+          </div>
+        )}
 
             <div className="grid gap-4">
               {availableDoctors.map((doctor) => (
@@ -492,9 +579,7 @@ function PatientDashboard() {
               <h2 className="text-xl font-semibold text-gray-800">
                 Medical History
               </h2>
-              <button className="bg-red-500 text-white px-4 py-2 rounded-[0.8rem] font-medium hover:bg-red-600 transition whitespace-nowrap max-w-full sm:max-w-xs truncate">
-                Download Records
-              </button>
+              <DownloadRecordsButton />
             </div>
 
             <div className="space-y-6">

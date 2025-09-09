@@ -9,13 +9,13 @@ const StatCard = ({
   trendValue,
   linkTo,
   cardColor = 'bg-white',
-  iconColor = 'text-blue-600',
+  iconColor,
 }) => {
   return (
     <Link
       to={linkTo}
       className={`
-        relative overflow-hidden rounded-lg ${cardColor} border shadow-sm
+        relative overflow-hidden rounded-lg ${cardColor} border border-gray-200 shadow-sm
         transition-transform hover:shadow-md hover:-translate-y-1 duration-300
         flex flex-col justify-between
       `}
@@ -30,7 +30,7 @@ const StatCard = ({
           </p>
         </div>
         <div
-          className={`rounded-full p-2 flex items-center justify-center ${iconColor} bg-opacity-20`}
+          className="rounded-full p-2 flex items-center justify-center bg-[#274D60]/10"
           style={{ minWidth: '44px', minHeight: '44px' }}
         >
           {icon}
@@ -57,7 +57,7 @@ const StatCard = ({
         </div>
       )}
 
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500" />
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[rgb(39,77,96)] to-[rgb(215,38,30)]" />
     </Link>
   );
 };

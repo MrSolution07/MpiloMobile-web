@@ -118,43 +118,43 @@ const Dashboard = () => {
         <StatCard
           title="Today's Appointments"
           value={stats.appointmentsToday}
-          icon={<Calendar className="w-6 h-6 text-blue-600" />}
+          icon={<Calendar className="w-6 h-6 text-[#274D60]" />}
           trend="up"
           trendValue="20%"
           linkTo="/dashboard/appointments"
-          cardColor="bg-blue-50 border-blue-200"
-          iconColor="text-blue-600"
+          // cardColor = bg-blue-50 border-blue-200"
+          iconColor = "text-[#274D60]"
         />
 
         <StatCard
           title="Unread Messages"
           value={stats.pendingMessages}
-          icon={<MessageSquare className="w-6 h-6 text-purple-600" />}
+          icon={<MessageSquare className="w-6 h-6 text-[#274D60]" />}
           trend="down"
           trendValue="5%"
           linkTo="/dashboard/messages"
-          cardColor="bg-purple-50 border-purple-200"
-          iconColor="text-purple-600"
+          // cardColor="bg-purple-50 border-purple-200"
+          iconColor="text-[#274D60]"
         />
 
         <StatCard
           title="Critical Patients Waiting"
           value={stats.criticalPatients}
-          icon={<Users className="w-6 h-6 text-red-600" />}
+          icon={<Users className="w-6 h-6 text-[#274D60]" />}
           linkTo="/dashboard/triage"
-          cardColor="bg-red-50 border-red-200"
-          iconColor="text-red-600"
+          // cardColor="bg-red-50 border-red-200"
+          iconColor="text-[#274D60]"
         />
 
         <StatCard
           title="Triage Cases Waiting"
           value={stats.triageCases}
-          icon={<AlertTriangle className="w-6 h-6 text-yellow-600" />}
+          icon={<AlertTriangle className="w-6 h-6 text-[#274D60]" />}
           trend="up"
           trendValue="15%"
           linkTo="/dashboard/triage"
-          cardColor="bg-yellow-50 border-yellow-200"
-          iconColor="text-yellow-600"
+          // cardColor="bg-yellow-50 border-yellow-200"
+          iconColor="text-[#274D60]"
         />
       </div>
 

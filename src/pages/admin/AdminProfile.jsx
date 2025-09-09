@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import profile from "../../../src/assets/profileImg.png";
+
 
 export default function AdminProfile() {
   const admin = {
@@ -7,7 +9,7 @@ export default function AdminProfile() {
     phone: '+27 12 345 6789',
     role: 'System Administrator',
     status: 'Active',
-    imageUrl: 'https://i.pravatar.cc/150?img=5',
+    imageUrl: profile,
   };
 
   return (
@@ -38,7 +40,7 @@ export default function AdminProfile() {
 
       <div className="mt-6">
         <Link to="/admin/adminsettings">
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+          <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
             Edit Profile
           </button>
         </Link>
