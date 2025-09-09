@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Users, Calendar, FileText, Activity, ArrowUp, ArrowDown } from "lucide-react";
 import { supabase } from "../../services/supabaseClient";
 
-// Card Components
+// Card Components (unchanged)
 const Card = ({ className = "", children, ...props }) => (
   <div className={`rounded-lg border bg-white shadow-sm ${className}`} {...props}>
     {children}
@@ -68,16 +68,53 @@ const AdminDashboard = () => {
         .from('medical_records')
         .select('*', { count: 'exact', head: true });
 
-      // Fetch total staff count
+      // Fetch total staff count (doctors)
       const { count: totalStaff } = await supabase
         .from('doctors')
         .select('*', { count: 'exact', head: true });
 
-      // Fetch monthly appointments average
+      // Fetch current month appointments
+      const currentMonthStart = new Date();
+      currentMonthStart.setDate(1);
+      currentMonthStart.setHours(0, 0, 0, 0);
+      
+      const currentMonthEnd = new Date();
+      currentMonthEnd.setMonth(currentMonthEnd.getMonth() + 1);
+      currentMonthEnd.setDate(0);
+      currentMonthEnd.setHours(23, 59, 59, 999);
+
       const { count: monthlyAppointments } = await supabase
         .from('appointments')
         .select('*', { count: 'exact', head: true })
-        .gte('appointment_date', new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString());
+        .gte('scheduled_datetime', currentMonthStart.toISOString())
+        .lte('scheduled_datetime', currentMonthEnd.toISOString());
+
+      // Fetch today's appointments with doctor names - FIXED QUERY
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const todayEnd = new Date();
+      todayEnd.setHours(23, 59, 59, 999);
+
+      const { data: appointmentsData, error: appointmentsError } = await supabase
+        .from('appointments')
+        .select(`
+          id,
+          appointment_number,
+          scheduled_datetime,
+          appointment_type,
+          status,
+          patient_id,
+          doctor_id,
+          patients!appointments_patient_id_fkey(first_name, last_name),
+          doctors!appointments_doctor_id_fkey(first_name, last_name, specialization)
+        `)
+        .gte('scheduled_datetime', todayStart.toISOString())
+        .lte('scheduled_datetime', todayEnd.toISOString())
+        .order('scheduled_datetime', { ascending: true });
+
+      if (appointmentsError) {
+        console.error('Error fetching appointments:', appointmentsError);
+      }
 
       // Fetch recent activity from medical records
       const { data: activityData } = await supabase
@@ -86,32 +123,52 @@ const AdminDashboard = () => {
           id,
           created_at,
           diagnosis,
-          patient:patients(first_name, last_name),
-          doctor:doctors(name)
+          patients!medical_records_patient_id_fkey(first_name, last_name),
+          doctors!medical_records_doctor_id_fkey(first_name, last_name)
         `)
         .order('created_at', { ascending: false })
         .limit(5);
 
-      // Fetch today's upcoming appointments
-      const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0);
-      const todayEnd = new Date();
-      todayEnd.setHours(23, 59, 59, 999);
-
-      const { data: appointmentsData } = await supabase
+      // Fetch department workload based on appointments count per specialty
+      const { data: workloadData } = await supabase
         .from('appointments')
         .select(`
           id,
-          appointment_time,
-          type,
-          status,
-          patient:patients(first_name, last_name),
-          doctor:doctors(name)
+          doctors!appointments_doctor_id_fkey(specialization)
         `)
-        .gte('appointment_date', todayStart.toISOString())
-        .lte('appointment_date', todayEnd.toISOString())
-        .order('appointment_time', { ascending: true })
-        .limit(3);
+        .gte('scheduled_datetime', currentMonthStart.toISOString())
+        .lte('scheduled_datetime', currentMonthEnd.toISOString());
+
+      // Process department workload
+      if (workloadData) {
+        const departmentStats = {};
+        
+        workloadData.forEach(appointment => {
+          const specialty = appointment.doctors?.specialization || 'General';
+          
+          if (!departmentStats[specialty]) {
+            departmentStats[specialty] = 0;
+          }
+          departmentStats[specialty]++;
+        });
+
+        // Get total appointments for percentage calculation
+        const totalAppointments = workloadData.length;
+
+        // Convert to array and calculate percentages
+        const workloadArray = Object.entries(departmentStats).map(([department, count]) => {
+          const percentage = totalAppointments > 0 ? Math.round((count / totalAppointments) * 100) : 0;
+          return {
+            department,
+            patients: count,
+            percentage: percentage,
+            capacity: 100, // For progress bar
+            utilization: percentage // For progress bar value
+          };
+        });
+
+        setDepartmentWorkload(workloadArray);
+      }
 
       // Process the stats data
       setStats([
@@ -123,8 +180,8 @@ const AdminDashboard = () => {
           trend: "up",
         },
         {
-          title: "Appointments (Monthly Avg)",
-          value: Math.round(monthlyAppointments/1)?.toLocaleString() || "0",
+          title: "Appointments This Month",
+          value: monthlyAppointments?.toLocaleString() || "0",
           icon: Calendar,
           change: "+2.1%",
           trend: "up",
@@ -149,9 +206,9 @@ const AdminDashboard = () => {
       if (activityData) {
         const processedActivity = activityData.map(record => ({
           id: record.id,
-          patient: `${record.patient?.first_name || 'Unknown'} ${record.patient?.last_name || 'Patient'}`,
+          patient: `${record.patients?.first_name || 'Unknown'} ${record.patients?.last_name || 'Patient'}`,
           action: record.diagnosis ? `Diagnosis: ${record.diagnosis}` : "Medical record updated",
-          doctor: record.doctor?.name || "Unknown Doctor",
+          doctor: `${record.doctors?.first_name || 'Unknown'} ${record.doctors?.last_name || 'Doctor'}`,
           time: formatTimeAgo(record.created_at),
         }));
         setRecentActivity(processedActivity);
@@ -161,22 +218,16 @@ const AdminDashboard = () => {
       if (appointmentsData) {
         const processedAppointments = appointmentsData.map(appt => ({
           id: appt.id,
-          patient: `${appt.patient?.first_name || 'Unknown'} ${appt.patient?.last_name || 'Patient'}`,
-          time: formatAppointmentTime(appt.appointment_time),
-          type: appt.type || "Consultation",
-          doctor: appt.doctor?.name || "Unknown Doctor",
-          status: appt.status || "Pending",
+          appointmentNumber: appt.appointment_number,
+          patient: `${appt.patients?.first_name || 'Unknown'} ${appt.patients?.last_name || 'Patient'}`,
+          time: formatAppointmentTime(appt.scheduled_datetime),
+          type: appt.appointment_type || "Consultation",
+          doctor: `${appt.doctors?.first_name || 'Unknown'} ${appt.doctors?.last_name || 'Doctor'}`,
+          specialty: appt.doctors?.specialization || "General",
+          status: appt.status || "scheduled",
         }));
         setUpcomingAppointments(processedAppointments);
       }
-
-      // Set all department workloads to 0%
-      setDepartmentWorkload([
-        { department: "Cardiology", patients: 0, capacity: 100 },
-        { department: "Neurology", patients: 0, capacity: 100 },
-        { department: "Pediatrics", patients: 0, capacity: 100 },
-        { department: "Orthopedics", patients: 0, capacity: 100 },
-      ]);
 
     } catch (err) {
       setError(err.message);
@@ -303,11 +354,11 @@ const AdminDashboard = () => {
                   <div className="flex justify-between items-center mb-1">
                     <span className="font-medium text-sm">{dept.department}</span>
                     <span className="text-gray-500 text-sm">
-                      {dept.patients}/{dept.capacity} patients (0%)
+                      {dept.patients} patients ({dept.percentage}%)
                     </span>
                   </div>
                   <Progress
-                    value={0}
+                    value={dept.utilization}
                     className="h-2 bg-gray-200"
                     indicatorClassName="bg-red-600"
                   />
@@ -322,27 +373,30 @@ const AdminDashboard = () => {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Calendar className="mr-2 w-5 h-5" />
-              Upcoming Appointments
+              Today's Appointments ({upcomingAppointments.length})
             </CardTitle>
-            <CardDescription>Today's scheduled appointments</CardDescription>
+            <CardDescription>Today's scheduled appointments across all doctors</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {upcomingAppointments.length > 0 ? (
                 upcomingAppointments.map((appointment) => (
                   <div key={appointment.id} className="flex justify-between items-center pb-3 last:border-0 border-b">
-                    <div>
+                    <div className="flex-1">
                       <p className="font-medium">{appointment.patient}</p>
                       <p className="text-gray-500 text-sm">
                         {appointment.time} - {appointment.type}
                       </p>
+                      <p className="text-xs text-blue-600">{appointment.specialty}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm">{appointment.doctor}</p>
+                      <p className="text-sm font-medium">Dr. {appointment.doctor}</p>
                       <p
                         className={`text-xs ${
-                          appointment.status === "Confirmed"
+                          appointment.status === "completed"
                             ? "text-green-600"
+                            : appointment.status === "cancelled"
+                            ? "text-red-600"
                             : "text-yellow-600"
                         }`}
                       >
@@ -376,7 +430,7 @@ const AdminDashboard = () => {
                       <span className="font-medium">{activity.patient}</span> - {activity.action}
                     </p>
                     <div className="flex mt-1 text-gray-500 text-xs">
-                      <span>{activity.doctor}</span>
+                      <span>Dr. {activity.doctor}</span>
                       <span className="mx-2">•</span>
                       <span>{activity.time}</span>
                     </div>
