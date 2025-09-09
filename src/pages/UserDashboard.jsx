@@ -397,9 +397,13 @@ function PatientDashboard() {
                       )}
                       <span>{upcomingAppointments[0].type}</span>
                     </div>
-                    <button className="w-full bg-[#DC2626] text-white py-2 rounded-lg font-medium hover:bg-red-700 transition">
-                      Join Now
-                    </button>
+                    <CallButton
+                      calleeId={"6816d5d7-0582-45a6-b950-c857f49ed8a6"}
+                    >
+                      <button className="w-full bg-[#DC2626] text-white py-2 rounded-lg font-medium hover:bg-red-700 transition">
+                        Join Now
+                      </button>
+                    </CallButton>
                   </div>
                 )}
               </div>
@@ -526,6 +530,8 @@ function PatientDashboard() {
                 />
               </div>
             </div>
+          </div>
+        )}
 
             <div className="grid gap-4">
               {availableDoctors.map((doctor) => (

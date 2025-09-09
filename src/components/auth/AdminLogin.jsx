@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { UserCog, LogIn } from "lucide-react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { TbStethoscope } from "react-icons/tb";
+import { FaSignInAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context";
+import { FaEnvelope } from "react-icons/fa";
 
 function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
@@ -133,7 +135,7 @@ function AdminLogin() {
             Don't have an account?
             <Link
               to="/Register"
-              className="ml-1 px-1 py-1 rounded-md text-primary font-medium hover:opacity-90"
+              className="bg-[#274D60] hover:opacity-90 ml-1 px-1 py-1 rounded-md font-medium text-primary"
             >
               Register
             </Link>

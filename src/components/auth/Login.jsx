@@ -1,3 +1,5 @@
+import { RiAdminFill } from "react-icons/ri";
+import { FaUser, FaLock, FaSignInAlt } from "react-icons/fa";
 import { useState } from "react";
 import { User, LogIn } from "lucide-react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -30,22 +32,25 @@ function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-6 border border-gray-200">
+    <div className="flex justify-center items-center bg-gray-100 px-4 min-h-screen">
+      <div className="bg-white shadow-md p-6 rounded-xl w-full max-w-md">
         <div className="flex justify-center mb-6">
-          <div>
+          <Link to="/">
             <img
               src="../assets/images/mpiloLogo.png"
               alt="Mpilo Logo"
-              className="h-14 w-auto"
-              onClick={() => navigate("/")}
+              className="w-auto h-14"
             />
-          </div>
+          </Link>
         </div>
 
-        <div className="text-center mb-4">
-          <h2 className="text-2xl font-extrabold text-gray-800">Welcome Back</h2>
-          <p className="text-sm text-gray-500">Sign in to continue your health journey</p>
+        <div className="mb-6 text-center">
+          <h2 className="font-bold text-gray-800 text-xl">
+            Healthcare Practitioner Login
+          </h2>
+          <p className="text-gray-500 text-sm">
+            Sign in to continue to Mpilo Mobile
+          </p>
         </div>
 
         <div className="flex items-center justify-center bg-green-50 rounded-xl px-4 py-2 mb-5 shadow-inner">
@@ -60,11 +65,12 @@ function Login() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
+              className="block font-medium text-gray-700 text-sm"
             >
               Email
             </label>
-            <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 bg-white hover:rounded-none">
+            <div className="flex items-center bg-white mt-1 px-3 py-2 border border-gray-300 rounded-md">
+              <FaUser className="mr-2 text-gray-400" />
               <input
                 id="email"
                 type="text"
@@ -85,10 +91,11 @@ function Login() {
             >
               Password
             </label>
-            <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 bg-white hover:rounded-none">
+            <div className="flex items-center bg-white mt-1 px-3 py-2 border border-gray-300 rounded-md">
+              <FaLock className="mr-2 text-gray-400" />
               <input
                 id="userpassword"
-                type={showPassword ? "text" : "password"}
+                type="password"
                 placeholder="Enter password"
                 className="w-full outline-none bg-transparent text-sm"
                 value={password}

@@ -43,8 +43,8 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-      <div className="bg-white shadow-lg h-full rounded-lg w-full max-w-md p-8">
+    <div className="flex justify-center items-center bg-gray-100 px-4 min-h-screen">
+      <div className="bg-white shadow-lg p-8 rounded-lg w-full max-w-md h-full">
         <div className="flex justify-center mb-4">
           <Link to="/">
             <img
@@ -55,9 +55,9 @@ function Register() {
           </Link>
         </div>
 
-        <div className="text-center mb-6">
-          <h2 className="text-xl font-semibold text-gray-800">Mpilo Mobile</h2>
-          <p className="text-sm text-gray-500">Register your account now.</p>
+        <div className="mb-6 text-center">
+          <h2 className="font-semibold text-gray-800 text-xl">Mpilo Mobile</h2>
+          <p className="text-gray-500 text-sm">Register your account now.</p>
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
@@ -111,7 +111,8 @@ function Register() {
             >
               Email
             </label>
-            <div className="flex items-center border border-gray-300 rounded-md px-3 mt-1 hover:rounded-none">
+            <div className="flex items-center mt-1 px-3 border rounded-md">
+              <FaEnvelope className="mr-2 text-gray-400" />
               <input
                 type="email"
                 id="email"
@@ -124,7 +125,6 @@ function Register() {
             </div>
           </div>
 
-          {/* Password */}
           <div>
             <label
               htmlFor="password"
@@ -132,10 +132,11 @@ function Register() {
             >
               Password
             </label>
-            <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 bg-white hover:rounded-none">
+            <div className="flex items-center mt-1 px-3 border rounded-md">
+              <FaLock className="mr-2 text-gray-400" />
               <input
-                id="userpassword"
-                type={showPassword ? "text" : "password"}
+                type="password"
+                id="password"
                 placeholder="Enter password"
                 className="w-full outline-none bg-transparent text-sm"
                 value={password}
@@ -152,7 +153,6 @@ function Register() {
             </div>
           </div>
 
-          {/* Confirm Password */}
           <div>
             <label
               htmlFor="confirmPassword"
@@ -160,10 +160,11 @@ function Register() {
             >
               Confirm Password
             </label>
-            <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 bg-white hover:rounded-none">
+            <div className="flex items-center mt-1 px-3 border rounded-md">
+              <FaUnlockAlt className="mr-2 text-gray-400" />
               <input
+                type="password"
                 id="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm password"
                 className="w-full outline-none bg-transparent text-sm"
                 value={confirmPassword}
@@ -192,7 +193,8 @@ function Register() {
             >
               Mobile Number
             </label>
-            <div className="flex items-center border border-gray-300 rounded-md px-3 mt-1 hover:rounded-none">
+            <div className="flex items-center mt-1 px-3 border rounded-md">
+              <FaPhone className="mr-2 text-gray-400" />
               <input
                 type="text"
                 id="mobileNumber"
@@ -229,7 +231,7 @@ function Register() {
           </button>
         </form>
 
-        <div className="text-center mt-6 text-sm text-gray-600">
+        <div className="mt-6 text-gray-600 text-sm text-center">
           Already have an account?
           <Link
             to="/login"

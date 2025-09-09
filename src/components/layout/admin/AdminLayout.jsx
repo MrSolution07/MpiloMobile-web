@@ -1,9 +1,11 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import AdminSidebar from "./AdminSidebar";
 import AdminHeader from "./AdminHeader";
+import { useAuth } from "../../../context";
 
 const AdminLayout = () => {
+  const { isLoggedIn } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -42,6 +44,8 @@ const AdminLayout = () => {
     };
   }, [isSidebarOpen]);
 
+  if (!isLoggedIn) return <Navigate to="/login" replace />;
+
   return (
     <div className="flex w-full h-screen">
       {/* Sidebar */}
@@ -56,14 +60,17 @@ const AdminLayout = () => {
 
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-opacity-50 z-10 lg:hidden"
+          className="lg:hidden z-10 fixed inset-0 bg-opacity-50"
           onClick={() => setIsSidebarOpen(false)}
         ></div>
       )}
 
       <div className="flex flex-col flex-1 overflow-hidden">
-        <AdminHeader toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
-        <main className="flex-1 overflow-auto p-6">
+        <AdminHeader
+          toggleSidebar={toggleSidebar}
+          isSidebarOpen={isSidebarOpen}
+        />
+        <main className="flex-1 p-6 overflow-auto">
           <Outlet />
         </main>
       </div>
