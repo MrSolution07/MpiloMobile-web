@@ -24,9 +24,19 @@ import { RecordPdf } from "../components/records/RecordPdf";
 import { useAuth } from "../context";
 
 function PatientDashboard() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (err) {
+      console.error("Logout failed:", err);
+    } finally {
+      navigate("/login");
+    }
+  };
 
   // Sample patient data for PDF generation
   const patientRecordData = {
@@ -234,7 +244,7 @@ function PatientDashboard() {
                 </span>
                 <button
                   className="text-gray-400 hover:text-gray-500"
-                  onClick={() => navigate("/Login")}
+                  onClick={handleLogout}
                 >
                   <FaSignOutAlt className="h-4 w-4" />
                 </button>
