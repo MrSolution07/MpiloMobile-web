@@ -1,4 +1,3 @@
-
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "./components/admin/ui/toaster";
 import { Toaster as Sonner } from "./components/admin/ui/sonner";
@@ -16,7 +15,6 @@ import {
   Contact,
   Error,
   UserDashboard,
-  
 } from "./pages";
 
 import { Register, Login, AdminLogin, ForgotPassword } from "./components/auth";
@@ -26,7 +24,11 @@ import { Layout, AdminLayout } from "./components/layout";
 import { Dashboard } from "./components/DoctorDashboard";
 import { AppointmentsList, NewAppointment } from "./components/appointments";
 import { MessagesList } from "./components/messages";
-import { PatientsList, PatientDetails, AddPatient } from "./components/patients";
+import {
+  PatientsList,
+  PatientDetails,
+  AddPatient,
+} from "./components/patients";
 import { TriageList, NewTriage } from "./components/triage";
 import { MedicalRecordsList, NewRecord } from "./components/records";
 import { DoctorSettings } from "./components/settings";
@@ -46,12 +48,17 @@ import {
   AdminSettings,
   AdminProfile,
   AdminInventory,
-  Routes
+  Routes,
 } from "./pages/admin";
+import { VideoCall } from "./components/shared";
 
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
+  {
+    path: "/call",
+    element: <VideoCall />,
+  },
   // Main website routes
   {
     path: "/",
@@ -149,7 +156,7 @@ const router = createBrowserRouter([
       },
       {
         path: "settings",
-        element: <DoctorSettings />
+        element: <DoctorSettings />,
       },
       {
         path: "profile",
