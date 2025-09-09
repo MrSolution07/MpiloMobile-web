@@ -1,4 +1,4 @@
-import profile from "../../../src/assets/profileImg.png";
+import profile from "../../../../src/assets/profileImg.png";
 
 // Mock Data, button and badge components
 const currentUser = {

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import profile from "../../../src/assets/profileImg.png";
+import profile from "../../../../src/assets/profileImg.png";
 
 
 export default function AdminProfile() {
