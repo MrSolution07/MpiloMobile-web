@@ -8,7 +8,7 @@ import {
   MoreVertical,
   X
 } from "lucide-react";
-import profile from "../../../src/assets/profileImg.png";
+import profile from "../../../public/assets/images/profileImg.png";
 
 
 // Mock current user - replace with actual auth
@@ -371,7 +371,7 @@ function MessagesList() {
   // Filter conversations
   const filteredConversations = conversations.filter(conv => {
     const matchesSearch = conv.participantName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         conv.lastMessage?.content.toLowerCase().includes(searchQuery.toLowerCase());
+                         (conv.lastMessage?.content && conv.lastMessage.content.toLowerCase().includes(searchQuery.toLowerCase()));
 
     const matchesFilter = filter === "all" || 
                          (filter === "unread" && conv.unreadCount > 0) ||

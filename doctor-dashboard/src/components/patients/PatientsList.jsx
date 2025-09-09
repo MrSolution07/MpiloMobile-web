@@ -78,12 +78,12 @@ const PatientsList = () => {
 
   const filteredPatients = patients.filter((patient) => {
     const matchesSearch =
-      patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      patient.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      patient.phone.includes(searchQuery);
+      (patient.name && patient.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (patient.email && patient.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (patient.phone && patient.phone.includes(searchQuery));
 
     const matchesStatus =
-      statusFilter === "all" || patient.status.toLowerCase() === statusFilter.toLowerCase();
+      statusFilter === "all" || (patient.status && patient.status.toLowerCase() === statusFilter.toLowerCase());
 
     return matchesSearch && matchesStatus;
   });
