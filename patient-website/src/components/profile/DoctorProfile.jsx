@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import profile from "../../../public/assets/images/profileImg.png";
+import profile from "../../../../src/assets/profileImg.png";
 
 
 export default function DoctorProfile() {

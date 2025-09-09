@@ -103,7 +103,7 @@ function Header({ className, logo, joinBtn, user }) {
               <div className="relative login-dropdown">
                 <button
                   onClick={() => setLoginDropdownOpen(!loginDropdownOpen)}
-                  className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 bg-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 hover:bg-gray-300 transition-colors"
+                  className="w-10 h-10 flex items-center justify-center rounded-4xl  border border-gray-300 bg-gray-50 text-gray-500 focus:outline-none focus:ring-1 focus:ring-black hover:bg-gray-50 transition-colors"
                   style={{ minWidth: 40, minHeight: 40 }}
                   title="Login Options"
                 >

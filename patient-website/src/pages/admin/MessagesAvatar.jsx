@@ -1,5 +1,5 @@
 // Mock Data, button and badge components
-import profile from "../../../public/assets/images/profileImg.png";
+import profile from "../../../../src/assets/profileImg.png";
 
 const currentUser = {
   id: "user-1",

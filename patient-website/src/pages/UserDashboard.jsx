@@ -621,7 +621,7 @@ import { useBookings } from "../hooks/useBookings";
 import { useAppointmentBooking } from "../hooks/useAppointmentBooking";
 import { useAuth } from "../context/AuthProvider";
 import { RecordPdf } from "../components/records/RecordPdf";
-import profile from "../../public/assets/images/profileImg.png";
+import profile from "../../../../src/assets/profileImg.png";
 
 
 function PatientDashboard() {

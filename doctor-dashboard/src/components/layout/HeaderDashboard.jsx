@@ -3,7 +3,7 @@ import { Bell, Search, Menu, X } from "lucide-react";
 import { Avatar } from "../ui";
 import { useAuth } from "../../context/AuthProvider";
 import { supabase } from "../../services/supabaseClient";
-import profile from "../../../public/assets/images/profileImg.png";
+import profile from "../../../src/assets/profileImg.png";
 
 
 function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {

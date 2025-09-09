@@ -8,7 +8,7 @@ import {
   MoreVertical,
   X
 } from "lucide-react";
-import profile from "../../../public/assets/images/profileImg.png";
+import profile from "../../../src/assets/profileImg.png";
 
 
 // Mock current user - replace with actual auth

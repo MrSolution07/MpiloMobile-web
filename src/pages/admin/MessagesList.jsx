@@ -3,7 +3,7 @@ import { contacts, currentUser } from "./MessagesAvatar";
 import HeaderWithSearchFilter from "./MessagesHeader";
 import MessagePanel from "./MessagePanel";
 import { NewMessageModal } from "./MessageModal";
-import profile from "../../../public/assets/images/profileImg.png";
+import profile from "../../../src/assets/profileImg.png";
 
 
 function MessagesList() {

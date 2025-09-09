@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthProvider';
 import { supabase } from '../../services/supabaseClient';
-import profile from "../../../public/assets/images/profileImg.png";
+import profile from "../../../src/assets/profileImg.png";
 
 
 export default function DoctorProfile() {

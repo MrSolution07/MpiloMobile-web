@@ -4,6 +4,8 @@ import { useAuth } from "../../context";
 import { FaSignInAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 
 function Register() {
+  const[firstname, setFirstname] = useState("");
+  const[lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -27,7 +29,8 @@ function Register() {
 
     try {
       setLoading(true);
-      await register(email.trim().toLowerCase(), password);
+      const fullName = `${firstname.trim()} ${lastname.trim()}`.trim();
+      await register(email.trim().toLowerCase(), password,fullName);
       navigate("/login");
     } catch (error) {
       setError(error.message);
@@ -53,8 +56,45 @@ function Register() {
           <h2 className="text-xl font-semibold text-gray-800">Mpilo Mobile</h2>
           <p className="text-sm text-gray-500">Register your account now.</p>
         </div>
-
+        
+        
         <form className="space-y-4" onSubmit={handleSubmit}>
+          {/* First Name */}
+        <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              First Name
+            </label>
+            <div className="flex items-center border border-gray-300 rounded-md px-3 mt-1 hover:rounded-none">
+              <input
+                type="letters"
+                id="firstname"
+                placeholder="Enter first name"
+                className="w-full py-2 outline-none text-sm"
+                value={firstname}
+                onChange={(e) => setFirstname(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          {/* Last Name */}
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              Last Name
+            </label>
+            <div className="flex items-center border border-gray-300 rounded-md px-3 mt-1 hover:rounded-none">
+              <input
+                type="letters"
+                id="lastname"
+                placeholder="Enter last name"
+                className="w-full py-2 outline-none text-sm"
+                value={lastname}
+                onChange={(e) => setLastname(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+          
            {/* Email */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">

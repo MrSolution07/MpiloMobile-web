@@ -125,7 +125,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppointmentBooking } from "../../hooks/useAppointmentBooking";
 import { useAuth } from "../../context/AuthProvider";
-import profile from "../../../public/assets/images/profileImg.png";
+import profile from "../../../../src/assets/profileImg.png";
 
 
 export default function NewAppointment() {
