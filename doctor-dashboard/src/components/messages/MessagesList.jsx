@@ -6,9 +6,13 @@ import {
   Filter, 
   Mail, 
   MoreVertical,
-  X
+  X,
+  Send,
+  ArrowLeft,
+  Menu,
 } from "lucide-react";
 import profile from "../../../public/assets/images/profileImg.png";
+
 
 
 // Mock current user - replace with actual auth
@@ -90,8 +94,8 @@ const Modal = ({ isOpen, onClose, title, children }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
           <Button
@@ -122,8 +126,26 @@ function MessagesList() {
   const [newMessageModalOpen, setNewMessageModalOpen] = useState(false);
   const [selectedContacts, setSelectedContacts] = useState([]);
   
+  // Mobile state
+  const [isMobile, setIsMobile] = useState(false);
+  const [showConversationsList, setShowConversationsList] = useState(true);
+  
   // Refs
   const messagesEndRef = useRef(null);
+
+  // Check for mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+      if (window.innerWidth >= 768) {
+        setShowConversationsList(true);
+      }
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Sample contacts for new message modal
   const contacts = [
@@ -256,6 +278,8 @@ function MessagesList() {
     if (!newMessage.trim() || !selectedConversation) return;
 
     setSendingMessage(true);
+    
+    document.querySelector('textarea').style.height = 'auto';
 
     const messageData = {
       conversationId: selectedConversation.id,
@@ -326,6 +350,11 @@ function MessagesList() {
   const handleConversationSelect = useCallback((conversation) => {
     setSelectedConversation(conversation);
     
+    // On mobile, hide conversations list when selecting a conversation
+    if (isMobile) {
+      setShowConversationsList(false);
+    }
+    
     // Mark messages as read
     if (conversation.unreadCount > 0) {
       setConversations(prev =>
@@ -344,7 +373,13 @@ function MessagesList() {
 
     // Fetch latest messages when conversation is selected
     fetchMessages(conversation.id);
-  }, []);
+  }, [isMobile]);
+
+  // Handle back to conversations (mobile)
+  const handleBackToConversations = () => {
+    setShowConversationsList(true);
+    setSelectedConversation(null);
+  };
 
   // Create new conversation
   const handleCreateConversation = useCallback(() => {
@@ -364,9 +399,15 @@ function MessagesList() {
 
     setConversations(prev => [newConversation, ...prev]);
     setSelectedConversation(newConversation);
+    
+    // On mobile, show the message view
+    if (isMobile) {
+      setShowConversationsList(false);
+    }
+    
     setNewMessageModalOpen(false);
     setSelectedContacts([]);
-  }, [selectedContacts, contacts]);
+  }, [selectedContacts, contacts, isMobile]);
 
   // Filter conversations
   const filteredConversations = conversations.filter(conv => {
@@ -395,92 +436,78 @@ function MessagesList() {
 
   return (
     <div className="h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Messages</h1>
-            <p className="text-sm text-gray-500 mt-1">
+      {/* Mobile: Conversations List View */}
+      {isMobile && showConversationsList && (
+        <>
+          {/* Header */}
+          <div className="bg-white border-b border-gray-200 px-4 py-3">
+            <div className="flex justify-between items-center">
+              <div>
+               <span className="text-3xl sm:text-3xl font-bold text-black">Messages</span>
+            <p className="text-xs md:text-sm text-gray-500 mt-1 hidden sm:block">
               Professional communication portal
             </p>
-          </div>
-          
-          <div className="flex space-x-4">
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={<Filter className="w-4 h-4" />}
-              onClick={() => setFilterOpen(!filterOpen)}
-              className="mr-2"
-            >
-              Filter
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              icon={<Plus className="w-4 h-4" />}
-              onClick={() => setNewMessageModalOpen(true)}
-            >
-              New Message
-            </Button>
-          </div>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="mt-4 flex flex-col space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search conversations..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-gray-300"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-
-          {filterOpen && (
-            <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-              <div className="flex space-x-4">
-                {['all', 'unread', 'urgent'].map((filterOption) => (
-                  <button
-                    key={filterOption}
-                    className={`px-4 py-2 rounded-md text-sm font-medium capitalize ${
-                      filter === filterOption
-                        ? "bg-red-100 text-red-800"
-                        : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                    }`}
-                    onClick={() => setFilter(filterOption)}
-                  >
-                    {filterOption} {filterOption === 'all' ? 'Messages' : ''}
-                  </button>
-                ))}
+              </div>
+              
+              <div className="flex space-x-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  icon={<Filter className="w-4 h-4" />}
+                  onClick={() => setFilterOpen(!filterOpen)}
+                />
+                <Button
+                  variant="primary"
+                  size="sm"
+                  icon={<Plus className="w-4 h-4 ml-2 sm:w-4 sm:h-4 text-center" />}
+                  onClick={() => setNewMessageModalOpen(true)}
+                />
               </div>
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Conversations List */}
-        <div className="w-1/3 bg-white border-r border-gray-200 flex flex-col">
-          <div className="p-4 border-b border-gray-200">
-            <h2 className="font-semibold text-gray-900">
-              Conversations ({filteredConversations.length})
-            </h2>
+            {/* Search */}
+            <div className="mt-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search conversations..."
+                  className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-gray-300 text-sm"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+
+              {filterOpen && (
+                <div className="bg-white border border-gray-200 rounded-lg p-2 sm:p-3 shadow-sm mt-2">
+                  <div className="flex flex-wrap sm:flex-nowrap gap-1 sm:gap-2">
+                    {['all', 'unread', 'urgent'].map((filterOption) => (
+                      <button
+                        key={filterOption}
+                        className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-md text-[10px] sm:text-xs font-medium capitalize ${
+                          filter === filterOption
+                            ? "bg-red-100 text-red-800"
+                            : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                        }`}
+                        onClick={() => setFilter(filterOption)}
+                      >
+                        {filterOption} {filterOption === 'all' ? 'Messages' : ''}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+            </div>
           </div>
-          
+
+          {/* Conversations List */}
           <div className="flex-1 overflow-y-auto">
             {filteredConversations.length > 0 ? (
               filteredConversations.map((conversation) => (
                 <div
                   key={conversation.id}
-                  className={`p-4 border-b border-gray-100 cursor-pointer transition-colors ${
-                    selectedConversation?.id === conversation.id
-                      ? "bg-red-50 border-red-200"
-                      : "hover:bg-gray-50"
-                  }`}
+                  className="p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 active:bg-gray-100"
                   onClick={() => handleConversationSelect(conversation)}
                 >
                   <div className="flex items-start space-x-3">
@@ -517,7 +544,7 @@ function MessagesList() {
                       )}
                       
                       {conversation.lastMessage?.urgent && (
-                        <Badge text="Urgent" variant="danger" size="small" />
+                        <Badge text="Urgent" variant="danger" size="small" className="mt-1" />
                       )}
                     </div>
                   </div>
@@ -530,31 +557,35 @@ function MessagesList() {
               </div>
             )}
           </div>
-        </div>
+        </>
+      )}
 
-        {/* Message View */}
-        <div className="flex-1 flex flex-col">
-          {selectedConversation ? (
-            <>
-              {/* Message Header */}
-              <div className="bg-white border-b border-gray-200 p-4">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center space-x-3">
-                    <Avatar
-                      src={selectedConversation.participantAvatar}
-                      alt={selectedConversation.participantName}
-                      size="md"
-                    />
-                    <div>
-                      <h3 className="font-semibold text-gray-900">
-                        {selectedConversation.participantName}
-                      </h3>
-                    </div>
-                  </div>
-                </div>
+      {/* Mobile: Message View */}
+      {isMobile && !showConversationsList && selectedConversation && (
+        <>
+          {/* Message Header */}
+          <div className="bg-white border-b border-gray-200 p-4">
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={handleBackToConversations}
+                className="p-1 hover:bg-gray-100 rounded-md"
+              >
+                <ArrowLeft className="w-5 h-5 text-gray-600" />
+              </button>
+              <Avatar
+                src={selectedConversation.participantAvatar}
+                alt={selectedConversation.participantName}
+                size="md"
+              />
+              <div>
+                <h3 className="font-semibold text-gray-900">
+                  {selectedConversation.participantName}
+                </h3>
               </div>
+            </div>
+          </div>
 
-              {/* Messages */}
+          {/* Messages */}
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
                 {(messages[selectedConversation.id] || []).map((message) => {
                   const isCurrentUser = message.senderId === currentUser.id;
@@ -570,9 +601,7 @@ function MessagesList() {
                             <Badge text="Urgent" variant="danger" size="small" className="mt-2" />
                           )}
                         </div>
-                        
                         <div className={`flex items-center mt-2 ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
-                         
                           <span className="text-xs text-gray-500">
                             {formatTime(message.timestamp)}
                           </span>
@@ -584,50 +613,282 @@ function MessagesList() {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Message Input */}
-              <div className="bg-white border-t border-gray-200 p-6">
-                <div className="flex space-x-3 items-end">
+              {/* Message Input Bar */}
+              <div className="bg-white border-t border-gray-200 p-4 flex items-end">
+                <div className="flex-1 flex items-center border border-gray-300 rounded-lg px-3 bg-slate-50">
                   <textarea
                     value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
+                    onChange={(e) => {
+                      setNewMessage(e.target.value);
+                      e.target.style.height = 'auto';
+                      e.target.style.height = e.target.scrollHeight + 'px';
+                    }}
                     placeholder="Type your message..."
-                    className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-gray-300 h-[40px] resize-none leading-tight align-middle"
+                    className="flex-1 text-sm text-gray-800 bg-transparent resize-none focus:outline-none leading-tight py-2"
                     rows={1}
-                    style={{ minHeight: '40px', maxHeight: '40px', resize: 'none' }}
                     onKeyDown={(e) => {
-                      // Allow Enter for newline, Ctrl+Enter or Cmd+Enter to send
-                      if ((e.key === 'Enter' && (e.ctrlKey || e.metaKey))) {
+                      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
                         e.preventDefault();
                         sendMessage();
                       }
                     }}
-                  />
-                  <Button
-                    variant="primary"
-                    disabled={!newMessage.trim() || sendingMessage}
-                    onClick={sendMessage}
-                    className="px-6 py-3 h-[40px] flex items-center justify-center ml-3"
-                  >
-                    {sendingMessage ? "Sending..." : "Send"}
-                  </Button>
+                  />                
                 </div>
+
+                <Button
+                  variant="primary"
+                  disabled={!newMessage.trim() || sendingMessage}
+                  onClick={sendMessage}
+                  className="ml-1 px-3 py-2 h-[35px] rounded-md flex items-center justify-center space-x-1"
+                >
+                  <Send className="w-4 h-5" />
+                  {sendingMessage && <span className="hidden sm:inline">Sending...</span>}
+                </Button>
+
               </div>
-            </>
-          ) : (
-            <div className="flex-1 flex items-center justify-center bg-gray-50">
-              <div className="text-center">
-                <MessageSquare className="w-16 h-16 text-gray-300 mx-auto" />
-                <h3 className="text-lg font-semibold text-gray-900 mt-4">
-                  Select a conversation
-                </h3>
-                <p className="text-gray-500 mt-2">
-                  Choose a conversation from the list to view messages
+        </>
+      )}
+
+      {/* Desktop Layout */}
+      {!isMobile && (
+        <>
+          {/* Header */}
+          <div className="bg-white border-b border-gray-200 px-6 py-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <span className="text-[30px] font-bold text-gray-900">Messages</span>
+                <p className="text-sm text-gray-500 mt-1">
+                  Professional communication portal
                 </p>
               </div>
+              
+              <div className="flex space-x-4">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  icon={<Filter className="w-4 h-4" />}
+                  onClick={() => setFilterOpen(!filterOpen)}
+                  className="mr-2"
+                >
+                  Filter
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  icon={<Plus className="w-4 h-4 sm:w-4 sm:h-4 text-center" />}
+                  onClick={() => setNewMessageModalOpen(true)}
+                >
+                  New Message
+                </Button>
+              </div>
             </div>
-          )}
-        </div>
-      </div>
+
+            {/* Search and Filters */}
+            <div className="mt-4 flex flex-col space-y-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search conversations..."
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-gray-300"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+
+              {filterOpen && (
+                <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                  <div className="flex space-x-4">
+                    {['all', 'unread', 'urgent'].map((filterOption) => (
+                      <button
+                        key={filterOption}
+                        className={`px-4 py-2 rounded-md text-sm font-medium capitalize ${
+                          filter === filterOption
+                            ? "bg-red-100 text-red-800"
+                            : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                        }`}
+                        onClick={() => setFilter(filterOption)}
+                      >
+                        {filterOption} {filterOption === 'all' ? 'Messages' : ''}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="flex-1 flex overflow-hidden">
+            {/* Conversations List */}
+            <div className="w-1/3 bg-white border-r border-gray-200 flex flex-col">
+              <div className="p-4 border-b border-gray-200">
+                <h2 className="font-semibold text-gray-900">
+                  Conversations ({filteredConversations.length})
+                </h2>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto">
+                {filteredConversations.length > 0 ? (
+                  filteredConversations.map((conversation) => (
+                    <div
+                      key={conversation.id}
+                      className={`p-4 border-b border-gray-100 cursor-pointer transition-colors ${
+                        selectedConversation?.id === conversation.id
+                          ? "bg-red-50 border-red-200"
+                          : "hover:bg-gray-50"
+                      }`}
+                      onClick={() => handleConversationSelect(conversation)}
+                    >
+                      <div className="flex items-start space-x-3">
+                        <Avatar
+                          src={conversation.participantAvatar}
+                          alt={conversation.participantName}
+                          size="md"
+                        />
+                        
+                        <div className="flex-1 min-w-0">
+                          <div className="flex justify-between items-center">
+                            <p className="font-semibold text-gray-900 truncate">
+                              {conversation.participantName}
+                            </p>
+                            <div className="flex items-center space-x-2">
+                              {conversation.lastMessage && (
+                                <span className="text-xs text-gray-500">
+                                  {formatTime(conversation.lastMessage.timestamp)}
+                                </span>
+                              )}
+                              {conversation.unreadCount > 0 && (
+                <span className="bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5 md:px-2 md:py-1 min-w-[18px] md:min-w-[20px] text-center">
+                                  {conversation.unreadCount}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          
+                          {conversation.lastMessage && (
+                            <p className="text-sm text-gray-600 truncate mt-1">
+                              {conversation.lastMessage.senderId === currentUser.id ? "You: " : ""}
+                              {conversation.lastMessage.content}
+                            </p>
+                          )}
+                          
+                          {conversation.lastMessage?.urgent && (
+                            <Badge text="Urgent" variant="danger" size="small" />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-8 text-center">
+                    <Mail className="w-12 h-12 text-gray-300 mx-auto" />
+                    <p className="text-gray-500 mt-2">No conversations found</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Message View */}
+            <div className="flex-1 flex flex-col">
+              {selectedConversation ? (
+                <>
+                  {/* Message Header */}
+                  <div className="bg-white border-b border-gray-200 p-4">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center space-x-3">
+                        <Avatar
+                          src={selectedConversation.participantAvatar}
+                          alt={selectedConversation.participantName}
+                          size="md"
+                        />
+                        <div>
+                          <h3 className="font-semibold text-gray-900">
+                            {selectedConversation.participantName}
+                          </h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Messages */}
+                  <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                    {(messages[selectedConversation.id] || []).map((message) => {
+                      const isCurrentUser = message.senderId === currentUser.id;
+                      return (
+                        <div
+                          key={message.id}
+                          className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div className="max-w-2xl">
+                            <div className="bg-gray-100 text-gray-900 px-4 py-3 rounded-lg">
+                              <p className="whitespace-pre-wrap">{message.content}</p>
+                              {message.urgent && (
+                                <Badge text="Urgent" variant="danger" size="small" className="mt-2" />
+                              )}
+                            </div>
+                            <div className={`flex items-center mt-2 ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
+                              <span className="text-xs text-gray-500">
+                                {formatTime(message.timestamp)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <div ref={messagesEndRef} />
+                  </div>
+
+                  {/* Message Input Bar */}
+                  <div className="bg-white border-t border-gray-200 p-4 flex items-end">
+                    <div className="flex-1 flex items-center border border-gray-300 rounded-lg px-3 bg-slate-50">
+                      <textarea
+                        value={newMessage}
+                        onChange={(e) => {
+                          setNewMessage(e.target.value);
+                          e.target.style.height = 'auto';
+                          e.target.style.height = e.target.scrollHeight + 'px';
+                        }}
+                        placeholder="Type your message..."
+                        className="flex-1 text-sm text-gray-800 bg-transparent resize-none focus:outline-none leading-tight py-2"
+                        rows={1}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+                            e.preventDefault();
+                            sendMessage();
+                          }
+                        }}
+                      />                
+                    </div>
+
+                    <Button
+                      variant="primary"
+                      disabled={!newMessage.trim() || sendingMessage}
+                      onClick={sendMessage}
+                      className="ml-3 px-3 py-2 h-[35px] rounded-md flex items-center justify-center"
+                    >
+                      {sendingMessage ? "Sending..." : <Send className="w-5 h-5" />}
+                    </Button>
+                  </div>
+
+                </>
+              ) : (
+                <div className="flex-1 flex items-center justify-center bg-gray-50">
+                  <div className="text-center">
+                    <MessageSquare className="w-16 h-16 text-gray-300 mx-auto" />
+                    <h3 className="text-lg font-semibold text-gray-900 mt-4">
+                      Select a conversation
+                    </h3>
+                    <p className="text-gray-500 mt-2">
+                      Choose a conversation from the list to view messages
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
 
       {/* New Message Modal */}
       <Modal
@@ -667,13 +928,14 @@ function MessagesList() {
             </div>
           </div>
           
-          <div className="flex justify-end space-x-2">
+          <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
             <Button
               variant="secondary"
               onClick={() => {
                 setNewMessageModalOpen(false);
                 setSelectedContacts([]);
               }}
+              className="w-full sm:w-auto"
             >
               Cancel
             </Button>
@@ -681,6 +943,7 @@ function MessagesList() {
               variant="primary"
               onClick={handleCreateConversation}
               disabled={selectedContacts.length === 0}
+              className="w-full sm:w-auto"
             >
               Start Conversation
             </Button>

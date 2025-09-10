@@ -131,7 +131,7 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
       <div className="relative">
         <button
           onClick={toggleNotifications}
-          className="hover:bg-gray-100 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-600 hover:text-gray-900"
+          className="hover:bg-gray-100 p-2 rounded-full focus:outline-none focus:ring-1 focus:ring-red-500 text-gray-600 hover:text-gray-900"
           aria-label="Notifications"
         >
           <Bell className="w-5 h-5" />
@@ -139,12 +139,12 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
         </button>
 
         {isNotificationsOpen && (
-          <div className="absolute right-0 mt-2 bg-white shadow-lg border border-gray-200 rounded-lg w-80 z-40">
-            <div className="px-4 py-2 border-b border-gray-100">
-              <h3 className="font-semibold text-gray-900 text-sm">Notifications</h3>
+          <div className="absolute right-0 mt-2 bg-white shadow-lg border border-gray-200 rounded-lg w-64 sm:w-70 z-40">
+            <div className="px-3 sm:px-4 py-2 border-b border-gray-100">
+              <span className="font-semibold text-gray-900 text-xs sm:text-sm">Notifications</span>
             </div>
-            <div className="max-h-96 overflow-y-auto">
-              
+            <div className="max-h-72 sm:max-h-96 overflow-y-auto">
+              {/* notifications list here */}
             </div>
           </div>
         )}

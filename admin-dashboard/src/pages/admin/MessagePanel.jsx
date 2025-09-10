@@ -1,4 +1,4 @@
-import { MessageSquare, Mail, ArrowLeft } from "lucide-react";
+import { MessageSquare, Mail, ArrowLeft,Send } from "lucide-react";
 import { MessagesAvatar, Badge, Button, currentUser } from "./MessagesAvatar";
 
 const MessagePanel = ({
@@ -14,7 +14,6 @@ const MessagePanel = ({
   setShowConversations,
   messagesEndRef
 }) => {
-
     const formatTime = (timestamp) => {
     const date = new Date(timestamp);
     const now = new Date();
@@ -31,6 +30,16 @@ const MessagePanel = ({
   const handleBackToConversations = () => {
     setShowConversations(true);
   };
+  const handleSendMessage = () => {
+  if (!newMessage.trim()) return;
+  sendMessage(newMessage);
+  setNewMessage("");
+
+  const textarea = document.querySelector('textarea');
+  if (textarea) {
+    textarea.style.height = 'auto'; 
+  }
+};
 
   // Conversation Item Component
   const ConversationItem = ({ conversation, isSelected, onClick }) => (
@@ -177,49 +186,69 @@ const MessagePanel = ({
             </div>
 
 
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-3 md:p-6">
-              {(messages[selectedConversation.id] || []).map((message) => {
-                const isCurrentUser = message.senderId === currentUser.id;
-                return (
-                  <MessageItem
-                    key={message.id}
-                    message={message}
-                    isCurrentUser={isCurrentUser}
-                  />
-                );
-              })}
-              <div ref={messagesEndRef} />
-            </div>
 
+             {/* Messages */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                {(messages[selectedConversation.id] || []).map((message) => {
+                  const isCurrentUser = message.senderId === currentUser.id;
+                  return (
+                    <div
+                      key={message.id}
+                      className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div className="max-w-2xl">
+                        <div className="bg-gray-100 text-gray-900 px-4 py-3 rounded-lg">
+                          <p className="whitespace-pre-wrap">{message.content}</p>
+                          {message.urgent && (
+                            <Badge text="Urgent" variant="danger" size="small" className="mt-2" />
+                          )}
+                        </div>
+                        <div className={`flex items-center mt-2 ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
+                          <span className="text-xs text-gray-500">
+                            {formatTime(message.timestamp)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+                <div ref={messagesEndRef} />
+              </div>
 
-            {/* Message Input */}
-            <div className="bg-white border-t border-gray-200 p-3 md:p-6">
-              <div className="flex space-x-2 md:space-x-3 items-end">
-                <input
-                  type="text"
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Type your message..."
-                  className="flex-1 p-2 md:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm md:text-base"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      sendMessage();
-                    }
-                  }}
-                />
+              {/* Message Input Bar */}
+              <div className="bg-white border-t border-gray-200 p-4 flex items-end">
+                <div className="flex-1 flex items-center border border-gray-300 rounded-lg px-3 bg-slate-50">
+                  <textarea
+                    value={newMessage}
+                    onChange={(e) => {
+                      setNewMessage(e.target.value);
+                      e.target.style.height = 'auto';
+                      e.target.style.height = e.target.scrollHeight + 'px';
+                    }}
+                    placeholder="Type your message..."
+                    className="flex-1 text-sm text-gray-800 bg-transparent resize-none focus:outline-none leading-tight py-2"
+                    rows={1}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+                        e.preventDefault();
+                        sendMessage();
+                      }
+                    }}
+                  />                
+                </div>
+
                 <Button
                   variant="primary"
                   disabled={!newMessage.trim() || sendingMessage}
-                  onClick={sendMessage}
-                  size="default"
-                  className="px-4 md:px-6"
+                  onClick={handleSendMessage}
+                  className="ml-1 px-3 py-2 h-[35px] rounded-md flex items-center justify-center space-x-1"
                 >
-                  {sendingMessage ? "Sending..." : "Send"}
+                  <Send className="w-4 h-5" />
+                  {sendingMessage && <span className="hidden sm:inline">Sending...</span>}
                 </Button>
+
               </div>
-            </div>
+
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center bg-gray-50 p-4">
