@@ -127,7 +127,7 @@ function Login() {
             {loading ? "Logging in..." : "Patient Login"} <LogIn size={16} />
           </button>
         </form>
-        <div className="text-center mt-6 text-sm">
+        {/* <div className="text-center mt-6 text-sm">
           <p className="text-gray-500">
             Don't have an account?
             <Link
@@ -137,7 +137,7 @@ function Login() {
               Register
             </Link>
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
   );
