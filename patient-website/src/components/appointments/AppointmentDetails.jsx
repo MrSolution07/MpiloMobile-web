@@ -4,7 +4,7 @@ import { FaCalendarAlt, FaClock, FaUserMd, FaMapMarkerAlt, FaVideo, FaPhone, FaN
 import { supabase } from "../../services/supabaseClient";
 import { useAuth } from "../../context/AuthProvider";
 import { useAppointmentBooking } from "../../hooks/useAppointmentBooking";
-import profile from "../../../../src/assets/profileImg.png";
+import profile from "../../../public/assets/images/profileImg.png";
 
 
 export default function AppointmentDetails() {
