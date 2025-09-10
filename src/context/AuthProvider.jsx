@@ -87,6 +87,15 @@ export const AuthProvider = ({ children }) => {
     if (data?.user?.identities?.length === 0) {
       throw new Error("User already exists.");
     }
+
+    // if (data.session?.user?.id) {
+    //   const fullUser = await fetchUser(data.session.user.id);
+    //   setUser(fullUser);
+    // } else {
+    //   setUser(null);
+    // }
+
+    // return user;
   };
 
   const login = async (email, password) => {
@@ -94,12 +103,21 @@ export const AuthProvider = ({ children }) => {
 
     await logout();
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) throw error;
+
+    if (data.session?.user?.id) {
+      const fullUser = await fetchUser(data.session.user.id);
+      setUser(fullUser);
+    } else {
+      setUser(null);
+    }
+
+    return user;
   };
 
   const logout = async () => {

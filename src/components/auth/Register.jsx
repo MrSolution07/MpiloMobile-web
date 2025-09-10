@@ -33,8 +33,17 @@ function Register() {
       const fullName = `${capitalize(firstname.trim())} ${capitalize(
         lastname.trim()
       )}`.trim();
-      await register(email.trim().toLowerCase(), password, fullName);
-      navigate("/login");
+      const user = await register(
+        email.trim().toLowerCase(),
+        password,
+        fullName
+      );
+
+      const roles = user?.roles?.map((r) => r.role?.name) ?? [];
+
+      if (roles.includes("admin")) navigate("/admin");
+      else if (roles.includes("doctor")) navigate("/dashboard");
+      else if (roles.includes("patient")) navigate("/UserDashboard");
     } catch (error) {
       setError(error.message);
     } finally {
