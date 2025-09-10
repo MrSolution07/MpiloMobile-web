@@ -10,4 +10,4 @@ export { default as AdminAddRecord } from "./AdminAddRecord";
 export { default as AdminSettings } from "./AdminSettings";
 export { default as AdminProfile } from "./AdminProfile";
 export { default as AdminInventory } from "./AdminInventory";
-export { default as Routes } from "./Routes";
+export { default as Routes } from "./AdminRoutes";
