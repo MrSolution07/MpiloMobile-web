@@ -1,4 +1,4 @@
-import profile from "../../../src/assets/profileImg.png";
+import profile from "../../public/assets/images/profileImg.png";
 
 export const currentUser = {
   id: 'u1',

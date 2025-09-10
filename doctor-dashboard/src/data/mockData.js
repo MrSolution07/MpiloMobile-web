@@ -1,11 +1,11 @@
-import profile from "../../../src/assets/profileImg.png";
+import profile from "../../public/assets/images/profileImg.png";
 
 export const currentUser = {
   id: 'u1',
   name: 'Dr. BULABULA HUSSEIN',
   role: 'doctor',
-  department: 'Family Medicine',
-  email: 'sarah.johnson@mediclinic.com',
+  department: 'Neurology',
+  email: 'bulabula.hussein@mediclinic.com',
   avatar: profile
 };
 
