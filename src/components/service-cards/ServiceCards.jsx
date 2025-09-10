@@ -13,7 +13,7 @@ const ServiceCards = () => {
       />
      
       
-      <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+      <div className="relative mt-10 z-10 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
         <div className="text-gray-800 font-sans text-lg leading-relaxed">
           <h2 className="text-3xl text-[#274D60] md:text-4xl font-bold mb-6">
             Transforming Healthcare with Mpilo Mobile

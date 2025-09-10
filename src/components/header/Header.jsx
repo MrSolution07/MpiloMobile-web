@@ -103,7 +103,7 @@ function Header({ className, logo, joinBtn, user }) {
               <div className="relative login-dropdown">
                 <button
                   onClick={() => setLoginDropdownOpen(!loginDropdownOpen)}
-                  className="w-10 h-10 flex items-center justify-center rounded-4xl  border border-gray-300 bg-gray-50 text-gray-500 focus:outline-none focus:ring-1 focus:ring-black hover:bg-gray-50 transition-colors"
+                className="w-10 h-10 flex items-center justify-center rounded-4xl  border border-gray-300 bg-gray-50 text-gray-500 focus:outline-none focus:ring-1 focus:ring-black hover:bg-gray-50 transition-colors"
                   style={{ minWidth: 40, minHeight: 40 }}
                   title="Login Options"
                 >
@@ -178,7 +178,7 @@ function Header({ className, logo, joinBtn, user }) {
               {className !== "header-02" && (
                 <Link
                   to="/login"
-                  className="w-10 h-10 rounded-full overflow-hidden border border-gray-300 bg-gray-200 mx-auto text-gray-500 flex items-center justify-center"
+                  className="w-10 h-10 flex items-center justify-center mx-auto rounded-4xl  border border-gray-300 bg-gray-50 text-gray-500 focus:outline-none focus:ring-1 focus:ring-black"
                   style={{ minWidth: 40, minHeight: 40 }}
                 >
                   <User className="w-6 h-6" />

@@ -358,7 +358,7 @@ export default function DoctorSettings() {
         </div>
 
         {/* Actions */}
-        <div className="flex justify-end gap-4 pt-6">
+        <div className="flex justify-between pt-6">
           <button
             type="button"
             className="px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-100 whitespace-nowrap min-w-0 flex items-center justify-center text-center"
@@ -368,7 +368,7 @@ export default function DoctorSettings() {
           </button>
           <button
             type="submit"
-            className="px-5 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed whitespace-nowrap min-w-0 flex items-center justify-center text-center"
+            className="px-3 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed whitespace-nowrap min-w-0 flex items-center justify-center text-center"
             disabled={loading}
           >
             {loading ? (
