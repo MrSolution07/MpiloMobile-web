@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Search, Plus, Filter, UserX } from "lucide-react";
 import {
   Card,
@@ -18,7 +18,6 @@ import { formatDate } from "../../utils";
 import { supabase } from "../../services/supabaseClient";
 
 const PatientsList = () => {
-  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [filterOpen, setFilterOpen] = useState(false);
@@ -50,7 +49,7 @@ const PatientsList = () => {
           avatar: patient.avatar || `https://ui-avatars.com/api/?name=${patient.first_name}+${patient.last_name}&background=random`,
           lastVisit: patient.last_visit,
           status: patient.status || 'Moderate',
-          gender: patient.gender, // Add gender if available in your database
+          gender: patient.gender,
           address: patient.address,
           chronic_conditions: patient.chronic_conditions
         }));
@@ -78,12 +77,12 @@ const PatientsList = () => {
 
   const filteredPatients = patients.filter((patient) => {
     const matchesSearch =
-      (patient.name && patient.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (patient.email && patient.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (patient.phone && patient.phone.includes(searchQuery));
+      patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      patient.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      patient.phone.includes(searchQuery);
 
     const matchesStatus =
-      statusFilter === "all" || (patient.status && patient.status.toLowerCase() === statusFilter.toLowerCase());
+      statusFilter === "all" || patient.status.toLowerCase() === statusFilter.toLowerCase();
 
     return matchesSearch && matchesStatus;
   });
@@ -107,10 +106,6 @@ const PatientsList = () => {
 
     return sortDirection === "asc" ? comparison : -comparison;
   });
-
-  const handlePatientClick = (patientId) => {
-    navigate(`/patients/${patientId}`);
-  };
 
   if (loading) {
     return (
@@ -257,11 +252,7 @@ const PatientsList = () => {
               </TableHead>
               <TableBody>
                 {sortedPatients.map((patient) => (
-                  <TableRow
-                    key={patient.id}
-                    onClick={() => handlePatientClick(patient.id)}
-                    className="cursor-pointer"
-                  >
+                  <TableRow key={patient.id}>
                     <TableCell>
                       <div className="flex items-center">
                         <Avatar
