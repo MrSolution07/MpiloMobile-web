@@ -23,33 +23,35 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
       try {
         // Initial fetch of waiting cases count
         const { count, error } = await supabase
-          .from('triage_cases')
-          .select('*', { count: 'exact', head: true })
-          .eq('status', 'waiting');
-        
+          .from("triage_cases")
+          .select("*", { count: "exact", head: true })
+          .eq("status", "waiting");
+
         if (error) throw error;
         setWaitingTriageCount(count || 0);
 
         // Set up realtime subscription
         subscription = supabase
-          .channel('triage-cases-changes')
+          .channel("triage-cases-changes")
           .on(
-            'postgres_changes',
+            "postgres_changes",
             {
-              event: '*',
-              schema: 'public',
-              table: 'triage_cases',
+              event: "*",
+              schema: "public",
+              table: "triage_cases",
             },
             async (payload) => {
               // Only refetch if the change affects a waiting case
-              if (payload.eventType === 'DELETE' || 
-                  payload.new?.status === 'waiting' || 
-                  payload.old?.status === 'waiting') {
+              if (
+                payload.eventType === "DELETE" ||
+                payload.new?.status === "waiting" ||
+                payload.old?.status === "waiting"
+              ) {
                 const { count, error } = await supabase
-                  .from('triage_cases')
-                  .select('*', { count: 'exact', head: true })
-                  .eq('status', 'waiting');
-                
+                  .from("triage_cases")
+                  .select("*", { count: "exact", head: true })
+                  .eq("status", "waiting");
+
                 if (!error) {
                   setWaitingTriageCount(count || 0);
                 }
@@ -57,9 +59,8 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
             }
           )
           .subscribe();
-
       } catch (err) {
-        console.error('Error initializing triage count:', err);
+        console.error("Error initializing triage count:", err);
       }
     };
 
@@ -73,18 +74,38 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
   }, []);
 
   const navItems = [
-    { name: "Dashboard", path: "/dashboard", icon: <Home className="w-5 h-5" /> },
-    { name: "Appointments", path: "/dashboard/appointments", icon: <Calendar className="w-5 h-5" /> },
-    { name: "Messages", path: "/dashboard/messages", icon: <MessageSquare className="w-5 h-5" />, badge: 2 },
-    { name: "Patients", path: "/dashboard/patients", icon: <Users className="w-5 h-5" /> },
-    { 
-      name: "Triage", 
-      path: "/dashboard/triage", 
-      icon: <AlertTriangle className="w-5 h-5" />, 
-      badge: waitingTriageCount > 0 ? waitingTriageCount : null 
+    {
+      name: "Dashboard",
+      path: "/dashboard",
+      icon: <Home className="w-5 h-5" />,
     },
-    { name: "Medical Records", path: "/dashboard/records", icon: <FileText className="w-5 h-5" /> },
-    
+    {
+      name: "Appointments",
+      path: "/dashboard/appointments",
+      icon: <Calendar className="w-5 h-5" />,
+    },
+    {
+      name: "Messages",
+      path: "/dashboard/messages",
+      icon: <MessageSquare className="w-5 h-5" />,
+      badge: 2,
+    },
+    {
+      name: "Patients",
+      path: "/dashboard/patients",
+      icon: <Users className="w-5 h-5" />,
+    },
+    {
+      name: "Triage",
+      path: "/dashboard/triage",
+      icon: <AlertTriangle className="w-5 h-5" />,
+      badge: waitingTriageCount > 0 ? waitingTriageCount : null,
+    },
+    {
+      name: "Medical Records",
+      path: "/dashboard/records",
+      icon: <FileText className="w-5 h-5" />,
+    },
   ];
 
   return (
@@ -103,7 +124,9 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
             alt="Mpilo Mobile Logo"
             className="w-8 h-8 rounded-full object-cover"
           />
-          <span className="ml-2 font-bold text-[#274D60] text-xl">Mpilo Mobile</span>
+          <span className="ml-2 font-bold text-[#274D60] text-xl">
+            Mpilo Mobile
+          </span>
         </div>
       </div>
 
@@ -124,7 +147,7 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
                           : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                       }
                     `}
-                    onClick={() => toggleSidebar && toggleSidebar()} 
+                    onClick={() => toggleSidebar && toggleSidebar()}
                   >
                     <div className="flex items-center">
                       <span

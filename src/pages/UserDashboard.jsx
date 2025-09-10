@@ -29,8 +29,6 @@ function PatientDashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
 
-  console.log(user);
-
   const handleLogout = async () => {
     try {
       await logout();

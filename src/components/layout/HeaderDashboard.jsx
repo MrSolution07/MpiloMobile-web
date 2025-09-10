@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Bell, Search, Menu, X } from "lucide-react";
 import { Avatar } from "../ui";
-import { currentUser } from "../../data";
 import { useAuth } from "../../context";
+import { Link } from "react-router-dom";
 
 function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
   const [isSearchActive, setIsSearchActive] = useState(false);
@@ -10,7 +10,7 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
 
   const toggleProfileDropdown = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
@@ -20,6 +20,14 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
   const toggleNotifications = () => {
     setIsNotificationsOpen(!isNotificationsOpen);
     if (isProfileDropdownOpen) setIsProfileDropdownOpen(false);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
   };
 
   return (
@@ -141,8 +149,8 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
             aria-label="User menu"
           >
             <Avatar
-              src={currentUser.avatar}
-              alt={currentUser.name}
+              src={user.avatar_url}
+              alt={user.display_name}
               size="sm"
               status="online"
             />
@@ -152,27 +160,25 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
             <div className="absolute right-0 z-40 bg-white shadow-lg mt-2 border border-gray-200 rounded-lg w-48">
               <div className="px-4 py-3 border-b border-gray-100">
                 <p className="text-sm font-semibold text-gray-900">
-                  {currentUser.name}
+                  {user.display_name}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">
-                  {currentUser.email}
-                </p>
+                <p className="text-xs text-gray-500 mt-1">{user.email}</p>
               </div>
               <div className="py-1">
-                <a
-                  href="/dashboard/profile"
+                <Link
+                  to="/dashboard/profile"
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Your Profile
-                </a>
-                <a
-                  href="/dashboard/settings"
+                </Link>
+                <Link
+                  to="/dashboard/settings"
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Settings
-                </a>
+                </Link>
                 <button
-                  onClick={() => logout()}
+                  onClick={handleLogout}
                   className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Sign out
