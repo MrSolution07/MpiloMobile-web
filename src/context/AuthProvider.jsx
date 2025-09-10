@@ -5,6 +5,7 @@ const AuthProviderContext = React.createContext(undefined);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
 
   const fetchUser = async (userId) => {
     if (!userId) return null;
@@ -47,13 +48,22 @@ export const AuthProvider = ({ children }) => {
     // listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user?.id) {
-        const fullUser = await fetchUser(session.user.id);
-        setUser(fullUser);
-      } else {
-        setUser(null);
-      }
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      (async () => {
+        if (session?.user?.id) {
+          try {
+            const fullUser = await fetchUser(session.user.id);
+            setUser(fullUser);
+          } catch (err) {
+            console.error("Error in fetchUser:", err);
+            setUser(null);
+          }
+        } else {
+          setUser(null);
+        }
+      })();
+
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -77,17 +87,37 @@ export const AuthProvider = ({ children }) => {
     if (data?.user?.identities?.length === 0) {
       throw new Error("User already exists.");
     }
+
+    if (data.session?.user?.id) {
+      const fullUser = await fetchUser(data.session.user.id);
+      setUser(fullUser);
+    } else {
+      setUser(null);
+    }
+
+    return user;
   };
 
   const login = async (email, password) => {
     email = email.trim().toLowerCase();
 
-    const { error } = await supabase.auth.signInWithPassword({
+    await logout();
+
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) throw error;
+
+    if (data.session?.user?.id) {
+      const fullUser = await fetchUser(data.session.user.id);
+      setUser(fullUser);
+    } else {
+      setUser(null);
+    }
+
+    return user;
   };
 
   const logout = async () => {
@@ -100,11 +130,11 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
+    loading,
     isLoggedIn: !!user,
     register,
     login,
     logout,
-    register,
   };
 
   return (

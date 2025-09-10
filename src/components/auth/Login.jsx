@@ -22,8 +22,13 @@ function Login() {
 
     try {
       setLoading(true);
-      await login(email.trim().toLowerCase(), password);
-      navigate("/UserDashboard");
+      const user = await login(email.trim().toLowerCase(), password);
+
+      const roles = user?.roles?.map((r) => r.role?.name) ?? [];
+
+      if (roles.includes("admin")) navigate("/admin");
+      else if (roles.includes("doctor")) navigate("/dashboard");
+      else if (roles.includes("patient")) navigate("/UserDashboard");
     } catch (err) {
       setError(err.message);
     } finally {
