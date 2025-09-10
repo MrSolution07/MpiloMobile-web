@@ -5,6 +5,7 @@ const AuthProviderContext = React.createContext(undefined);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
 
   const fetchUser = async (userId) => {
     if (!userId) return null;
@@ -47,13 +48,22 @@ export const AuthProvider = ({ children }) => {
     // listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user?.id) {
-        const fullUser = await fetchUser(session.user.id);
-        setUser(fullUser);
-      } else {
-        setUser(null);
-      }
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      (async () => {
+        if (session?.user?.id) {
+          try {
+            const fullUser = await fetchUser(session.user.id);
+            setUser(fullUser);
+          } catch (err) {
+            console.error("Error in fetchUser:", err);
+            setUser(null);
+          }
+        } else {
+          setUser(null);
+        }
+      })();
+
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -82,6 +92,8 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     email = email.trim().toLowerCase();
 
+    await logout();
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -100,11 +112,11 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
+    loading,
     isLoggedIn: !!user,
     register,
     login,
     logout,
-    register,
   };
 
   return (

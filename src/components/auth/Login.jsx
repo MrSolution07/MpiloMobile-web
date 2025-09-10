@@ -14,7 +14,6 @@ function Login() {
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,7 +22,6 @@ function Login() {
     try {
       setLoading(true);
       await login(email.trim().toLowerCase(), password);
-      navigate("/UserDashboard");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -107,7 +105,7 @@ function Login() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="focus:outline-none text-gray-400 ml-2"
               >
-                {showPassword ? <FaEyeSlash size={20}/> : <FaEye size={20} />}
+                {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
               </button>
             </div>
           </div>
@@ -115,10 +113,16 @@ function Login() {
           {/* Remember & Forgot */}
           <div className="flex justify-between items-center text-sm">
             <label className="flex items-center text-gray-600">
-              <input type="checkbox" className="form-checkbox text-white mr-2" />
+              <input
+                type="checkbox"
+                className="form-checkbox text-white mr-2"
+              />
               Remember Me
             </label>
-            <Link to="/forgot-password" className="text-primary font-medium hover:underline">
+            <Link
+              to="/forgot-password"
+              className="text-primary font-medium hover:underline"
+            >
               Forgot Password?
             </Link>
           </div>
