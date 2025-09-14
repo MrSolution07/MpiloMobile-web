@@ -104,6 +104,12 @@ const TriageList = () => {
     }
   };
 
+  // Handle begin treatment - show alert
+  const handleBeginTreatment = (triageCase) => {
+    alert(`Beginning treatment for ${triageCase.first_name} ${triageCase.last_name}`);
+    updateCaseStatus(triageCase.id, 'in-progress');
+  };
+
   // Handle complete treatment - navigate to NewRecord with patient data
   const handleCompleteTreatment = (triageCase) => {
     navigate('/dashboard/records/new', {
@@ -414,7 +420,7 @@ const TriageList = () => {
                 <CaseCard 
                   key={triageCase.id}
                   triageCase={triageCase}
-                  action={() => updateCaseStatus(triageCase.id, 'in-progress')}
+                  action={() => handleBeginTreatment(triageCase)}
                   actionText="Begin Treatment"
                   actionVariant="danger"
                 />

@@ -281,7 +281,7 @@ export default function AppointmentDetails() {
           onClick={() => navigate("/UserDashboard?tab=appointments")}
           className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition"
         >
-          Back to Appointments
+          Back to Home
         </button>
       </div>
     </div>
