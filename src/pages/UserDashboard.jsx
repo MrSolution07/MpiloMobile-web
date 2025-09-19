@@ -177,13 +177,13 @@ function PatientDashboard() {
     },
     {
       label: "Temperature",
-      value: "98.6°F",
+      value: "37.6°C",
       icon: FaThermometerHalf,
       color: "text-orange-500",
     },
     {
       label: "Weight",
-      value: "165 lbs",
+      value: "78 kg",
       icon: FaWeight,
       color: "text-green-500",
     },
@@ -398,13 +398,11 @@ function PatientDashboard() {
                       )}
                       <span>{upcomingAppointments[0].type}</span>
                     </div>
-                    <CallButton
-                      calleeId={"6816d5d7-0582-45a6-b950-c857f49ed8a6"}
-                    >
+                    <Link to="/c/1">
                       <button className="w-full bg-[#DC2626] text-white py-2 rounded-lg font-medium hover:bg-red-700 transition">
                         Join Now
                       </button>
-                    </CallButton>
+                    </Link>
                   </div>
                 )}
               </div>
