@@ -10,8 +10,10 @@ import {
   Send,
   ArrowLeft,
   Menu,
+  Video,
 } from "lucide-react";
 import profile from "../../../public/assets/images/profileImg.png";
+import { Link } from "react-router-dom";
 
 
 
@@ -808,6 +810,11 @@ function MessagesList() {
                           </h3>
                         </div>
                       </div>
+                      <Button asChild>
+                        <Link to="/c/1">
+                          <Video className="w-6 h-6 " />
+                        </Link>
+                      </Button>
                     </div>
                   </div>
 

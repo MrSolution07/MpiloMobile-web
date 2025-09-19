@@ -19,6 +19,7 @@ import { TriageList, NewTriage } from "./components/triage";
 import { MedicalRecordsList, NewRecord } from "./components/records";
 import { DoctorSettings } from "./components/settings";
 import { DoctorProfile } from "./components/profile";
+import { VideoCall } from "./components/VideoCall";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,11 @@ const router = createBrowserRouter([
   {
     path: "/forgot-password",
     element: <ForgotPassword />,
+  },
+
+  {
+    path: "/c/:hash",
+    element: <VideoCall />
   },
 
   // Dashboard routes (nested under /dashboard path)
