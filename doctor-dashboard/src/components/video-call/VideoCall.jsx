@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import AgoraRTC from "agora-rtc-sdk-ng";
+import { Button } from "../ui";
 
 const APP_ID = import.meta.env.VITE_AGORA_APP_ID;
 
@@ -18,7 +19,9 @@ const VideoPlayer = ({ user, isLocal }) => {
     <div
       ref={ref}
       className={`bg-black rounded-lg shadow-md ${
-        isLocal ? "w-40 h-28 border-2 border-white" : "w-full h-full"
+        isLocal
+          ? "w-28 h-40 sm:w-40 sm:h-28 border-2 border-white"
+          : "w-full h-full"
       }`}
     ></div>
   );
@@ -164,36 +167,37 @@ export const VideoCall = ({ channelName = "testChannel", onLeave }) => {
 
     // cleanup function
     return () => {
-      const cleanup = async () => {
-        try {
-          const client = clientRef.current;
-          const { audioTrack, videoTrack } = localTracksRef.current;
-
-          // stop and close local tracks
-          if (audioTrack) {
-            audioTrack.stop();
-            audioTrack.close();
-          }
-
-          if (videoTrack) {
-            videoTrack.stop();
-            videoTrack.close();
-          }
-
-          // leave channel and reset client
-          if (client) {
-            await client.leave();
-            clientRef.current = null;
-          }
-
-          onLeave?.();
-        } catch (error) {
-          console.error("Error during cleanup:", error);
-        }
-      };
-      cleanup();
+      leaveCall();
     };
   }, []);
+
+  const leaveCall = async () => {
+    try {
+      const client = clientRef.current;
+      const { audioTrack, videoTrack } = localTracksRef.current;
+
+      // stop and close local tracks
+      if (audioTrack) {
+        audioTrack.stop();
+        audioTrack.close();
+      }
+
+      if (videoTrack) {
+        videoTrack.stop();
+        videoTrack.close();
+      }
+
+      // leave channel and reset client
+      if (client) {
+        await client.leave();
+        clientRef.current = null;
+      }
+
+      onLeave?.();
+    } catch (error) {
+      console.error("Error leaving call:", error);
+    }
+  };
 
   const localUser = users.find((u) => u.uid === localUid);
   const remoteUsers = users.filter((u) => u.uid !== localUid);
@@ -246,6 +250,13 @@ export const VideoCall = ({ channelName = "testChannel", onLeave }) => {
             Connected • {users.length} user{users.length !== 1 ? "s" : ""}
           </p>
         )}
+
+        <Button
+          className="absolute z-10 top-4 right-4 rounded-sm"
+          onClick={leaveCall}
+        >
+          End Call
+        </Button>
       </div>
     </div>
   );

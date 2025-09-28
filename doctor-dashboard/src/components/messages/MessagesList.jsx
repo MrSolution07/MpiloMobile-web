@@ -1,41 +1,42 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { 
-  MessageSquare, 
-  Search, 
-  Plus, 
-  Filter, 
-  Mail, 
-  MoreVertical,
+import {
+  MessageSquare,
+  Search,
+  Plus,
+  Filter,
+  Mail,
   X,
   Send,
   ArrowLeft,
-  Menu,
   Video,
 } from "lucide-react";
 import profile from "../../../public/assets/images/profileImg.png";
-import { Link } from "react-router-dom";
-
-
+import { CallButton } from "@/components/video-call";
 
 // Mock current user - replace with actual auth
 const currentUser = {
   id: "user-1",
   name: "Dr. Sarah Johnson",
-  avatar: profile
+  avatar: profile,
 };
 
 // Avatar component
 const Avatar = ({ src, alt, size = "md", className = "" }) => {
   const sizeClasses = {
     sm: "w-8 h-8",
-    md: "w-10 h-10", 
-    lg: "w-12 h-12"
+    md: "w-10 h-10",
+    lg: "w-12 h-12",
   };
 
   return (
     <div className={`relative ${className}`}>
       <img
-        src={src || `https://ui-avatars.com/api/?name=${encodeURIComponent(alt)}&background=ef4444&color=fff`}
+        src={
+          src ||
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(
+            alt
+          )}&background=ef4444&color=fff`
+        }
         alt={alt}
         className={`${sizeClasses[size]} rounded-full object-cover`}
       />
@@ -49,34 +50,45 @@ const Badge = ({ text, variant = "default", size = "default" }) => {
     default: "bg-gray-100 text-gray-800",
     danger: "bg-red-100 text-red-800",
     success: "bg-green-100 text-green-800",
-    warning: "bg-yellow-100 text-yellow-800"
+    warning: "bg-yellow-100 text-yellow-800",
   };
-  
+
   const sizes = {
     small: "px-2 py-1 text-xs",
-    default: "px-3 py-1 text-sm"
+    default: "px-3 py-1 text-sm",
   };
 
   return (
-    <span className={`inline-flex items-center font-medium rounded-full ${variants[variant]} ${sizes[size]}`}>
+    <span
+      className={`inline-flex items-center font-medium rounded-full ${variants[variant]} ${sizes[size]}`}
+    >
       {text}
     </span>
   );
 };
 
 // Button component
-const Button = ({ children, variant = "default", size = "default", icon, onClick, disabled, className = "", loading = false }) => {
+const Button = ({
+  children,
+  variant = "default",
+  size = "default",
+  icon,
+  onClick,
+  disabled,
+  className = "",
+  loading = false,
+}) => {
   const variants = {
     default: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50",
     primary: "bg-red-600 text-white border-transparent hover:bg-red-700",
     secondary: "bg-gray-100 text-gray-700 border-transparent hover:bg-gray-200",
-    danger: "bg-red-600 text-white border-transparent hover:bg-red-700"
+    danger: "bg-red-600 text-white border-transparent hover:bg-red-700",
   };
-  
+
   const sizes = {
     sm: "px-3 py-1.5 text-sm",
     default: "px-4 py-2 text-sm",
-    lg: "px-6 py-3 text-base"
+    lg: "px-6 py-3 text-base",
   };
 
   return (
@@ -119,7 +131,7 @@ function MessagesList() {
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState({});
   const [newMessage, setNewMessage] = useState("");
-  
+
   // UI state
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("all");
@@ -127,11 +139,11 @@ function MessagesList() {
   const [sendingMessage, setSendingMessage] = useState(false);
   const [newMessageModalOpen, setNewMessageModalOpen] = useState(false);
   const [selectedContacts, setSelectedContacts] = useState([]);
-  
+
   // Mobile state
   const [isMobile, setIsMobile] = useState(false);
   const [showConversationsList, setShowConversationsList] = useState(true);
-  
+
   // Refs
   const messagesEndRef = useRef(null);
 
@@ -143,10 +155,10 @@ function MessagesList() {
         setShowConversationsList(true);
       }
     };
-    
+
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   // Sample contacts for new message modal
@@ -155,20 +167,20 @@ function MessagesList() {
       id: "user-2",
       name: "John Smith",
       avatar: profile,
-      role: "Patient"
+      role: "Patient",
     },
     {
-      id: "user-3", 
+      id: "user-3",
       name: "Dr. Mike Wilson",
       avatar: profile,
-      role: "Colleague"
+      role: "Colleague",
     },
     {
       id: "user-4",
       name: "Sarah Davis",
       avatar: profile,
-      role: "Patient"
-    }
+      role: "Patient",
+    },
   ];
 
   // Initialize with sample data
@@ -176,7 +188,7 @@ function MessagesList() {
     // Sample conversations
     const sampleConversations = [
       {
-        id: "conv-1",
+        id: "9788ca04-820d-4f01-b152-386593fd51ac",
         participantId: "user-2",
         participantName: "John Smith",
         participantAvatar: profile,
@@ -184,69 +196,72 @@ function MessagesList() {
           id: "msg-1",
           senderId: "user-2",
           senderName: "John Smith",
-          content: "Hi Dr. Johnson, I have a question about my recent test results.",
+          content:
+            "Hi Dr. Johnson, I have a question about my recent test results.",
           timestamp: new Date(Date.now() - 300000).toISOString(),
           read: false,
-          urgent: false
+          urgent: false,
         },
-        unreadCount: 1
+        unreadCount: 1,
       },
       {
-        id: "conv-2",
+        id: "de78b9ba-7837-4550-a6eb-8f67bc8a21d2",
         participantId: "user-3",
         participantName: "Dr. Mike Wilson",
         participantAvatar: profile,
         lastMessage: {
           id: "msg-2",
           senderId: "user-3",
-          senderName: "Dr. Mike Wilson", 
+          senderName: "Dr. Mike Wilson",
           content: "Can we discuss the patient case we talked about yesterday?",
           timestamp: new Date(Date.now() - 600000).toISOString(),
           read: true,
-          urgent: false
+          urgent: false,
         },
-        unreadCount: 0
-      }
+        unreadCount: 0,
+      },
     ];
 
     setConversations(sampleConversations);
 
     // Sample messages
     const sampleMessages = {
-      "conv-1": [
+      "9788ca04-820d-4f01-b152-386593fd51ac": [
         {
           id: "msg-1",
-          conversationId: "conv-1",
+          conversationId: "9788ca04-820d-4f01-b152-386593fd51ac",
           senderId: "user-2",
           senderName: "John Smith",
-          content: "Hi Dr. Johnson, I have a question about my recent test results.",
+          content:
+            "Hi Dr. Johnson, I have a question about my recent test results.",
           timestamp: new Date(Date.now() - 300000).toISOString(),
           read: false,
-          urgent: false
-        }
+          urgent: false,
+        },
       ],
-      "conv-2": [
+      "de78b9ba-7837-4550-a6eb-8f67bc8a21d2": [
         {
           id: "msg-2",
-          conversationId: "conv-2",
+          conversationId: "de78b9ba-7837-4550-a6eb-8f67bc8a21d2",
           senderId: "user-3",
           senderName: "Dr. Mike Wilson",
           content: "Can we discuss the patient case we talked about yesterday?",
           timestamp: new Date(Date.now() - 600000).toISOString(),
           read: true,
-          urgent: false
+          urgent: false,
         },
         {
           id: "msg-3",
-          conversationId: "conv-2",
+          conversationId: "de78b9ba-7837-4550-a6eb-8f67bc8a21d2",
           senderId: currentUser.id,
           senderName: currentUser.name,
-          content: "Of course! I'm available this afternoon. What specific aspects would you like to discuss?",
+          content:
+            "Of course! I'm available this afternoon. What specific aspects would you like to discuss?",
           timestamp: new Date(Date.now() - 580000).toISOString(),
           read: true,
-          urgent: false
-        }
-      ]
+          urgent: false,
+        },
+      ],
     };
 
     setMessages(sampleMessages);
@@ -267,9 +282,8 @@ function MessagesList() {
       // This is where you'd make your actual API call
       // const response = await fetch(`/api/conversations/${conversationId}/messages`);
       // const newMessages = await response.json();
-      
+
       console.log("Fetching messages for conversation:", conversationId);
-      
     } catch (error) {
       console.error("Error fetching messages:", error);
     }
@@ -280,14 +294,14 @@ function MessagesList() {
     if (!newMessage.trim() || !selectedConversation) return;
 
     setSendingMessage(true);
-    
-    document.querySelector('textarea').style.height = 'auto';
+
+    document.querySelector("textarea").style.height = "auto";
 
     const messageData = {
       conversationId: selectedConversation.id,
       recipientId: selectedConversation.participantId,
       content: newMessage.trim(),
-      urgent: false
+      urgent: false,
     };
 
     const optimisticMessage = {
@@ -298,19 +312,22 @@ function MessagesList() {
       content: newMessage.trim(),
       timestamp: new Date().toISOString(),
       read: true,
-      urgent: false
+      urgent: false,
     };
 
     // Add message optimistically
-    setMessages(prev => ({
+    setMessages((prev) => ({
       ...prev,
-      [selectedConversation.id]: [...(prev[selectedConversation.id] || []), optimisticMessage]
+      [selectedConversation.id]: [
+        ...(prev[selectedConversation.id] || []),
+        optimisticMessage,
+      ],
     }));
 
     // Update conversation's last message
-    setConversations(prev => 
-      prev.map(conv => 
-        conv.id === selectedConversation.id 
+    setConversations((prev) =>
+      prev.map((conv) =>
+        conv.id === selectedConversation.id
           ? { ...conv, lastMessage: optimisticMessage }
           : conv
       )
@@ -320,8 +337,8 @@ function MessagesList() {
 
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // This is where you'd make your actual API call
       // const response = await fetch('/api/messages', {
       //   method: 'POST',
@@ -331,16 +348,17 @@ function MessagesList() {
       // const sentMessage = await response.json();
 
       console.log("Message sent successfully");
-
     } catch (error) {
       console.error("Error sending message:", error);
-      
+
       // Remove failed message
-      setMessages(prev => ({
+      setMessages((prev) => ({
         ...prev,
-        [selectedConversation.id]: prev[selectedConversation.id].filter(msg => msg.id !== optimisticMessage.id)
+        [selectedConversation.id]: prev[selectedConversation.id].filter(
+          (msg) => msg.id !== optimisticMessage.id
+        ),
       }));
-      
+
       // Restore message to input
       setNewMessage(messageData.content);
     } finally {
@@ -349,33 +367,36 @@ function MessagesList() {
   };
 
   // Handle conversation selection
-  const handleConversationSelect = useCallback((conversation) => {
-    setSelectedConversation(conversation);
-    
-    // On mobile, hide conversations list when selecting a conversation
-    if (isMobile) {
-      setShowConversationsList(false);
-    }
-    
-    // Mark messages as read
-    if (conversation.unreadCount > 0) {
-      setConversations(prev =>
-        prev.map(conv =>
-          conv.id === conversation.id ? { ...conv, unreadCount: 0 } : conv
-        )
-      );
-      
-      setMessages(prev => ({
-        ...prev,
-        [conversation.id]: (prev[conversation.id] || []).map(msg =>
-          msg.senderId !== currentUser.id ? { ...msg, read: true } : msg
-        )
-      }));
-    }
+  const handleConversationSelect = useCallback(
+    (conversation) => {
+      setSelectedConversation(conversation);
 
-    // Fetch latest messages when conversation is selected
-    fetchMessages(conversation.id);
-  }, [isMobile]);
+      // On mobile, hide conversations list when selecting a conversation
+      if (isMobile) {
+        setShowConversationsList(false);
+      }
+
+      // Mark messages as read
+      if (conversation.unreadCount > 0) {
+        setConversations((prev) =>
+          prev.map((conv) =>
+            conv.id === conversation.id ? { ...conv, unreadCount: 0 } : conv
+          )
+        );
+
+        setMessages((prev) => ({
+          ...prev,
+          [conversation.id]: (prev[conversation.id] || []).map((msg) =>
+            msg.senderId !== currentUser.id ? { ...msg, read: true } : msg
+          ),
+        }));
+      }
+
+      // Fetch latest messages when conversation is selected
+      fetchMessages(conversation.id);
+    },
+    [isMobile]
+  );
 
   // Handle back to conversations (mobile)
   const handleBackToConversations = () => {
@@ -388,37 +409,42 @@ function MessagesList() {
     if (selectedContacts.length === 0) return;
 
     const conversationId = `conv-${Date.now()}`;
-    const contact = contacts.find(c => c.id === selectedContacts[0]);
-    
+    const contact = contacts.find((c) => c.id === selectedContacts[0]);
+
     const newConversation = {
       id: conversationId,
       participantId: selectedContacts[0],
       participantName: contact.name,
       participantAvatar: contact.avatar,
       lastMessage: null,
-      unreadCount: 0
+      unreadCount: 0,
     };
 
-    setConversations(prev => [newConversation, ...prev]);
+    setConversations((prev) => [newConversation, ...prev]);
     setSelectedConversation(newConversation);
-    
+
     // On mobile, show the message view
     if (isMobile) {
       setShowConversationsList(false);
     }
-    
+
     setNewMessageModalOpen(false);
     setSelectedContacts([]);
   }, [selectedContacts, contacts, isMobile]);
 
   // Filter conversations
-  const filteredConversations = conversations.filter(conv => {
-    const matchesSearch = conv.participantName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         (conv.lastMessage?.content && conv.lastMessage.content.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredConversations = conversations.filter((conv) => {
+    const matchesSearch =
+      conv.participantName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (conv.lastMessage?.content &&
+        conv.lastMessage.content
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()));
 
-    const matchesFilter = filter === "all" || 
-                         (filter === "unread" && conv.unreadCount > 0) ||
-                         (filter === "urgent" && conv.lastMessage?.urgent);
+    const matchesFilter =
+      filter === "all" ||
+      (filter === "unread" && conv.unreadCount > 0) ||
+      (filter === "urgent" && conv.lastMessage?.urgent);
 
     return matchesSearch && matchesFilter;
   });
@@ -428,9 +454,12 @@ function MessagesList() {
     const date = new Date(timestamp);
     const now = new Date();
     const isToday = date.toDateString() === now.toDateString();
-    
+
     if (isToday) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
     } else {
       return date.toLocaleDateString();
     }
@@ -445,12 +474,14 @@ function MessagesList() {
           <div className="bg-white border-b border-gray-200 px-4 py-3">
             <div className="flex justify-between items-center">
               <div>
-               <span className="text-3xl sm:text-3xl font-bold text-black">Messages</span>
-            <p className="text-xs md:text-sm text-gray-500 mt-1 hidden sm:block">
-              Professional communication portal
-            </p>
+                <span className="text-3xl sm:text-3xl font-bold text-black">
+                  Messages
+                </span>
+                <p className="text-xs md:text-sm text-gray-500 mt-1 hidden sm:block">
+                  Professional communication portal
+                </p>
               </div>
-              
+
               <div className="flex space-x-2">
                 <Button
                   variant="secondary"
@@ -461,7 +492,9 @@ function MessagesList() {
                 <Button
                   variant="primary"
                   size="sm"
-                  icon={<Plus className="w-4 h-4 ml-2 sm:w-4 sm:h-4 text-center" />}
+                  icon={
+                    <Plus className="w-4 h-4 ml-2 sm:w-4 sm:h-4 text-center" />
+                  }
                   onClick={() => setNewMessageModalOpen(true)}
                 />
               </div>
@@ -483,7 +516,7 @@ function MessagesList() {
               {filterOpen && (
                 <div className="bg-white border border-gray-200 rounded-lg p-2 sm:p-3 shadow-sm mt-2">
                   <div className="flex flex-wrap sm:flex-nowrap gap-1 sm:gap-2">
-                    {['all', 'unread', 'urgent'].map((filterOption) => (
+                    {["all", "unread", "urgent"].map((filterOption) => (
                       <button
                         key={filterOption}
                         className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-md text-[10px] sm:text-xs font-medium capitalize ${
@@ -493,13 +526,13 @@ function MessagesList() {
                         }`}
                         onClick={() => setFilter(filterOption)}
                       >
-                        {filterOption} {filterOption === 'all' ? 'Messages' : ''}
+                        {filterOption}{" "}
+                        {filterOption === "all" ? "Messages" : ""}
                       </button>
                     ))}
                   </div>
                 </div>
               )}
-
             </div>
           </div>
 
@@ -518,7 +551,7 @@ function MessagesList() {
                       alt={conversation.participantName}
                       size="md"
                     />
-                    
+
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-center">
                         <p className="font-semibold text-gray-900 truncate">
@@ -537,16 +570,23 @@ function MessagesList() {
                           )}
                         </div>
                       </div>
-                      
+
                       {conversation.lastMessage && (
                         <p className="text-sm text-gray-600 truncate mt-1">
-                          {conversation.lastMessage.senderId === currentUser.id ? "You: " : ""}
+                          {conversation.lastMessage.senderId === currentUser.id
+                            ? "You: "
+                            : ""}
                           {conversation.lastMessage.content}
                         </p>
                       )}
-                      
+
                       {conversation.lastMessage?.urgent && (
-                        <Badge text="Urgent" variant="danger" size="small" className="mt-1" />
+                        <Badge
+                          text="Urgent"
+                          variant="danger"
+                          size="small"
+                          className="mt-1"
+                        />
                       )}
                     </div>
                   </div>
@@ -588,66 +628,78 @@ function MessagesList() {
           </div>
 
           {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                {(messages[selectedConversation.id] || []).map((message) => {
-                  const isCurrentUser = message.senderId === currentUser.id;
-                  return (
-                    <div
-                      key={message.id}
-                      className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
-                    >
-                      <div className="max-w-2xl">
-                        <div className="bg-gray-100 text-gray-900 px-4 py-3 rounded-lg">
-                          <p className="whitespace-pre-wrap">{message.content}</p>
-                          {message.urgent && (
-                            <Badge text="Urgent" variant="danger" size="small" className="mt-2" />
-                          )}
-                        </div>
-                        <div className={`flex items-center mt-2 ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
-                          <span className="text-xs text-gray-500">
-                            {formatTime(message.timestamp)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-                <div ref={messagesEndRef} />
-              </div>
-
-              {/* Message Input Bar */}
-              <div className="bg-white border-t border-gray-200 p-4 flex items-end">
-                <div className="flex-1 flex items-center border border-gray-300 rounded-lg px-3 bg-slate-50">
-                  <textarea
-                    value={newMessage}
-                    onChange={(e) => {
-                      setNewMessage(e.target.value);
-                      e.target.style.height = 'auto';
-                      e.target.style.height = e.target.scrollHeight + 'px';
-                    }}
-                    placeholder="Type your message..."
-                    className="flex-1 text-sm text-gray-800 bg-transparent resize-none focus:outline-none leading-tight py-2"
-                    rows={1}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-                        e.preventDefault();
-                        sendMessage();
-                      }
-                    }}
-                  />                
-                </div>
-
-                <Button
-                  variant="primary"
-                  disabled={!newMessage.trim() || sendingMessage}
-                  onClick={sendMessage}
-                  className="ml-1 px-3 py-2 h-[35px] rounded-md flex items-center justify-center space-x-1"
+          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            {(messages[selectedConversation.id] || []).map((message) => {
+              const isCurrentUser = message.senderId === currentUser.id;
+              return (
+                <div
+                  key={message.id}
+                  className={`flex ${
+                    isCurrentUser ? "justify-end" : "justify-start"
+                  }`}
                 >
-                  <Send className="w-4 h-5" />
-                  {sendingMessage && <span className="hidden sm:inline">Sending...</span>}
-                </Button>
+                  <div className="max-w-2xl">
+                    <div className="bg-gray-100 text-gray-900 px-4 py-3 rounded-lg">
+                      <p className="whitespace-pre-wrap">{message.content}</p>
+                      {message.urgent && (
+                        <Badge
+                          text="Urgent"
+                          variant="danger"
+                          size="small"
+                          className="mt-2"
+                        />
+                      )}
+                    </div>
+                    <div
+                      className={`flex items-center mt-2 ${
+                        isCurrentUser ? "justify-end" : "justify-start"
+                      }`}
+                    >
+                      <span className="text-xs text-gray-500">
+                        {formatTime(message.timestamp)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            <div ref={messagesEndRef} />
+          </div>
 
-              </div>
+          {/* Message Input Bar */}
+          <div className="bg-white border-t border-gray-200 p-4 flex items-end">
+            <div className="flex-1 flex items-center border border-gray-300 rounded-lg px-3 bg-slate-50">
+              <textarea
+                value={newMessage}
+                onChange={(e) => {
+                  setNewMessage(e.target.value);
+                  e.target.style.height = "auto";
+                  e.target.style.height = e.target.scrollHeight + "px";
+                }}
+                placeholder="Type your message..."
+                className="flex-1 text-sm text-gray-800 bg-transparent resize-none focus:outline-none leading-tight py-2"
+                rows={1}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+                    e.preventDefault();
+                    sendMessage();
+                  }
+                }}
+              />
+            </div>
+
+            <Button
+              variant="primary"
+              disabled={!newMessage.trim() || sendingMessage}
+              onClick={sendMessage}
+              className="ml-1 px-3 py-2 h-[35px] rounded-md flex items-center justify-center space-x-1"
+            >
+              <Send className="w-4 h-5" />
+              {sendingMessage && (
+                <span className="hidden sm:inline">Sending...</span>
+              )}
+            </Button>
+          </div>
         </>
       )}
 
@@ -658,12 +710,14 @@ function MessagesList() {
           <div className="bg-white border-b border-gray-200 px-6 py-4">
             <div className="flex justify-between items-center">
               <div>
-                <span className="text-[30px] font-bold text-gray-900">Messages</span>
+                <span className="text-[30px] font-bold text-gray-900">
+                  Messages
+                </span>
                 <p className="text-sm text-gray-500 mt-1">
                   Professional communication portal
                 </p>
               </div>
-              
+
               <div className="flex space-x-4">
                 <Button
                   variant="secondary"
@@ -701,7 +755,7 @@ function MessagesList() {
               {filterOpen && (
                 <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                   <div className="flex space-x-4">
-                    {['all', 'unread', 'urgent'].map((filterOption) => (
+                    {["all", "unread", "urgent"].map((filterOption) => (
                       <button
                         key={filterOption}
                         className={`px-4 py-2 rounded-md text-sm font-medium capitalize ${
@@ -711,7 +765,8 @@ function MessagesList() {
                         }`}
                         onClick={() => setFilter(filterOption)}
                       >
-                        {filterOption} {filterOption === 'all' ? 'Messages' : ''}
+                        {filterOption}{" "}
+                        {filterOption === "all" ? "Messages" : ""}
                       </button>
                     ))}
                   </div>
@@ -729,7 +784,7 @@ function MessagesList() {
                   Conversations ({filteredConversations.length})
                 </h2>
               </div>
-              
+
               <div className="flex-1 overflow-y-auto">
                 {filteredConversations.length > 0 ? (
                   filteredConversations.map((conversation) => (
@@ -748,7 +803,7 @@ function MessagesList() {
                           alt={conversation.participantName}
                           size="md"
                         />
-                        
+
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-center">
                             <p className="font-semibold text-gray-900 truncate">
@@ -757,26 +812,35 @@ function MessagesList() {
                             <div className="flex items-center space-x-2">
                               {conversation.lastMessage && (
                                 <span className="text-xs text-gray-500">
-                                  {formatTime(conversation.lastMessage.timestamp)}
+                                  {formatTime(
+                                    conversation.lastMessage.timestamp
+                                  )}
                                 </span>
                               )}
                               {conversation.unreadCount > 0 && (
-                <span className="bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5 md:px-2 md:py-1 min-w-[18px] md:min-w-[20px] text-center">
+                                <span className="bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5 md:px-2 md:py-1 min-w-[18px] md:min-w-[20px] text-center">
                                   {conversation.unreadCount}
                                 </span>
                               )}
                             </div>
                           </div>
-                          
+
                           {conversation.lastMessage && (
                             <p className="text-sm text-gray-600 truncate mt-1">
-                              {conversation.lastMessage.senderId === currentUser.id ? "You: " : ""}
+                              {conversation.lastMessage.senderId ===
+                              currentUser.id
+                                ? "You: "
+                                : ""}
                               {conversation.lastMessage.content}
                             </p>
                           )}
-                          
+
                           {conversation.lastMessage?.urgent && (
-                            <Badge text="Urgent" variant="danger" size="small" />
+                            <Badge
+                              text="Urgent"
+                              variant="danger"
+                              size="small"
+                            />
                           )}
                         </div>
                       </div>
@@ -810,39 +874,55 @@ function MessagesList() {
                           </h3>
                         </div>
                       </div>
-                      <Button asChild>
-                        <Link to="/c/1">
-                          <Video className="w-6 h-6 " />
-                        </Link>
-                      </Button>
+                      <CallButton calleeId={selectedConversation.id}>
+                        <Video className="size-5" />
+                      </CallButton>
                     </div>
                   </div>
 
                   {/* Messages */}
                   <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                    {(messages[selectedConversation.id] || []).map((message) => {
-                      const isCurrentUser = message.senderId === currentUser.id;
-                      return (
-                        <div
-                          key={message.id}
-                          className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
-                        >
-                          <div className="max-w-2xl">
-                            <div className="bg-gray-100 text-gray-900 px-4 py-3 rounded-lg">
-                              <p className="whitespace-pre-wrap">{message.content}</p>
-                              {message.urgent && (
-                                <Badge text="Urgent" variant="danger" size="small" className="mt-2" />
-                              )}
-                            </div>
-                            <div className={`flex items-center mt-2 ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
-                              <span className="text-xs text-gray-500">
-                                {formatTime(message.timestamp)}
-                              </span>
+                    {(messages[selectedConversation.id] || []).map(
+                      (message) => {
+                        const isCurrentUser =
+                          message.senderId === currentUser.id;
+                        return (
+                          <div
+                            key={message.id}
+                            className={`flex ${
+                              isCurrentUser ? "justify-end" : "justify-start"
+                            }`}
+                          >
+                            <div className="max-w-2xl">
+                              <div className="bg-gray-100 text-gray-900 px-4 py-3 rounded-lg">
+                                <p className="whitespace-pre-wrap">
+                                  {message.content}
+                                </p>
+                                {message.urgent && (
+                                  <Badge
+                                    text="Urgent"
+                                    variant="danger"
+                                    size="small"
+                                    className="mt-2"
+                                  />
+                                )}
+                              </div>
+                              <div
+                                className={`flex items-center mt-2 ${
+                                  isCurrentUser
+                                    ? "justify-end"
+                                    : "justify-start"
+                                }`}
+                              >
+                                <span className="text-xs text-gray-500">
+                                  {formatTime(message.timestamp)}
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      }
+                    )}
                     <div ref={messagesEndRef} />
                   </div>
 
@@ -853,8 +933,8 @@ function MessagesList() {
                         value={newMessage}
                         onChange={(e) => {
                           setNewMessage(e.target.value);
-                          e.target.style.height = 'auto';
-                          e.target.style.height = e.target.scrollHeight + 'px';
+                          e.target.style.height = "auto";
+                          e.target.style.height = e.target.scrollHeight + "px";
                         }}
                         placeholder="Type your message..."
                         className="flex-1 text-sm text-gray-800 bg-transparent resize-none focus:outline-none leading-tight py-2"
@@ -865,7 +945,7 @@ function MessagesList() {
                             sendMessage();
                           }
                         }}
-                      />                
+                      />
                     </div>
 
                     <Button
@@ -874,10 +954,13 @@ function MessagesList() {
                       onClick={sendMessage}
                       className="ml-3 px-3 py-2 h-[35px] rounded-md flex items-center justify-center"
                     >
-                      {sendingMessage ? "Sending..." : <Send className="w-5 h-5" />}
+                      {sendingMessage ? (
+                        "Sending..."
+                      ) : (
+                        <Send className="w-5 h-5" />
+                      )}
                     </Button>
                   </div>
-
                 </>
               ) : (
                 <div className="flex-1 flex items-center justify-center bg-gray-50">
@@ -913,7 +996,10 @@ function MessagesList() {
             </label>
             <div className="space-y-2 max-h-60 overflow-y-auto">
               {contacts.map((contact) => (
-                <label key={contact.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-md cursor-pointer">
+                <label
+                  key={contact.id}
+                  className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-md cursor-pointer"
+                >
                   <input
                     type="radio"
                     name="recipient"
@@ -934,7 +1020,7 @@ function MessagesList() {
               ))}
             </div>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
             <Button
               variant="secondary"

@@ -3,7 +3,7 @@ import { Toaster } from "./components/admin/ui/toaster";
 import { Toaster as Sonner } from "./components/admin/ui/sonner";
 import { TooltipProvider } from "./components/admin/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "./context";
+import { AuthProvider, CallProvider } from "./context";
 
 // Doctor pages
 import { Error } from "./pages";
@@ -14,12 +14,16 @@ import { Layout } from "./components/layout";
 import { Dashboard } from "./components/DoctorDashboard";
 import { AppointmentsList, NewAppointment } from "./components/appointments";
 import { MessagesList } from "./components/messages";
-import { PatientsList, PatientDetails, AddPatient } from "./components/patients";
+import {
+  PatientsList,
+  PatientDetails,
+  AddPatient,
+} from "./components/patients";
 import { TriageList, NewTriage } from "./components/triage";
 import { MedicalRecordsList, NewRecord } from "./components/records";
 import { DoctorSettings } from "./components/settings";
 import { DoctorProfile } from "./components/profile";
-import { VideoCall } from "./components/VideoCall";
+import { CallHandler } from "./components/video-call";
 
 const queryClient = new QueryClient();
 
@@ -36,11 +40,6 @@ const router = createBrowserRouter([
   {
     path: "/forgot-password",
     element: <ForgotPassword />,
-  },
-
-  {
-    path: "/c/:hash",
-    element: <VideoCall />
   },
 
   // Dashboard routes (nested under /dashboard path)
@@ -94,7 +93,7 @@ const router = createBrowserRouter([
       },
       {
         path: "settings",
-        element: <DoctorSettings />
+        element: <DoctorSettings />,
       },
       {
         path: "profile",
@@ -110,13 +109,16 @@ const router = createBrowserRouter([
 function App() {
   return (
     <AuthProvider>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <RouterProvider router={router} />
-        </TooltipProvider>
-      </QueryClientProvider>
+      <CallProvider>
+        <CallHandler />
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <RouterProvider router={router} />
+          </TooltipProvider>
+        </QueryClientProvider>
+      </CallProvider>
     </AuthProvider>
   );
 }
