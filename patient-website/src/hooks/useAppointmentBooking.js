@@ -1,3 +1,7 @@
+
+
+
+
 // hooks/useAppointmentBooking.js
 import { useState } from 'react';
 import { supabase } from '../services/supabaseClient';
@@ -11,30 +15,33 @@ export const useAppointmentBooking = () => {
   // Browser-compatible alert function
   const showAlert = (title, message) => {
     // You can replace this with your preferred UI library's alert/modal
-    window.alert(`${title}: ${message}`);
+    if (typeof window !== 'undefined' && window.alert) {
+      window.alert(`${title}: ${message}`);
+    }
     // Alternatively, you could use a state to trigger a custom modal component
+    console.log(`${title}: ${message}`);
   };
 
-  // Function to ensure patient exists
+  // Function to ensure patient exists and get patient ID
   const ensurePatientExists = async () => {
-    if (!user) return false;
+    if (!user) return null;
 
     try {
-      // Check if patient exists
+      // Check if patient exists by user_id (not id!)
       const { data: existingPatient, error: checkError } = await supabase
         .from('patients')
-        .select('id')
-        .eq('id', user.id)
+        .select('id, patient_number, first_name, last_name')
+        .eq('user_id', user.id)  // Use user_id instead of id
         .single();
 
       if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows found
         throw checkError;
       }
 
-      return !!existingPatient;
+      return existingPatient; // Return the patient object which contains the patient ID
     } catch (error) {
       console.error('Error checking patient existence:', error);
-      return false;
+      return null;
     }
   };
 
@@ -61,11 +68,11 @@ export const useAppointmentBooking = () => {
       return { success: false, error: "Not authenticated" };
     }
 
-    // Check if patient exists
-    const patientExists = await ensurePatientExists();
-    if (!patientExists) {
-      setError("Patient profile not found. Please contact support.");
-      showAlert("Error", "Patient profile not found. Please contact support.");
+    // Check if patient exists and get patient ID
+    const patient = await ensurePatientExists();
+    if (!patient) {
+      setError("Patient profile not found. Please complete your profile first.");
+      showAlert("Error", "Patient profile not found. Please complete your profile first.");
       return { success: false, error: "Patient not found" };
     }
 
@@ -96,10 +103,10 @@ export const useAppointmentBooking = () => {
       const scheduledDateTime = new Date(selectedDate);
       scheduledDateTime.setHours(hours, minutes, 0, 0);
 
-      // Create appointment data
+      // Create appointment data - use patient.id (the patient UUID) not user.id
       const appointmentData = {
         appointment_number: generateAppointmentNumber(),
-        patient_id: user.id, // References patients table
+        patient_id: patient.id, // Use patient.id (the UUID from patients table)
         appointment_type: consultationType.toLowerCase(),
         mobile_unit_schedule_id: consultationType.toLowerCase() === 'mobile_unit' ? mobileUnitScheduleId : null,
         doctor_id: doctor.id,
@@ -113,20 +120,49 @@ export const useAppointmentBooking = () => {
         updated_at: new Date().toISOString()
       };
 
+      console.log('Booking appointment with data:', {
+        patientId: patient.id,
+        patientNumber: patient.patient_number,
+        patientName: `${patient.first_name} ${patient.last_name}`,
+        doctorId: doctor.id,
+        scheduledDateTime: scheduledDateTime.toISOString()
+      });
+
       // Insert into Supabase
       const { data, error: supabaseError } = await supabase
         .from('appointments')
         .insert([appointmentData])
-        .select()
+        .select(`
+          *,
+          doctors:doctor_id (
+            first_name,
+            last_name,
+            specialization,
+            profile_image_url
+          ),
+          patients:patient_id (
+            first_name,
+            last_name,
+            patient_number
+          )
+        `)
         .single();
 
       if (supabaseError) {
         console.error('Error creating appointment:', supabaseError);
-        throw supabaseError;
+        
+        // More specific error handling
+        if (supabaseError.code === '23503') {
+          throw new Error("Invalid doctor or patient reference. Please try again.");
+        } else if (supabaseError.code === '23505') {
+          throw new Error("Appointment number conflict. Please try again.");
+        } else {
+          throw supabaseError;
+        }
       }
 
       // Success
-      const successMessage = `Appointment booked successfully with ${doctor.name} on ${scheduledDateTime.toLocaleDateString()} at ${selectedTime}`;
+      const successMessage = `Appointment booked successfully with Dr. ${doctor.first_name} ${doctor.last_name} on ${scheduledDateTime.toLocaleDateString()} at ${selectedTime}`;
       
       showAlert("Success", successMessage);
 
@@ -135,7 +171,7 @@ export const useAppointmentBooking = () => {
         data: {
           appointment: data,
           appointmentNumber: appointmentData.appointment_number,
-          doctorName: doctor.name,
+          doctorName: `${doctor.first_name} ${doctor.last_name}`,
           consultationType,
           scheduledDateTime: scheduledDateTime.toISOString(),
           time: `${scheduledDateTime.toDateString()} at ${selectedTime}`,
@@ -169,6 +205,12 @@ export const useAppointmentBooking = () => {
     setError(null);
 
     try {
+      // First get the patient to verify ownership
+      const patient = await ensurePatientExists();
+      if (!patient) {
+        throw new Error("Patient profile not found.");
+      }
+
       const { error: supabaseError } = await supabase
         .from('appointments')
         .update({ 
@@ -176,7 +218,7 @@ export const useAppointmentBooking = () => {
           updated_at: new Date().toISOString()
         })
         .eq('id', appointmentId)
-        .eq('patient_id', user.id);
+        .eq('patient_id', patient.id); // Use patient.id
 
       if (supabaseError) {
         throw supabaseError;
@@ -211,6 +253,12 @@ export const useAppointmentBooking = () => {
     setError(null);
 
     try {
+      // First get the patient to verify ownership
+      const patient = await ensurePatientExists();
+      if (!patient) {
+        throw new Error("Patient profile not found.");
+      }
+
       let scheduledDateTime = new Date(newDateTime);
       
       // If a time slot is provided, parse and set the time
@@ -226,7 +274,7 @@ export const useAppointmentBooking = () => {
           updated_at: new Date().toISOString()
         })
         .eq('id', appointmentId)
-        .eq('patient_id', user.id);
+        .eq('patient_id', patient.id); // Use patient.id
 
       if (supabaseError) {
         throw supabaseError;
@@ -307,6 +355,16 @@ export const useAppointmentBooking = () => {
     }
 
     try {
+      // First get the patient ID
+      const patient = await ensurePatientExists();
+      if (!patient) {
+        return { 
+          success: false, 
+          error: "Patient profile not found", 
+          appointments: [] 
+        };
+      }
+
       let query = supabase
         .from('appointments')
         .select(`
@@ -316,9 +374,14 @@ export const useAppointmentBooking = () => {
             last_name,
             specialization,
             profile_image_url
+          ),
+          patients:patient_id (
+            first_name,
+            last_name,
+            patient_number
           )
         `)
-        .eq('patient_id', user.id)
+        .eq('patient_id', patient.id) // Use patient.id
         .order('scheduled_datetime', { ascending: true });
 
       if (status) {
