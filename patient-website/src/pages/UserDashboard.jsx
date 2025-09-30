@@ -333,6 +333,7 @@ function PatientDashboard() {
         ? "Triage Follow-up"
         : "Medical Record",
     rawDate: new Date(record.date),
+    raw:record,
   }));
 
   // Map doctors to UI format
