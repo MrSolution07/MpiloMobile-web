@@ -53,7 +53,7 @@ export const RecordPreviewModal: React.FC<Props> = ({ open, record, onClose }) =
 
   if (!open || !record) return null;
 
-  // Map raw record to the same labels/sections you show in the PDF
+
   const fullName =
     `${record?.first_name ?? ""} ${record?.last_name ?? ""}`.trim() || "Patient";
 
