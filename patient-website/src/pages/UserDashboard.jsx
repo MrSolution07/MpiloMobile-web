@@ -18,10 +18,10 @@ import {
   FaSearch,
   FaStar,
   FaFileMedical,
-  FaNotesMedical,
+  FaNotesMedical, 
   FaPrescription,
 } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { useDoctors } from "../hooks/useDoctors";
 import { useSpecialties } from "../hooks/useSpecialties";
@@ -31,13 +31,22 @@ import { useAuth } from "../context/AuthProvider";
 import { RecordPdf } from "../components/records/RecordPdf";
 import { supabase } from "../services/supabaseClient";
 import profile from "../../public/assets/images/profileImg.png";
+import { RecordPreviewModal } from "../components/records/RecordPreviewModal";
+
 
 function PatientDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSpecialty, setSelectedSpecialty] = useState("All Specialties");
   const [sortBy, setSortBy] = useState("name");
+
   const navigate = useNavigate();
+  const location = useLocation(); 
+
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewRecord, setPreviewRecord] = useState(null);
+
+
 
   // Use custom hooks
   const {
@@ -172,18 +181,58 @@ function PatientDashboard() {
   };
 
   // Handle view appointment details
-  const handleViewAppointmentDetails = (appointment) => {
-    navigate("/appointment-details", {
-      state: { appointment },
-    });
-  };
+      const handleViewAppointmentDetails = (appointment) => {
+        navigate("/appointment-details", {
+          state: { appointment },
+        });
+      };
 
-  // Handle view medical record details
-  const handleViewMedicalRecord = (record) => {
-    navigate("/medical-record-details", {
-      state: { record },
-    });
-  };
+      // Handle view medical record details
+
+    const handleViewMedicalRecord = (record) => {
+      const params = new URLSearchParams(location.search);
+      params.set("record", String(record.id));
+      navigate(
+        { pathname: location.pathname, search: params.toString() },
+        { state: { record } }
+      );
+    };
+    useEffect(() => {
+      const params = new URLSearchParams(location.search);
+      const idFromUrl = params.get("record");
+      if (!idFromUrl) return;
+
+      // Fast path if we navigated with state
+      if (location.state && location.state.record) {
+        setPreviewRecord(location.state.record);
+        setPreviewOpen(true);
+        return;
+      }
+
+      // Fallback: fetch record by id so direct URL works
+      const fetchOne = async () => {
+        try {
+          setRecordsLoading(true);
+          const { data, error } = await supabase
+            .from("medical_records")
+            .select("*")
+            .eq("id", idFromUrl)
+            .single();
+          if (error) throw error;
+          setPreviewRecord(data);
+          setPreviewOpen(true);
+        } catch (e) {
+          console.error("Failed to load record", e);
+        } finally {
+          setRecordsLoading(false);
+        }
+      };
+
+      fetchOne();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location.search]);
+
+
 
   // Handle appointment booking navigation
   const handleBookAppointment = (doctor) => {
@@ -418,6 +467,7 @@ function PatientDashboard() {
     }
 
     return (
+      
       <PDFDownloadLink
         document={<RecordPdf data={patientRecordData} />}
         fileName={`medical_record_${patientRecordData.patientName}_${
@@ -461,6 +511,7 @@ function PatientDashboard() {
   }
 
   return (
+    
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm">
@@ -920,7 +971,7 @@ function PatientDashboard() {
                             </div>
                             <button
                               className="text-[#274D60] hover:text-[#1e3a4a] text-sm font-medium whitespace-nowrap"
-                              onClick={() => handleViewMedicalRecord(record)}
+                              onClick={() => handleViewMedicalRecord(record.raw)}
                             >
                               View Details
                             </button>
@@ -956,6 +1007,20 @@ function PatientDashboard() {
                     </div>
                   )}
                 </div>
+                <RecordPreviewModal
+                  open={previewOpen}
+                  record={previewRecord}
+                  onClose={() => {
+                    const params = new URLSearchParams(location.search);
+                    params.delete("record");
+                    navigate(
+                      { pathname: location.pathname, search: params.toString() },
+                      { replace: true }
+                    );
+                    setPreviewOpen(false);
+                    setPreviewRecord(null);
+                  }}
+                />
 
                 {/* Lab Results */}
                 <div>
