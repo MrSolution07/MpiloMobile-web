@@ -2,33 +2,6 @@
 # yarn lockfile v1
 
 
-"@agora-js/media@4.24.0":
-  version "4.24.0"
-  resolved "https://registry.npmjs.org/@agora-js/media/-/media-4.24.0.tgz"
-  integrity sha512-foii2klr5+qonLznxN0ZZFejoxLt/W8do79wmIsADPZLw2uZjRP35m0lqUGiLXBKeQ8u3i4UygPzEdFaY26hrw==
-  dependencies:
-    "@agora-js/report" "4.24.0"
-    "@agora-js/shared" "4.24.0"
-    agora-rte-extension "^1.2.4"
-    axios "^1.8.3"
-    webrtc-adapter "8.2.0"
-
-"@agora-js/report@4.24.0":
-  version "4.24.0"
-  resolved "https://registry.npmjs.org/@agora-js/report/-/report-4.24.0.tgz"
-  integrity sha512-MYbtkdY1Ls0KW0iagUzrPzyvqMWlyCWSC5odEb1SQaraAl7DJeDUkf91a3wxKzrjVah+LCxFxsS4lCFDxvKgNA==
-  dependencies:
-    "@agora-js/shared" "4.24.0"
-    axios "^1.8.3"
-
-"@agora-js/shared@4.24.0":
-  version "4.24.0"
-  resolved "https://registry.npmjs.org/@agora-js/shared/-/shared-4.24.0.tgz"
-  integrity sha512-Vj67ZcTHZI+1ctWusrEPSSGLM3l6CFiAze/Bi8r7YHRMLivzhZR79nV6GiKvHS3muLAON2YAExznvjPIly6lcg==
-  dependencies:
-    axios "^1.8.3"
-    ua-parser-js "^0.7.34"
-
 "@ampproject/remapping@^2.2.0", "@ampproject/remapping@^2.3.0":
   version "2.3.0"
   resolved "https://registry.npmjs.org/@ampproject/remapping/-/remapping-2.3.0.tgz"
@@ -1037,26 +1010,6 @@ acorn-jsx@^5.3.2:
   resolved "https://registry.npmjs.org/acorn/-/acorn-8.15.0.tgz"
   integrity sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==
 
-agora-rtc-sdk-ng@^4.24.0:
-  version "4.24.0"
-  resolved "https://registry.npmjs.org/agora-rtc-sdk-ng/-/agora-rtc-sdk-ng-4.24.0.tgz"
-  integrity sha512-2apG/07EtsuX21ncSF77q+dr6/kDgu9B/RpKtstCtaq46l4/Eraoecewi4zXRUCY3Im+8dzTIXx6jUwyPdxdHQ==
-  dependencies:
-    "@agora-js/media" "4.24.0"
-    "@agora-js/report" "4.24.0"
-    "@agora-js/shared" "4.24.0"
-    agora-rte-extension "^1.2.4"
-    axios "^1.8.3"
-    formdata-polyfill "^4.0.7"
-    pako "^2.1.0"
-    ua-parser-js "^0.7.34"
-    webrtc-adapter "8.2.0"
-
-agora-rte-extension@^1.2.4:
-  version "1.2.4"
-  resolved "https://registry.npmjs.org/agora-rte-extension/-/agora-rte-extension-1.2.4.tgz"
-  integrity sha512-0ovZz1lbe30QraG1cU+ji7EnQ8aUu+Hf3F+a8xPml3wPOyUQEK6CTdxV9kMecr9t+fIDrGeW7wgJTsM1DQE7Nw==
-
 ajv@^6.12.4:
   version "6.12.6"
   resolved "https://registry.npmjs.org/ajv/-/ajv-6.12.6.tgz"
@@ -1091,7 +1044,7 @@ asynckit@^0.4.0:
   resolved "https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz"
   integrity sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==
 
-axios@^1.11.0, axios@^1.8.3:
+axios@^1.11.0:
   version "1.11.0"
   resolved "https://registry.npmjs.org/axios/-/axios-1.11.0.tgz"
   integrity sha512-1Lx3WLFQWm3ooKDYZD1eXmoGO9fxYQjrycfHFC8P0sCfQVXyROp0p9PFWBehewBOdCwHc+f/b8I0fMto5eSfwA==
@@ -1518,14 +1471,6 @@ fdir@^6.4.4, fdir@^6.4.6:
   resolved "https://registry.npmjs.org/fdir/-/fdir-6.4.6.tgz"
   integrity sha512-hiFoqpyZcfNm1yc4u8oWCf9A2c4D3QjCrks3zmoVKVxpQRzmPNar1hUJcBG2RQHvEVGDN+Jm81ZheVLAQMK6+w==
 
-fetch-blob@^3.1.2:
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/fetch-blob/-/fetch-blob-3.2.0.tgz"
-  integrity sha512-7yAQpD2UMJzLi1Dqv7qFYnPbaPx7ZfFK6PiIxQ4PfkGPyNyl2Ugx+a/umUonmKqjhM4DnfbMvdX6otXq83soQQ==
-  dependencies:
-    node-domexception "^1.0.0"
-    web-streams-polyfill "^3.0.3"
-
 file-entry-cache@^8.0.0:
   version "8.0.0"
   resolved "https://registry.npmjs.org/file-entry-cache/-/file-entry-cache-8.0.0.tgz"
@@ -1584,13 +1529,6 @@ form-data@^4.0.4:
     es-set-tostringtag "^2.1.0"
     hasown "^2.0.2"
     mime-types "^2.1.12"
-
-formdata-polyfill@^4.0.7:
-  version "4.0.10"
-  resolved "https://registry.npmjs.org/formdata-polyfill/-/formdata-polyfill-4.0.10.tgz"
-  integrity sha512-buewHzMvYL29jdeQTVILecSaZKnt/RJWjoZCF5OW60Z67/GmSLBkOFM7qh1PI3zFNtJbaZL5eQu1vLfazOwj4g==
-  dependencies:
-    fetch-blob "^3.1.2"
 
 fsevents@~2.3.2, fsevents@~2.3.3:
   version "2.3.3"
@@ -1963,11 +1901,6 @@ next-themes@^0.4.6:
   resolved "https://registry.npmjs.org/next-themes/-/next-themes-0.4.6.tgz"
   integrity sha512-pZvgD5L0IEvX5/9GWyHMf3m8BKiVQwsCMHfoFosXtXBMnaS0ZnIJ9ST4b4NqLVKDEm8QBxoNNGNaBv2JNF6XNA==
 
-node-domexception@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/node-domexception/-/node-domexception-1.0.0.tgz"
-  integrity sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==
-
 node-releases@^2.0.19:
   version "2.0.19"
   resolved "https://registry.npmjs.org/node-releases/-/node-releases-2.0.19.tgz"
@@ -2015,11 +1948,6 @@ pako@^0.2.5:
   version "0.2.9"
   resolved "https://registry.npmjs.org/pako/-/pako-0.2.9.tgz"
   integrity sha512-NUcwaKxUxWrZLpDG+z/xZaCgQITkA/Dv4V/T6bw7VON6l1Xz/VnrBqrYjZQ12TamKHzITTfOEIYUj48y2KXImA==
-
-pako@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.npmjs.org/pako/-/pako-2.1.0.tgz"
-  integrity sha512-w+eufiZ1WuJYgPXbV/PO3NCMEc3xqylkKHzp8bxp1uW4qaSNQUkwmLLEc3kKsfz8lpV1F8Ht3U1Cm+9Srog2ug==
 
 pako@~1.0.5:
   version "1.0.11"
@@ -2258,11 +2186,6 @@ scheduler@0.25.0-rc-603e6108-20241029:
   resolved "https://registry.npmjs.org/scheduler/-/scheduler-0.25.0-rc-603e6108-20241029.tgz"
   integrity sha512-pFwF6H1XrSdYYNLfOcGlM28/j8CGLu8IvdrxqhjWULe2bPcKiKW4CV+OWqR/9fT52mywx65l7ysNkjLKBda7eA==
 
-sdp@^3.0.2:
-  version "3.2.1"
-  resolved "https://registry.npmjs.org/sdp/-/sdp-3.2.1.tgz"
-  integrity sha512-lwsAIzOPlH8/7IIjjz3K0zYBk7aBVVcvjMwt3M4fLxpjMYyy7i3I97SLHebgn4YBjirkzfp3RvRDWSKsh/+WFw==
-
 semver@^6.3.1:
   version "6.3.1"
   resolved "https://registry.npmjs.org/semver/-/semver-6.3.1.tgz"
@@ -2393,11 +2316,6 @@ type-check@^0.4.0, type-check@~0.4.0:
   dependencies:
     prelude-ls "^1.2.1"
 
-ua-parser-js@^0.7.34:
-  version "0.7.41"
-  resolved "https://registry.npmjs.org/ua-parser-js/-/ua-parser-js-0.7.41.tgz"
-  integrity sha512-O3oYyCMPYgNNHuO7Jjk3uacJWZF8loBgwrfd/5LE/HyZ3lUIOdniQ7DNXJcIgZbwioZxk0fLfI4EVnetdiX5jg==
-
 undici-types@~7.8.0:
   version "7.8.0"
   resolved "https://registry.npmjs.org/undici-types/-/undici-types-7.8.0.tgz"
@@ -2477,22 +2395,10 @@ vite-compatible-readable-stream@^3.6.1:
   optionalDependencies:
     fsevents "~2.3.3"
 
-web-streams-polyfill@^3.0.3:
-  version "3.3.3"
-  resolved "https://registry.npmjs.org/web-streams-polyfill/-/web-streams-polyfill-3.3.3.tgz"
-  integrity sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==
-
 webidl-conversions@^3.0.0:
   version "3.0.1"
   resolved "https://registry.npmjs.org/webidl-conversions/-/webidl-conversions-3.0.1.tgz"
   integrity sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==
-
-webrtc-adapter@8.2.0:
-  version "8.2.0"
-  resolved "https://registry.npmjs.org/webrtc-adapter/-/webrtc-adapter-8.2.0.tgz"
-  integrity sha512-umxCMgedPAVq4Pe/jl3xmelLXLn4XZWFEMR5Iipb5wJ+k1xMX0yC4ZY9CueZUU1MjapFxai1tFGE7R/kotH6Ww==
-  dependencies:
-    sdp "^3.0.2"
 
 whatwg-url@^5.0.0:
   version "5.0.0"

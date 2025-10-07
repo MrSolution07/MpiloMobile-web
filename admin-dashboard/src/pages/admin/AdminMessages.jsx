@@ -1,5 +1,5 @@
-import MessagesList from "./MessagesList";
+import AdminMessagesNew from "./AdminMessagesNew";
 
 export default function AdminMessages() {
-  return <MessagesList />;
+  return <AdminMessagesNew />;
 }
