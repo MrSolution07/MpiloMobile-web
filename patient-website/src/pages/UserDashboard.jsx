@@ -21,6 +21,7 @@ import {
   FaNotesMedical, 
   FaPrescription,
 } from "react-icons/fa";
+import { Activity, Bell, Calendar, LogOut, TrendingDown, TrendingUp, User, UserCircle,Clock, FileText, Heart } from "lucide-react";
 import { useNavigate,useLocation } from "react-router-dom";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { useDoctors } from "../hooks/useDoctors";
@@ -162,6 +163,50 @@ function PatientDashboard() {
     }
   }, [activeTab, searchTerm, selectedSpecialty]);
 
+   const tabs = [
+    { id: "overview", label: "Overview", icon: User },
+    { id: "appointments", label: "Appointments", icon: Calendar },
+    { id: "doctors", label: "Find Doctors", icon: UserCircle },
+    { id: "history", label: "Medical History", icon: Clock }
+  ];
+  const statsCards = [
+    { 
+      title: "Total Appointments", 
+      value: "27", 
+      change: "+0.8%", 
+      isPositive: true, 
+      icon: Calendar,
+      iconBg: "bg-[#274D60]/6",
+      iconColor: "text-[#274D60]"
+    },
+    { 
+      title: "Completed Visits", 
+      value: "15", 
+      change: "+2.1%", 
+      isPositive: true, 
+      icon: Activity,
+      iconBg: "bg-[#274D60]/6",
+      iconColor: "text-[#274D60]"
+    },
+    { 
+      title: "Medical Records", 
+      value: "7", 
+      change: "+1.5%", 
+      isPositive: true, 
+      icon: FileText,
+      iconBg: "bg-[#274D60]/6",
+      iconColor: "text-[#274D60]"
+    },
+    { 
+      title: "Prescriptions", 
+      value: "7", 
+      change: "-0.2%", 
+      isPositive: false, 
+      icon: Heart,
+      iconBg: "bg-[#274D60]/6",
+      iconColor: "text-[#274D60]"
+    }
+  ];
   // Handle view doctor profile
   const handleViewDoctorProfile = (doctor) => {
     navigate("/doctor-profile", {
@@ -511,14 +556,14 @@ function PatientDashboard() {
     );
   }
 
-  return (
-    
+ return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4">
-            <div className="flex items-center space-x-4 mb-3 sm:mb-0">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 gap-4">
+            <div className="flex items-center space-x-3">
+               <div className="flex items-center space-x-4 mb-3 sm:mb-0">
               <img
                 src="../assets/images/mpiloLogo.png"
                 alt="Mpilo Logo"
@@ -526,27 +571,23 @@ function PatientDashboard() {
                 onClick={() => navigate("/")}
               />
             </div>
+            </div>
 
-            <div className="flex items-center space-x-4">
-              <button className="relative p-2 text-gray-400 hover:text-gray-500">
-                <FaBell className="h-5 w-5" />
-                <span className="absolute top-0 right-0 block h-2 w-2 bg-red-400 rounded-full"></span>
+            <div className="flex items-center space-x-4 w-full sm:w-auto justify-between sm:justify-end">
+              <button className="relative p-2 text-gray-400 hover:text-gray-600">
+                <Bell className="h-5 w-5" />
+                <span className="absolute top-1 right-1 block h-2 w-2 bg-red-500 rounded-full"></span>
               </button>
 
               <div className="flex items-center space-x-3">
-                <img
-                  className="h-8 w-8 rounded-full"
-                  src={profile}
-                  alt="User avatar"
-                />
+                <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-white font-semibold text-sm">
+                  {user?.user_metadata?.full_name?.charAt(0) || "U"}
+                </div>
                 <span className="hidden sm:block text-sm font-medium text-gray-700">
                   {user?.user_metadata?.full_name || "User"}
                 </span>
-                <button
-                  className="text-gray-400 hover:text-gray-500"
-                  onClick={logout}
-                >
-                  <FaSignOutAlt className="h-4 w-4" />
+                <button className="text-gray-400 hover:text-gray-600">
+                  <LogOut className="h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -554,162 +595,168 @@ function PatientDashboard() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 mt-4">
-        <h1 className="text-sm sm:text-sm md:text-sm lg:text-lg font-semibold text-gray-800">
-          Patient Dashboard
-        </h1>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="mb-6">
+          <h1 className="text-xl font-semibold text-gray-800">
+            Patient Dashboard
+          </h1>
+        </div>
 
         {/* Navigation Tabs */}
-        <div className="flex flex-wrap gap-6 sm:gap-8 lg:gap-12 mb-8 border-b overflow-x-auto">
-          {[
-            { id: "overview", label: "Overview", icon: FaUser },
-            { id: "appointments", label: "Appointments", icon: FaCalendarAlt },
-            { id: "doctors", label: "Find Doctors", icon: FaUserMd },
-            { id: "history", label: "Medical History", icon: FaHistory },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center space-x-2 pb-4 px-1  font-medium text-sm whitespace-nowrap ${
-                activeTab === tab.id
-                  ? "border-red-500 text-red-500"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              <tab.icon className="h-4 w-4" />
-              <span className="hidden sm:inline">{tab.label}</span>
-              <span className="sm:hidden">{tab.label.split(" ")[0]}</span>
-            </button>
-          ))}
+        <div className="border-b border-gray-200 mb-6 overflow-x-auto">
+          <div className="flex gap-8 min-w-max">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center space-x-2 pb-4 px-1 font-medium text-sm whitespace-nowrap transition-colors ${
+                  activeTab === tab.id
+                    ? "border-red-600 text-red-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
+              >
+                <tab.icon className="h-4 w-4" />
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Overview Tab */}
         {activeTab === "overview" && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Welcome Card */}
-            <div className="lg:col-span-2">
-              <div className="bg-gradient-to-r from-[#274D60] to-[#1e3a4a] rounded-xl p-6 text-white mb-6">
-                <h2 className="text-2xl font-bold mb-2">
-                  Welcome back, {user?.user_metadata?.full_name || "User"}!
-                </h2>
-                <p className="text-blue-100">
-                  You have {todaysAppointments.length} appointment
-                  {todaysAppointments.length !== 1 ? "s" : ""} today and{" "}
-                  {upcomingWeekAppointments.length} upcoming this week.
-                </p>
-              </div>
-
-              {/* Health Metrics */}
-              <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                  Health Overview
-                </h3>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                  {healthMetrics.map((metric, index) => (
-                    <div
-                      key={index}
-                      className="text-center p-4 bg-gray-50 rounded-lg"
-                    >
-                      <metric.icon
-                        className={`h-6 w-6 mx-auto mb-2 ${metric.color}`}
-                      />
-                      <p className="text-sm text-gray-600">{metric.label}</p>
-                      <p className="font-semibold text-gray-800">
-                        {metric.value}
-                      </p>
+          <div className="space-y-6">
+            {/* Stats Cards Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {statsCards.map((stat, index) => (
+                <div key={index} className="bg-white rounded-lg border border-gray-200 p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`w-12 h-12 rounded-lg ${stat.iconBg} flex items-center justify-center`}>
+                      <stat.icon className={`h-6 w-6 ${stat.iconColor}`} />
                     </div>
-                  ))}
+                  </div>
+                  <div>
+                    <p className="text-gray-500 text-sm mb-1">{stat.title}</p>
+                    <div className="flex items-end justify-between">
+                      <p className="text-3xl font-semibold text-gray-800">{stat.value}</p>
+                      <div className="flex items-center">
+                        {stat.isPositive ? (
+                          <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
+                        ) : (
+                          <TrendingDown className="h-4 w-4 text-red-600 mr-1" />
+                        )}
+                        <span className={`text-sm ${stat.isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                          {stat.change}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-400 mt-1">from last month</p>
+                  </div>
                 </div>
-              </div>
+              ))}
+            </div>
 
-              {/* Recent Activity */}
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                  Recent Activity
-                </h3>
-                <div className="space-y-4">
-                  {recentActivity.map((activity, index) => (
-                    <div key={index} className="flex items-start space-x-3">
-                      <div
-                        className={`w-2 h-2 mt-2 rounded-full ${
-                          activity.type === "completed"
-                            ? "bg-green-400"
-                            : activity.type === "upcoming"
-                            ? "bg-blue-400"
-                            : activity.type === "medical"
-                            ? "bg-purple-400"
-                            : "bg-yellow-400"
-                        }`}
-                      ></div>
-                      <div>
-                        <p className="text-sm text-gray-800">
-                          {activity.action}
-                        </p>
-                        <p className="text-xs text-gray-500">{activity.date}</p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Health Overview */}
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    Health Overview
+                  </h3>
+                </div>
+                <div className="space-y-6">
+                  {healthMetrics.map((metric, index) => (
+                    <div key={index}>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                            <metric.icon className={`h-5 w-5 ${metric.color}`} />
+                          </div>
+                          <span className="text-sm text-gray-600">{metric.label}</span>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-semibold text-gray-800">{metric.value}</p>
+                          <p className={`text-xs ${metric.trendUp ? 'text-green-600' : 'text-red-600'}`}>
+                            {metric.trend}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className={`h-2 rounded-full ${
+                            index === 0 ? 'bg-red-500 w-[75%]' :
+                            index === 1 ? 'bg-blue-500 w-[85%]' :
+                            index === 2 ? 'bg-purple-500 w-[65%]' :
+                            'bg-green-500 w-[95%]'
+                          }`}
+                        ></div>
                       </div>
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* Today's Appointments */}
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="flex items-center mb-6">
+                  <Calendar className="h-5 w-5 text-[#274D60] mr-2 sm:h-8 w-5" />
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    Today's Appointments ({todaysAppointmentsUI.length})
+                  </h3>
+                </div>
+                <p className="text-sm text-gray-500 mb-6">Today's scheduled appointments across all doctors</p>
+                
+                {todaysAppointmentsUI.length > 0 ? (
+                  <div className="space-y-4">
+                    {todaysAppointmentsUI.map((appointment, index) => (
+                      <div key={index} className="border-b border-gray-100 pb-4 last:border-0">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <p className="font-medium text-gray-800">{user?.user_metadata?.full_name || "Patient Name"}</p>
+                            <p className="text-sm text-gray-500">{appointment.time} - {appointment.type.toLowerCase()}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm font-medium text-gray-800">{appointment.doctor}</p>
+                            <span className="inline-block px-2 py-1 text-xs rounded bg-green-100 text-green-700 mt-1">
+                              {appointment.status}
+                            </span>
+                          </div>
+                        </div>
+                        <p className="text-sm text-blue-600">{appointment.specialty}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-sm">No appointments today</p>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Sidebar */}
-            <div className="space-y-6">
-              {/* Next Appointment */}
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                  Next Appointment
-                </h3>
-                {todaysAppointmentsUI[0] ? (
-                  <div className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <img
-                        src={todaysAppointmentsUI[0].avatar}
-                        alt={todaysAppointmentsUI[0].doctor}
-                        className="w-10 h-10 rounded-full"
-                      />
-                      <div>
-                        <p className="font-medium text-gray-800">
-                          {todaysAppointmentsUI[0].doctor}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {todaysAppointmentsUI[0].specialty}
-                        </p>
-                      </div>
+            {/* Recent Activity */}
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-6">
+                Recent Activity
+              </h3>
+              <div className="space-y-4">
+                {recentActivity.map((activity, index) => (
+                  <div key={index} className="flex items-start space-x-3">
+                    <div className={`w-2 h-2 mt-2 rounded-full flex-shrink-0 ${
+                      activity.type === "completed"
+                        ? "bg-green-500"
+                        : activity.type === "upcoming"
+                        ? "bg-blue-500"
+                        : activity.type === "medical"
+                        ? "bg-purple-500"
+                        : "bg-yellow-500"
+                    }`}></div>
+                    <div className="flex-1">
+                      <p className="text-sm text-gray-800">{activity.action}</p>
+                      <p className="text-xs text-gray-500 mt-1">{activity.date}</p>
                     </div>
-                    <div className="flex items-center text-sm text-gray-600 mb-2">
-                      <FaClock className="h-4 w-4 mr-2" />
-                      <span>
-                        {todaysAppointmentsUI[0].date} at{" "}
-                        {todaysAppointmentsUI[0].time}
-                      </span>
-                    </div>
-                    <div className="flex items-center text-sm text-gray-600 mb-3">
-                      {todaysAppointmentsUI[0].type === "Video Call" && (
-                        <FaVideo className="h-4 w-4 mr-2" />
-                      )}
-                      {todaysAppointmentsUI[0].type === "Phone Call" && (
-                        <FaPhone className="h-4 w-4 mr-2" />
-                      )}
-                      {todaysAppointmentsUI[0].type === "In-Person" && (
-                        <FaMapMarkerAlt className="h-4 w-4 mr-2" />
-                      )}
-                      <span>{todaysAppointmentsUI[0].type}</span>
-                    </div>
-                    <button
-                      className="w-full bg-[#DC2626] text-white py-2 rounded-lg font-medium hover:bg-red-700 transition"
-                      onClick={() =>
-                        handleViewAppointmentDetails(todaysAppointmentsUI[0])
-                      }
-                    >
-                      View Details
-                    </button>
                   </div>
-                ) : (
-                  <div className="text-center py-4 text-gray-500">
-                    No appointments today
-                  </div>
-                )}
+                ))}
               </div>
             </div>
           </div>
