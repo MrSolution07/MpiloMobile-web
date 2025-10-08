@@ -296,10 +296,10 @@ const Records = () => {
       {/* Header Section */}
       <div className="mb-4 sm:mb-6 flex flex-col gap-3 sm:gap-4 sm:flex-row sm:items-center sm:justify-between">
         <span className="text-3xl sm:text-3xl lg:text-4xl text-black font-bold">Medical Records</span>
-        <Button onClick={handleNewRecord} className="w-full sm:w-auto text-sm">
+        {/* <Button onClick={handleNewRecord} className="w-full sm:w-auto text-sm">
           <FileText className="mr-2 h-4 w-4" /> 
           <span className="sm:inline">New Record</span>
-        </Button>
+        </Button> */}
       </div>
 
       {/* Tabs Section */}
@@ -360,7 +360,7 @@ const Records = () => {
                   <TableHead className="hidden lg:table-cell">Doctor</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  {/* <TableHead className="text-right">Actions</TableHead> */}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -389,7 +389,7 @@ const Records = () => {
                         {record.status}
                       </span>
                     </TableCell>
-                    <TableCell className="text-right">
+                    {/* <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
                         <Button variant="ghost" size="icon" className="h-8 w-8 lg:h-10 lg:w-10">
                           <Edit className="h-3 w-3 lg:h-4 lg:w-4" />
@@ -407,7 +407,7 @@ const Records = () => {
                           <MoreVertical className="h-3 w-3" />
                         </Button>
                       </div>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 ))}
                 {filteredRecords.length === 0 && (
