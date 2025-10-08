@@ -53,7 +53,7 @@ export const generateMessageHash = (message) => {
  * Verifies message integrity
  * @param {string} message - The message to verify
  * @param {string} hash - The hash to compare against
- * @returns {boolean} - Whether the message is valid
+ * @returns {boolean} - Whether the message is valid ot not 
  */
 export const verifyMessageIntegrity = (message, hash) => {
   const computedHash = generateMessageHash(message);
