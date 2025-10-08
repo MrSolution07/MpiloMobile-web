@@ -1,39 +1,45 @@
-import { useState, useEffect } from "react";
+import { pdf } from "@react-pdf/renderer";
+import {
+  Activity,
+  Bell,
+  Calendar,
+  Clock,
+  FileText,
+  Heart,
+  LogOut,
+  TrendingDown,
+  TrendingUp,
+  User,
+  UserCircle,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import {
   FaCalendarAlt,
-  FaUserMd,
-  FaHistory,
-  FaBell,
-  FaUser,
-  FaSignOutAlt,
-  FaVideo,
-  FaPhone,
-  FaMapMarkerAlt,
   FaClock,
-  FaHeart,
-  FaThermometerHalf,
-  FaWeight,
-  FaTint,
   FaDownload,
+  FaFileMedical,
+  FaHeart,
+  FaMapMarkerAlt,
+  FaNotesMedical,
+  FaPhone,
+  FaPrescription,
   FaSearch,
   FaStar,
-  FaFileMedical,
-  FaNotesMedical, 
-  FaPrescription,
+  FaThermometerHalf,
+  FaTint,
+  FaVideo,
+  FaWeight,
 } from "react-icons/fa";
-import { Activity, Bell, Calendar, LogOut, TrendingDown, TrendingUp, User, UserCircle,Clock, FileText, Heart } from "lucide-react";
-import { useNavigate,useLocation } from "react-router-dom";
-import { PDFDownloadLink } from "@react-pdf/renderer";
+import { useLocation, useNavigate } from "react-router-dom";
+import profile from "../../public/assets/images/profileImg.png";
+import { RecordPdf } from "../components/records/RecordPdf";
+import { RecordPreviewModal } from "../components/records/RecordPreviewModal";
+import { useAuth } from "../context/AuthProvider";
+import { useAppointmentBooking } from "../hooks/useAppointmentBooking";
+import { useBookings } from "../hooks/useBookings";
 import { useDoctors } from "../hooks/useDoctors";
 import { useSpecialties } from "../hooks/useSpecialties";
-import { useBookings } from "../hooks/useBookings";
-import { useAppointmentBooking } from "../hooks/useAppointmentBooking";
-import { useAuth } from "../context/AuthProvider";
-import { RecordPdf } from "../components/records/RecordPdf";
 import { supabase } from "../services/supabaseClient";
-import profile from "../../public/assets/images/profileImg.png";
-import { RecordPreviewModal } from "../components/records/RecordPreviewModal";
-
 
 function PatientDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -42,12 +48,10 @@ function PatientDashboard() {
   const [sortBy, setSortBy] = useState("name");
 
   const navigate = useNavigate();
-  const location = useLocation(); 
+  const location = useLocation();
 
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewRecord, setPreviewRecord] = useState(null);
-
-
 
   // Use custom hooks
   const {
@@ -163,49 +167,49 @@ function PatientDashboard() {
     }
   }, [activeTab, searchTerm, selectedSpecialty]);
 
-   const tabs = [
+  const tabs = [
     { id: "overview", label: "Overview", icon: User },
     { id: "appointments", label: "Appointments", icon: Calendar },
     { id: "doctors", label: "Find Doctors", icon: UserCircle },
-    { id: "history", label: "Medical History", icon: Clock }
+    { id: "history", label: "Medical History", icon: Clock },
   ];
   const statsCards = [
-    { 
-      title: "Total Appointments", 
-      value: "27", 
-      change: "+0.8%", 
-      isPositive: true, 
+    {
+      title: "Total Appointments",
+      value: "27",
+      change: "+0.8%",
+      isPositive: true,
       icon: Calendar,
       iconBg: "bg-[#274D60]/6",
-      iconColor: "text-[#274D60]"
+      iconColor: "text-[#274D60]",
     },
-    { 
-      title: "Completed Visits", 
-      value: "15", 
-      change: "+2.1%", 
-      isPositive: true, 
+    {
+      title: "Completed Visits",
+      value: "15",
+      change: "+2.1%",
+      isPositive: true,
       icon: Activity,
       iconBg: "bg-[#274D60]/6",
-      iconColor: "text-[#274D60]"
+      iconColor: "text-[#274D60]",
     },
-    { 
-      title: "Medical Records", 
-      value: "7", 
-      change: "+1.5%", 
-      isPositive: true, 
+    {
+      title: "Medical Records",
+      value: "7",
+      change: "+1.5%",
+      isPositive: true,
       icon: FileText,
       iconBg: "bg-[#274D60]/6",
-      iconColor: "text-[#274D60]"
+      iconColor: "text-[#274D60]",
     },
-    { 
-      title: "Prescriptions", 
-      value: "7", 
-      change: "-0.2%", 
-      isPositive: false, 
+    {
+      title: "Prescriptions",
+      value: "7",
+      change: "-0.2%",
+      isPositive: false,
       icon: Heart,
       iconBg: "bg-[#274D60]/6",
-      iconColor: "text-[#274D60]"
-    }
+      iconColor: "text-[#274D60]",
+    },
   ];
   // Handle view doctor profile
   const handleViewDoctorProfile = (doctor) => {
@@ -226,58 +230,56 @@ function PatientDashboard() {
   };
 
   // Handle view appointment details
-      const handleViewAppointmentDetails = (appointment) => {
-        navigate("/appointment-details", {
-          state: { appointment },
-        });
-      };
+  const handleViewAppointmentDetails = (appointment) => {
+    navigate("/appointment-details", {
+      state: { appointment },
+    });
+  };
 
-      // Handle view medical record details
+  // Handle view medical record details
 
-    const handleViewMedicalRecord = (record) => {
-      const params = new URLSearchParams(location.search);
-      params.set("record", String(record.id));
-      navigate(
-        { pathname: location.pathname, search: params.toString() },
-        { state: { record } }
-      );
-    };
-    useEffect(() => {
-      const params = new URLSearchParams(location.search);
-      const idFromUrl = params.get("record");
-      if (!idFromUrl) return;
+  const handleViewMedicalRecord = (record) => {
+    const params = new URLSearchParams(location.search);
+    params.set("record", String(record.id));
+    navigate(
+      { pathname: location.pathname, search: params.toString() },
+      { state: { record } }
+    );
+  };
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const idFromUrl = params.get("record");
+    if (!idFromUrl) return;
 
-      // Fast path if we navigated with state
-      if (location.state && location.state.record) {
-        setPreviewRecord(location.state.record);
+    // Fast path if we navigated with state
+    if (location.state && location.state.record) {
+      setPreviewRecord(location.state.record);
+      setPreviewOpen(true);
+      return;
+    }
+
+    // Fallback: fetch record by id so direct URL works
+    const fetchOne = async () => {
+      try {
+        setRecordsLoading(true);
+        const { data, error } = await supabase
+          .from("medical_records")
+          .select("*")
+          .eq("id", idFromUrl)
+          .single();
+        if (error) throw error;
+        setPreviewRecord(data);
         setPreviewOpen(true);
-        return;
+      } catch (e) {
+        console.error("Failed to load record", e);
+      } finally {
+        setRecordsLoading(false);
       }
+    };
 
-      // Fallback: fetch record by id so direct URL works
-      const fetchOne = async () => {
-        try {
-          setRecordsLoading(true);
-          const { data, error } = await supabase
-            .from("medical_records")
-            .select("*")
-            .eq("id", idFromUrl)
-            .single();
-          if (error) throw error;
-          setPreviewRecord(data);
-          setPreviewOpen(true);
-        } catch (e) {
-          console.error("Failed to load record", e);
-        } finally {
-          setRecordsLoading(false);
-        }
-      };
-
-      fetchOne();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [location.search]);
-
-
+    fetchOne();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search]);
 
   // Handle appointment booking navigation
   const handleBookAppointment = (doctor) => {
@@ -378,7 +380,7 @@ function PatientDashboard() {
         ? "Triage Follow-up"
         : "Medical Record",
     rawDate: new Date(record.date),
-    raw:record,
+    raw: record,
   }));
 
   // Map doctors to UI format
@@ -447,6 +449,10 @@ function PatientDashboard() {
 
   // DownloadRecordsButton component
   const DownloadRecordsButton = ({ medicalRecords }) => {
+    const [loading, setLoading] = useState(false);
+    const [password, setPassword] = useState("");
+    const [showModal, setShowModal] = useState(false);
+
     // Function to format medical records data for PDF
     const formatMedicalRecordsForPdf = () => {
       if (!medicalRecords || medicalRecords.length === 0) {
@@ -500,6 +506,56 @@ function PatientDashboard() {
 
     const patientRecordData = formatMedicalRecordsForPdf();
 
+    const handleVerifyAndDownload = async () => {
+      try {
+        setLoading(true);
+
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          alert("You must be logged in to download your records.");
+          setLoading(false);
+          return;
+        }
+
+        const { error } = await supabase.auth.signInWithPassword({
+          email: user.email,
+          password,
+        });
+
+        if (error) {
+          alert("Incorrect password. Please try again.");
+          setLoading(false);
+          return;
+        }
+
+        // verified - generate PDF
+        const blob = await pdf(<RecordPdf data={patientRecordData} />).toBlob();
+
+        const fileName = `medical_record_${patientRecordData.patientName}_${
+          new Date().toISOString().split("T")[0]
+        }.pdf`;
+
+        // Trigger download
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        link.click();
+        URL.revokeObjectURL(link.href);
+
+        // cleanup
+        setPassword("");
+        setShowModal(false);
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+        alert("Something went wrong during verification.");
+        setLoading(false);
+      }
+    };
+
     if (!patientRecordData) {
       return (
         <button
@@ -513,25 +569,61 @@ function PatientDashboard() {
     }
 
     return (
-      
-      <PDFDownloadLink
-        document={<RecordPdf data={patientRecordData} />}
-        fileName={`medical_record_${patientRecordData.patientName}_${
-          new Date().toISOString().split("T")[0]
-        }.pdf`}
-      >
-        {({ loading }) => (
-          <button
-            className={`bg-red-500 text-white px-4 py-2 rounded-[0.8rem] font-medium hover:bg-red-600 transition whitespace-nowrap flex items-center gap-2 ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            disabled={loading}
-          >
-            <FaDownload className="h-4 w-4" />
-            {loading ? "Preparing..." : "Download Records"}
-          </button>
+      <>
+        {/* Main Button */}
+        <button
+          onClick={() => setShowModal(true)}
+          disabled={loading}
+          className={`bg-red-500 text-white px-4 py-2 rounded-[0.8rem] font-medium hover:bg-red-600 transition whitespace-nowrap flex items-center gap-2 ${
+            loading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+        >
+          <FaDownload className="h-4 w-4" />
+          {loading ? "Preparing..." : "Download Records"}
+        </button>
+
+        {/* Password Modal */}
+        {showModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white rounded-lg shadow-lg p-6 w-[22rem]">
+              <h2 className="text-lg font-semibold mb-4 text-gray-800">
+                Confirm Your Password
+              </h2>
+
+              <input
+                type="password"
+                className="w-full border border-gray-300 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-red-400"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+              />
+
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => {
+                    if (!loading) {
+                      setPassword("");
+                      setShowModal(false);
+                    }
+                  }}
+                  className="text-gray-600 hover:text-gray-800 px-3 py-1"
+                  disabled={loading}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleVerifyAndDownload}
+                  className="bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-1 rounded-md disabled:opacity-50"
+                  disabled={loading || !password}
+                >
+                  {loading ? "Verifying..." : "Confirm"}
+                </button>
+              </div>
+            </div>
+          </div>
         )}
-      </PDFDownloadLink>
+      </>
     );
   };
 
@@ -556,21 +648,21 @@ function PatientDashboard() {
     );
   }
 
- return (
+  return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 gap-4">
             <div className="flex items-center space-x-3">
-               <div className="flex items-center space-x-4 mb-3 sm:mb-0">
-              <img
-                src="../assets/images/mpiloLogo.png"
-                alt="Mpilo Logo"
-                className="h-8 w-auto cursor-pointer"
-                onClick={() => navigate("/")}
-              />
-            </div>
+              <div className="flex items-center space-x-4 mb-3 sm:mb-0">
+                <img
+                  src="../assets/images/mpiloLogo.png"
+                  alt="Mpilo Logo"
+                  className="h-8 w-auto cursor-pointer"
+                  onClick={() => navigate("/")}
+                />
+              </div>
             </div>
 
             <div className="flex items-center space-x-4 w-full sm:w-auto justify-between sm:justify-end">
@@ -628,28 +720,41 @@ function PatientDashboard() {
             {/* Stats Cards Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {statsCards.map((stat, index) => (
-                <div key={index} className="bg-white rounded-lg border border-gray-200 p-6">
+                <div
+                  key={index}
+                  className="bg-white rounded-lg border border-gray-200 p-6"
+                >
                   <div className="flex items-center justify-between mb-4">
-                    <div className={`w-12 h-12 rounded-lg ${stat.iconBg} flex items-center justify-center`}>
+                    <div
+                      className={`w-12 h-12 rounded-lg ${stat.iconBg} flex items-center justify-center`}
+                    >
                       <stat.icon className={`h-6 w-6 ${stat.iconColor}`} />
                     </div>
                   </div>
                   <div>
                     <p className="text-gray-500 text-sm mb-1">{stat.title}</p>
                     <div className="flex items-end justify-between">
-                      <p className="text-3xl font-semibold text-gray-800">{stat.value}</p>
+                      <p className="text-3xl font-semibold text-gray-800">
+                        {stat.value}
+                      </p>
                       <div className="flex items-center">
                         {stat.isPositive ? (
                           <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
                         ) : (
                           <TrendingDown className="h-4 w-4 text-red-600 mr-1" />
                         )}
-                        <span className={`text-sm ${stat.isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                        <span
+                          className={`text-sm ${
+                            stat.isPositive ? "text-green-600" : "text-red-600"
+                          }`}
+                        >
                           {stat.change}
                         </span>
                       </div>
                     </div>
-                    <p className="text-xs text-gray-400 mt-1">from last month</p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      from last month
+                    </p>
                   </div>
                 </div>
               ))}
@@ -669,24 +774,37 @@ function PatientDashboard() {
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
-                            <metric.icon className={`h-5 w-5 ${metric.color}`} />
+                            <metric.icon
+                              className={`h-5 w-5 ${metric.color}`}
+                            />
                           </div>
-                          <span className="text-sm text-gray-600">{metric.label}</span>
+                          <span className="text-sm text-gray-600">
+                            {metric.label}
+                          </span>
                         </div>
                         <div className="text-right">
-                          <p className="text-lg font-semibold text-gray-800">{metric.value}</p>
-                          <p className={`text-xs ${metric.trendUp ? 'text-green-600' : 'text-red-600'}`}>
+                          <p className="text-lg font-semibold text-gray-800">
+                            {metric.value}
+                          </p>
+                          <p
+                            className={`text-xs ${
+                              metric.trendUp ? "text-green-600" : "text-red-600"
+                            }`}
+                          >
                             {metric.trend}
                           </p>
                         </div>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
+                        <div
                           className={`h-2 rounded-full ${
-                            index === 0 ? 'bg-red-500 w-[75%]' :
-                            index === 1 ? 'bg-blue-500 w-[85%]' :
-                            index === 2 ? 'bg-purple-500 w-[65%]' :
-                            'bg-green-500 w-[95%]'
+                            index === 0
+                              ? "bg-red-500 w-[75%]"
+                              : index === 1
+                              ? "bg-blue-500 w-[85%]"
+                              : index === 2
+                              ? "bg-purple-500 w-[65%]"
+                              : "bg-green-500 w-[95%]"
                           }`}
                         ></div>
                       </div>
@@ -703,25 +821,39 @@ function PatientDashboard() {
                     Today's Appointments ({todaysAppointmentsUI.length})
                   </h3>
                 </div>
-                <p className="text-sm text-gray-500 mb-6">Today's scheduled appointments across all doctors</p>
-                
+                <p className="text-sm text-gray-500 mb-6">
+                  Today's scheduled appointments across all doctors
+                </p>
+
                 {todaysAppointmentsUI.length > 0 ? (
                   <div className="space-y-4">
                     {todaysAppointmentsUI.map((appointment, index) => (
-                      <div key={index} className="border-b border-gray-100 pb-4 last:border-0">
+                      <div
+                        key={index}
+                        className="border-b border-gray-100 pb-4 last:border-0"
+                      >
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <p className="font-medium text-gray-800">{user?.user_metadata?.full_name || "Patient Name"}</p>
-                            <p className="text-sm text-gray-500">{appointment.time} - {appointment.type.toLowerCase()}</p>
+                            <p className="font-medium text-gray-800">
+                              {user?.user_metadata?.full_name || "Patient Name"}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {appointment.time} -{" "}
+                              {appointment.type.toLowerCase()}
+                            </p>
                           </div>
                           <div className="text-right">
-                            <p className="text-sm font-medium text-gray-800">{appointment.doctor}</p>
+                            <p className="text-sm font-medium text-gray-800">
+                              {appointment.doctor}
+                            </p>
                             <span className="inline-block px-2 py-1 text-xs rounded bg-green-100 text-green-700 mt-1">
                               {appointment.status}
                             </span>
                           </div>
                         </div>
-                        <p className="text-sm text-blue-600">{appointment.specialty}</p>
+                        <p className="text-sm text-blue-600">
+                          {appointment.specialty}
+                        </p>
                       </div>
                     ))}
                   </div>
@@ -742,18 +874,22 @@ function PatientDashboard() {
               <div className="space-y-4">
                 {recentActivity.map((activity, index) => (
                   <div key={index} className="flex items-start space-x-3">
-                    <div className={`w-2 h-2 mt-2 rounded-full flex-shrink-0 ${
-                      activity.type === "completed"
-                        ? "bg-green-500"
-                        : activity.type === "upcoming"
-                        ? "bg-blue-500"
-                        : activity.type === "medical"
-                        ? "bg-purple-500"
-                        : "bg-yellow-500"
-                    }`}></div>
+                    <div
+                      className={`w-2 h-2 mt-2 rounded-full flex-shrink-0 ${
+                        activity.type === "completed"
+                          ? "bg-green-500"
+                          : activity.type === "upcoming"
+                          ? "bg-blue-500"
+                          : activity.type === "medical"
+                          ? "bg-purple-500"
+                          : "bg-yellow-500"
+                      }`}
+                    ></div>
                     <div className="flex-1">
                       <p className="text-sm text-gray-800">{activity.action}</p>
-                      <p className="text-xs text-gray-500 mt-1">{activity.date}</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {activity.date}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -1019,7 +1155,9 @@ function PatientDashboard() {
                             </div>
                             <button
                               className="text-[#274D60] hover:text-[#1e3a4a] text-sm font-medium whitespace-nowrap"
-                              onClick={() => handleViewMedicalRecord(record.raw)}
+                              onClick={() =>
+                                handleViewMedicalRecord(record.raw)
+                              }
                             >
                               View Details
                             </button>
@@ -1062,7 +1200,10 @@ function PatientDashboard() {
                     const params = new URLSearchParams(location.search);
                     params.delete("record");
                     navigate(
-                      { pathname: location.pathname, search: params.toString() },
+                      {
+                        pathname: location.pathname,
+                        search: params.toString(),
+                      },
                       { replace: true }
                     );
                     setPreviewOpen(false);
