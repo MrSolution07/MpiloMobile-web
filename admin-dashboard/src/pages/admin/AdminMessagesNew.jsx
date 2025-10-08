@@ -6,6 +6,7 @@ import {
   Filter,
   Mail,
   X,
+  Check,
   Send,
   ArrowLeft,
   Shield,
@@ -106,20 +107,21 @@ const Button = ({
   );
 };
 
-// Modal component
+// Modal component (modernized)
 const Modal = ({ isOpen, onClose, title, children }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-100">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+          <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
           <Button
-            variant="secondary"
+            variant="ghost"
             size="sm"
-            icon={<X className="w-4 h-4" />}
+            icon={<X className="w-4 h-4 text-center ml-3 text-red-600" />}
             onClick={onClose}
+            className="rounded-full hover:bg-gray-100 p-2 flex items-center justify-center w-8 h-8"
           />
         </div>
         {children}
@@ -145,6 +147,7 @@ function AdminMessagesNew() {
   const [newMessageModalOpen, setNewMessageModalOpen] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [doctors, setDoctors] = useState([]);
+  const [doctorQuery, setDoctorQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
   // Mobile state
@@ -978,44 +981,71 @@ function AdminMessagesNew() {
         onClose={() => {
           setNewMessageModalOpen(false);
           setSelectedDoctor(null);
+          setDoctorQuery("");
         }}
         title="New Message to Doctor"
       >
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Select doctor
-            </label>
-            <div className="space-y-2 max-h-60 overflow-y-auto">
-              {doctors.map((doctor) => (
-                <label
-                  key={doctor.id}
-                  className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-md cursor-pointer"
-                >
-                  <input
-                    type="radio"
-                    name="doctor"
-                    checked={selectedDoctor?.id === doctor.id}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedDoctor(doctor);
-                      }
-                    }}
-                    className="border-gray-300 text-red-600 focus:ring-red-500"
-                  />
-                  <Avatar 
-                    src={doctor.profile_image_url || profile} 
-                    alt={`Dr. ${doctor.first_name} ${doctor.last_name}`} 
-                    size="sm" 
-                  />
-                  <div>
-                    <p className="font-medium text-gray-900">
-                      Dr. {doctor.first_name} {doctor.last_name}
-                    </p>
-                    <p className="text-sm text-gray-500">{doctor.specialization}</p>
-                  </div>
-                </label>
-              ))}
+            <label className="block text-sm font-medium text-gray-700 mb-2">Select doctor</label>
+
+            <div className="relative mb-3">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search doctor by name or specialization..."
+                value={doctorQuery}
+                onChange={(e) => setDoctorQuery(e.target.value)}
+                className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-60 overflow-y-auto">
+              {doctors
+                .filter((d) => {
+                  const q = doctorQuery.trim().toLowerCase();
+                  if (!q) return true;
+                  const name = `${d.first_name} ${d.last_name}`.toLowerCase();
+                  const spec = (d.specialization || "").toLowerCase();
+                  return name.includes(q) || spec.includes(q) || (d.email || "").toLowerCase().includes(q);
+                })
+                .map((doctor) => {
+                  const isSelected = selectedDoctor?.id === doctor.id;
+                  return (
+                    <div
+                      key={doctor.id}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => setSelectedDoctor(doctor)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") setSelectedDoctor(doctor);
+                      }}
+                      aria-pressed={isSelected}
+                      className={`relative flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-shadow border ${isSelected ? 'bg-red-50 border-red-200 shadow-sm' : 'border-transparent hover:shadow-sm hover:bg-gray-50'}`}
+                    >
+                        <div className="flex-shrink-0 mr-3">
+                          {isSelected ? (
+                            <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-red-600 text-white">
+                              <Check className="w-3 h-3" />
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-white border border-gray-200 text-transparent">
+                              <Check className="w-3 h-3" />
+                            </span>
+                          )}
+                        </div>
+                        <Avatar
+                          src={doctor.profile_image_url || profile}
+                          alt={`Dr. ${doctor.first_name} ${doctor.last_name}`}
+                          size="md"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-900 truncate">Dr. {doctor.first_name} {doctor.last_name}</p>
+                          <p className="text-sm text-gray-500 truncate">{doctor.specialization}</p>
+                        </div>
+                    </div>
+                  );
+                })}
             </div>
           </div>
 
@@ -1025,16 +1055,20 @@ function AdminMessagesNew() {
               onClick={() => {
                 setNewMessageModalOpen(false);
                 setSelectedDoctor(null);
+                setDoctorQuery("");
               }}
-              className="w-full sm:w-auto"
+              className="w-full text-center sm:w-auto"
             >
               Cancel
             </Button>
             <Button
               variant="primary"
-              onClick={handleCreateConversation}
+              onClick={() => {
+                handleCreateConversation();
+                setDoctorQuery("");
+              }}
               disabled={!selectedDoctor}
-              className="w-full sm:w-auto"
+              className="w-full text-center sm:w-auto"
             >
               Start Conversation
             </Button>
