@@ -1,3 +1,6 @@
+
+
+
 import { supabase } from './supabaseClient';
 import { encryptMessage, decryptMessage } from './encryptionService';
 
@@ -41,9 +44,9 @@ export const getOrCreateConversation = async (userId1, userId2) => {
 };
 
 /**
- * Gets all conversations for a user
+ * Gets all conversations for a user with their latest message
  * @param {string} userId - User ID
- * @returns {Promise<Array>} - Array of conversations with participant info
+ * @returns {Promise<Array>} - Array of conversations with participant info and latest message
  */
 export const getUserConversations = async (userId) => {
   try {
@@ -53,29 +56,40 @@ export const getUserConversations = async (userId) => {
         *,
         user1:users!conversations_user1_id_fkey(id, display_name, avatar_url, email),
         user2:users!conversations_user2_id_fkey(id, display_name, avatar_url, email),
-        last_message:messages(id, content, created_at, sender_id, is_read)
+        messages(
+          id, 
+          content, 
+          created_at, 
+          sender_id, 
+          recipient_id,
+          is_read,
+          is_urgent
+        )
       `)
       .or(`user1_id.eq.${userId},user2_id.eq.${userId}`)
       .order('updated_at', { ascending: false });
 
     if (error) throw error;
 
-    // Process conversations to determine the other participant
+    // Process conversations to determine the other participant and get latest message
     const conversations = data.map(conv => {
       const isUser1 = conv.user1_id === userId;
       const otherUser = isUser1 ? conv.user2 : conv.user1;
       
-      // Get the most recent message
-      const lastMessage = conv.last_message && conv.last_message.length > 0 
-        ? conv.last_message[0] 
+      // Get the most recent message from the messages array
+      const messages = conv.messages || [];
+      const latestMessage = messages.length > 0 
+        ? messages.reduce((latest, current) => {
+            return new Date(current.created_at) > new Date(latest.created_at) ? current : latest;
+          })
         : null;
 
       return {
         id: conv.id,
         participant: otherUser,
-        lastMessage: lastMessage ? {
-          ...lastMessage,
-          content: lastMessage.content // Will be decrypted in component
+        lastMessage: latestMessage ? {
+          ...latestMessage,
+          content: decryptMessage(latestMessage.content)
         } : null,
         updatedAt: conv.updated_at
       };
@@ -357,3 +371,36 @@ export const getDoctorPatients = async (doctorId) => {
   }
 };
 
+/**
+ * Gets the latest message for a conversation (helper function)
+ * @param {string} conversationId - Conversation ID
+ * @returns {Promise<Object>} - Latest message object
+ */
+export const getLatestMessage = async (conversationId) => {
+  try {
+    const { data, error } = await supabase
+      .from('messages')
+      .select('*')
+      .eq('conversation_id', conversationId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // No messages found
+        return null;
+      }
+      throw error;
+    }
+
+    return {
+      ...data,
+      content: decryptMessage(data.content),
+      decrypted: true
+    };
+  } catch (error) {
+    console.error('Error fetching latest message:', error);
+    return null;
+  }
+};

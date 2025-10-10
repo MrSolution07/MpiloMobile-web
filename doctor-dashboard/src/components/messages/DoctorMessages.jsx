@@ -1,3 +1,6 @@
+
+
+
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
   MessageSquare,
@@ -22,6 +25,7 @@ import {
   getDoctorPatients,
   subscribeToMessages,
   decryptMessage,
+  subscribeToConversations,
 } from "@/services";
 import profile from "../../../public/assets/images/profileImg.png";
 import { CallButton } from "@/components/video-call";
@@ -158,6 +162,7 @@ function DoctorMessages() {
   // Refs
   const messagesEndRef = useRef(null);
   const messageSubscription = useRef(null);
+  const conversationSubscription = useRef(null);
 
   // Check for mobile screen size
   useEffect(() => {
@@ -204,7 +209,7 @@ function DoctorMessages() {
       try {
         setLoading(true);
         
-        // Load conversations
+        // Load conversations with their latest messages
         const convs = await getUserConversations(user.id);
         setConversations(convs);
         
@@ -248,6 +253,18 @@ function DoctorMessages() {
     loadData();
   }, [user, currentDoctorId]);
 
+  // Refresh conversations function
+  const refreshConversations = async () => {
+    if (!user?.id) return;
+    
+    try {
+      const convs = await getUserConversations(user.id);
+      setConversations(convs);
+    } catch (error) {
+      console.error("Error refreshing conversations:", error);
+    }
+  };
+
   // Auto-scroll to bottom of messages
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -272,6 +289,8 @@ function DoctorMessages() {
         // Mark as read
         if (user?.id) {
           await markMessagesAsRead(selectedConversation.id, user.id);
+          // Refresh conversations to update read status
+          refreshConversations();
         }
 
         // Subscribe to new messages
@@ -290,9 +309,10 @@ function DoctorMessages() {
               ]
             }));
 
-            // Mark as read if it's from the other person
+            // Mark as read if it's from the other person and refresh conversations
             if (newMsg.sender_id !== user?.id) {
               markMessagesAsRead(selectedConversation.id, user.id);
+              refreshConversations();
             }
           }
         );
@@ -309,6 +329,28 @@ function DoctorMessages() {
       }
     };
   }, [selectedConversation, user]);
+
+  // Subscribe to conversation updates
+  useEffect(() => {
+    if (!user?.id) return;
+
+    if (conversationSubscription.current) {
+      conversationSubscription.current.unsubscribe();
+    }
+
+    conversationSubscription.current = subscribeToConversations(user.id, (payload) => {
+      // Refresh conversations when they are updated
+      if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
+        refreshConversations();
+      }
+    });
+
+    return () => {
+      if (conversationSubscription.current) {
+        conversationSubscription.current.unsubscribe();
+      }
+    };
+  }, [user]);
 
   // Send message function
   const sendMessageHandler = async () => {
@@ -354,8 +396,7 @@ function DoctorMessages() {
       });
 
       // Refresh conversations to update last message
-      const convs = await getUserConversations(user.id);
-      setConversations(convs);
+      await refreshConversations();
     } catch (error) {
       console.error("Error sending message:", error);
 
@@ -442,6 +483,7 @@ function DoctorMessages() {
 
   // Format timestamp
   const formatTime = (timestamp) => {
+    if (!timestamp) return '';
     const date = new Date(timestamp);
     const now = new Date();
     const isToday = date.toDateString() === now.toDateString();
@@ -576,12 +618,16 @@ function DoctorMessages() {
                         </div>
                       </div>
 
-                      {conversation.lastMessage && (
+                      {conversation.lastMessage ? (
                         <p className="text-sm text-gray-600 truncate mt-1">
                           {conversation.lastMessage.sender_id === user?.id
                             ? "You: "
                             : ""}
-                          {decryptMessage(conversation.lastMessage.content)}
+                          {conversation.lastMessage.content}
+                        </p>
+                      ) : (
+                        <p className="text-sm text-gray-400 italic mt-1">
+                          No messages yet
                         </p>
                       )}
 
@@ -731,7 +777,7 @@ function DoctorMessages() {
         </>
       )}
 
-      {/* Desktop Layout - Similar structure, copying the admin implementation */}
+      {/* Desktop Layout */}
       {!isMobile && (
         <>
           {/* Header */}
@@ -856,13 +902,17 @@ function DoctorMessages() {
                             </div>
                           </div>
 
-                          {conversation.lastMessage && (
+                          {conversation.lastMessage ? (
                             <p className="text-sm text-gray-600 truncate mt-1">
                               {conversation.lastMessage.sender_id ===
                               user?.id
                                 ? "You: "
                                 : ""}
-                              {decryptMessage(conversation.lastMessage.content)}
+                              {conversation.lastMessage.content}
+                            </p>
+                          ) : (
+                            <p className="text-sm text-gray-400 italic mt-1">
+                              No messages yet
                             </p>
                           )}
 
