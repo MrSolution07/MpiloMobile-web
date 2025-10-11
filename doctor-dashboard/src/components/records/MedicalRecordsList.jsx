@@ -266,20 +266,20 @@ const MedicalRecordsList = () => {
                       Recorded on: {formatDate(record.created_at)}
                     </div>
                     <div className="flex gap-3">
-                      <Button
+                      {/* <Button
                         variant="secondary"
                         size="sm"
                         icon={<FileText className="w-4 h-4" />}
                       >
                         View Full Record
-                      </Button>
-                      <Button
+                      </Button> */}
+                      {/* <Button
                         variant="danger"
                         size="sm"
                         icon={<FilePlus className="w-4 h-4" />}
                       >
                         Add Follow-up
-                      </Button>
+                      </Button> */}
                     </div>
                   </div>
                 </CardContent>

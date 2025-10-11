@@ -356,12 +356,12 @@ function HeaderDashboard({ toggleSidebar, isSidebarOpen }) {
 >
   Admin Profile
 </Link>
-                  <a
+                  {/* <a
                     href="/admin/settings"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                   >
                     System Settings
-                  </a>
+                  </a> */}
                   {/* <a
                     href="/admin/users"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"

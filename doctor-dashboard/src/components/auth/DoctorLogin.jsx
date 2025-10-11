@@ -107,10 +107,10 @@ function DoctorLogin() {
 
           {/* Remember & Forgot */}
           <div className="flex justify-between items-center text-sm">
-            <label className="flex items-center text-gray-600">
+            {/* <label className="flex items-center text-gray-600">
               <input type="checkbox" className="form-checkbox text-white mr-2" />
               Remember Me
-            </label>
+            </label> */}
             <Link to="/forgot-password" className="text-primary font-medium hover:underline">
               Forgot Password?
             </Link>

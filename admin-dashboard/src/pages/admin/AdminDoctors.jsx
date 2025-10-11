@@ -249,20 +249,20 @@ const Doctors = () => {
                       </div>
                     </div>
                     <div className="flex gap-1">
-                      <Button 
+                      {/* <Button 
                         variant="ghost" 
                         size="icon"
                         onClick={() => handleEdit(doctor.id)}
                       >
                         <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button 
+                      </Button> */}
+                      {/* <Button 
                         variant="ghost" 
                         size="icon"
                         onClick={() => handleDelete(doctor.id)}
                       >
                         <Trash2 className="h-4 w-4" />
-                      </Button>
+                      </Button> */}
                     </div>
                   </div>
                   <div className="space-y-1 text-xs sm:text-sm">
