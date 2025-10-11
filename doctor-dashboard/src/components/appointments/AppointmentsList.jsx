@@ -428,7 +428,6 @@
 
 
 
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Calendar, Filter, Search, Plus, RefreshCw } from "lucide-react";
@@ -538,14 +537,6 @@ function AppointmentsList() {
         appointments: dayAppointments
       });
     }
-    
-    // Group appointments by date for quick lookup
-    const appointmentsByDate = filteredAppointmentsList.reduce((acc, app) => {
-      const date = app.date;
-      if (!acc[date]) acc[date] = [];
-      acc[date].push(app);
-      return acc;
-    }, {});
     
     const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     
@@ -729,7 +720,7 @@ function AppointmentsList() {
           </div>
           <input
             type="text"
-            placeholder="Search by patient name..."
+            placeholder="Search by patient name, symptoms, or notes..."
             className="bg-white py-2 pr-4 pl-10 border border-gray-300 focus:border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 w-full text-gray-700"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -884,6 +875,13 @@ function AppointmentsList() {
                                 {appointment.notes}
                               </p>
                             )}
+                            {appointment.symptoms && (
+                              <p className={`mt-1 text-xs line-clamp-1 ${
+                                appointment.status === "cancelled" ? "text-gray-400" : "text-blue-600"
+                              }`}>
+                                <strong>Symptoms:</strong> {appointment.symptoms}
+                              </p>
+                            )}
                           </div>
 
                           <div className="flex-shrink-0 ml-4">
@@ -926,8 +924,6 @@ function AppointmentsList() {
 }
 
 export default AppointmentsList;
-
-
 
 
 
