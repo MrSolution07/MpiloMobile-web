@@ -370,8 +370,9 @@ function DoctorMessages() {
     setSendingMessage(true);
     document.querySelector("textarea")?.style && (document.querySelector("textarea").style.height = "auto");
 
+    const tempId = `temp-${Date.now()}`;
     const optimisticMessage = {
-      id: `temp-${Date.now()}`,
+      id: tempId,
       conversation_id: selectedConversation.id,
       sender_id: user.id,
       sender: {
@@ -398,13 +399,21 @@ function DoctorMessages() {
     setNewMessage("");
 
     try {
-      await sendMessageAPI({
+      const sentMessage = await sendMessageAPI({
         conversationId: selectedConversation.id,
         senderId: user.id,
         recipientId: selectedConversation.participant.id,
         content: messageContent,
         urgent: false,
       });
+
+      // Replace temp message with real one
+      setMessages((prev) => ({
+        ...prev,
+        [selectedConversation.id]: (prev[selectedConversation.id] || []).map(msg =>
+          msg.id === tempId ? { ...sentMessage, content: messageContent } : msg
+        ),
+      }));
 
       // Refresh conversations to update last message
       await refreshConversations();
@@ -415,7 +424,7 @@ function DoctorMessages() {
       setMessages((prev) => ({
         ...prev,
         [selectedConversation.id]: prev[selectedConversation.id].filter(
-          (msg) => msg.id !== optimisticMessage.id
+          (msg) => msg.id !== tempId
         ),
       }));
 

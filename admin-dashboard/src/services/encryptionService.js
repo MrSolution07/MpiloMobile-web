@@ -1,42 +1,46 @@
+import CryptoJS from 'crypto-js';
+
 // Encryption key - MUST match across all platforms
 const ENCRYPTION_KEY = 'mpilo-secure-messaging-key-2024';
 
 /**
- * NO ENCRYPTION - Messages stored as plain text
- * This ensures compatibility between mobile app and doctor dashboard
- * For production, implement proper encryption with shared libraries
+ * Encrypts a message using AES encryption
  * @param {string} message - The message to encrypt
- * @returns {string} - The message (unencrypted for now)
+ * @returns {string} - The encrypted message
  */
 export const encryptMessage = (message) => {
   try {
     if (!message) return '';
     
-    console.log('Storing message (no encryption):', message.substring(0, 20) + '...');
-    
-    // Return message as-is (no encryption)
-    // This ensures both mobile and web can read messages
-    return message;
+    const encrypted = CryptoJS.AES.encrypt(message, ENCRYPTION_KEY).toString();
+    return encrypted;
   } catch (error) {
-    console.error('Error processing message:', error);
-    return message;
+    console.error('Encryption error:', error);
+    throw new Error('Failed to encrypt message');
   }
 };
 
 /**
- * NO DECRYPTION - Messages are plain text
- * @param {string} encryptedMessage - The message
- * @returns {string} - The message
+ * Decrypts an encrypted message
+ * @param {string} encryptedMessage - The encrypted message
+ * @returns {string} - The decrypted message
  */
 export const decryptMessage = (encryptedMessage) => {
   try {
     if (!encryptedMessage) return '';
     
-    // Return message as-is (no decryption needed)
-    return encryptedMessage;
+    const bytes = CryptoJS.AES.decrypt(encryptedMessage, ENCRYPTION_KEY);
+    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+    
+    if (!decrypted) {
+      throw new Error('Decryption failed - invalid message or key');
+    }
+    
+    return decrypted;
   } catch (error) {
-    console.error('Error reading message:', error);
-    return encryptedMessage;
+    console.error('Decryption error:', error);
+    // Return a placeholder for corrupted messages
+    return '[Message could not be decrypted]';
   }
 };
 
@@ -46,13 +50,7 @@ export const decryptMessage = (encryptedMessage) => {
  * @returns {string} - The hash
  */
 export const generateMessageHash = (message) => {
-  try {
-    // Simple hash for verification
-    return btoa(message);
-  } catch (error) {
-    console.error('Hash generation error:', error);
-    return '';
-  }
+  return CryptoJS.SHA256(message).toString();
 };
 
 /**
@@ -62,12 +60,7 @@ export const generateMessageHash = (message) => {
  * @returns {boolean} - Whether the message is valid
  */
 export const verifyMessageIntegrity = (message, hash) => {
-  try {
-    const computedHash = generateMessageHash(message);
-    return computedHash === hash;
-  } catch (error) {
-    console.error('Verification error:', error);
-    return false;
-  }
+  const computedHash = generateMessageHash(message);
+  return computedHash === hash;
 };
 
