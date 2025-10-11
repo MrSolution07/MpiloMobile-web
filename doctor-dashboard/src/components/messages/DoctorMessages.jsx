@@ -301,13 +301,24 @@ function DoctorMessages() {
         messageSubscription.current = subscribeToMessages(
           selectedConversation.id,
           (newMsg) => {
-            setMessages(prev => ({
-              ...prev,
-              [selectedConversation.id]: [
-                ...(prev[selectedConversation.id] || []),
-                newMsg
-              ]
-            }));
+            console.log('New message received via subscription:', newMsg.id);
+            
+            // Prevent duplicates - check if message already exists
+            setMessages(prev => {
+              const existing = prev[selectedConversation.id] || [];
+              const messageExists = existing.some(msg => msg.id === newMsg.id);
+              
+              if (messageExists) {
+                console.log('Message already exists, skipping duplicate');
+                return prev;
+              }
+              
+              console.log('Adding new message to state');
+              return {
+                ...prev,
+                [selectedConversation.id]: [...existing, newMsg]
+              };
+            });
 
             // Mark as read if it's from the other person and refresh conversations
             if (newMsg.sender_id !== user?.id) {

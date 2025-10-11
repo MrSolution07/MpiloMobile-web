@@ -592,6 +592,8 @@ export const getUnreadCount = async (userId) => {
  * @returns {Object} - Subscription object
  */
 export const subscribeToMessages = (conversationId, callback) => {
+  console.log('📡 Setting up realtime subscription for conversation:', conversationId);
+  
   const subscription = supabase
     .channel(`messages:${conversationId}`)
     .on(
@@ -603,26 +605,37 @@ export const subscribeToMessages = (conversationId, callback) => {
         filter: `conversation_id=eq.${conversationId}`
       },
       async (payload) => {
-        // Fetch full message with sender info
-        const { data, error } = await supabase
-          .from('messages')
-          .select(`
-            *,
-            sender:users!messages_sender_id_fkey(id, display_name, avatar_url)
-          `)
-          .eq('id', payload.new.id)
-          .single();
+        try {
+          console.log('📨 New message detected in database:', payload.new.id);
+          
+          // Fetch full message with sender info
+          const { data, error } = await supabase
+            .from('messages')
+            .select(`
+              *,
+              sender:users!messages_sender_id_fkey(id, display_name, avatar_url)
+            `)
+            .eq('id', payload.new.id)
+            .single();
 
-        if (!error && data) {
-          callback({
-            ...data,
-            content: decryptMessage(data.content),
-            decrypted: true
-          });
+          if (!error && data) {
+            console.log('✅ Message fetched, calling callback');
+            callback({
+              ...data,
+              content: decryptMessage(data.content),
+              decrypted: true
+            });
+          } else {
+            console.error('❌ Error fetching message:', error);
+          }
+        } catch (error) {
+          console.error('❌ Error in message subscription:', error);
         }
       }
     )
-    .subscribe();
+    .subscribe((status) => {
+      console.log('🔔 Subscription status:', status);
+    });
 
   return subscription;
 };
