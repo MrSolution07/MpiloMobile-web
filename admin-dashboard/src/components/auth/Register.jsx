@@ -1,11 +1,11 @@
 import { useState } from "react";
+import { FaEye, FaEyeSlash, FaSignInAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context";
-import { FaSignInAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 
 function Register() {
-  const[firstname, setFirstname] = useState("");
-  const[lastname, setLastname] = useState("");
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -30,7 +30,10 @@ function Register() {
     try {
       setLoading(true);
       const fullName = `${firstname.trim()} ${lastname.trim()}`.trim();
-      await register(email.trim().toLowerCase(), password,fullName);
+      await register(email.trim().toLowerCase(), password, fullName);
+      alert(
+        "Registration successful! Please check your email to confirm your account."
+      );
       navigate("/login");
     } catch (error) {
       setError(error.message);
@@ -56,12 +59,14 @@ function Register() {
           <h2 className="text-xl font-semibold text-gray-800">Mpilo Mobile</h2>
           <p className="text-sm text-gray-500">Register your account now.</p>
         </div>
-        
-        
+
         <form className="space-y-4" onSubmit={handleSubmit}>
           {/* First Name */}
-        <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               First Name
             </label>
             <div className="flex items-center border border-gray-300 rounded-md px-3 mt-1 hover:rounded-none">
@@ -79,7 +84,10 @@ function Register() {
 
           {/* Last Name */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               Last Name
             </label>
             <div className="flex items-center border border-gray-300 rounded-md px-3 mt-1 hover:rounded-none">
@@ -94,10 +102,13 @@ function Register() {
               />
             </div>
           </div>
-          
-           {/* Email */}
+
+          {/* Email */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               Email
             </label>
             <div className="flex items-center border border-gray-300 rounded-md px-3 mt-1 hover:rounded-none">
@@ -115,7 +126,10 @@ function Register() {
 
           {/* Password */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               Password
             </label>
             <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 bg-white hover:rounded-none">
@@ -133,14 +147,17 @@ function Register() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="focus:outline-none text-gray-400 ml-2"
               >
-                {showPassword ? <FaEyeSlash size={20}/> : <FaEye size={20} />}
+                {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
               </button>
             </div>
           </div>
 
           {/* Confirm Password */}
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-gray-700"
+            >
               Confirm Password
             </label>
             <div className="flex items-center mt-1 border border-gray-300 rounded-md px-3 py-2 bg-white hover:rounded-none">
@@ -158,14 +175,21 @@ function Register() {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="focus:outline-none text-gray-400 ml-2"
               >
-                {showConfirmPassword ? <FaEyeSlash size={20}/> : <FaEye size={20} />}
+                {showConfirmPassword ? (
+                  <FaEyeSlash size={20} />
+                ) : (
+                  <FaEye size={20} />
+                )}
               </button>
             </div>
           </div>
 
           {/* Mobile Number */}
           <div>
-            <label htmlFor="mobileNumber" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="mobileNumber"
+              className="block text-sm font-medium text-gray-700"
+            >
               Mobile Number
             </label>
             <div className="flex items-center border border-gray-300 rounded-md px-3 mt-1 hover:rounded-none">
@@ -181,7 +205,11 @@ function Register() {
           </div>
 
           <div className="flex items-center gap-2 text-sm text-gray-600">
-            <input type="checkbox" id="customSwitchSuccess" className="mt-0.5" />
+            <input
+              type="checkbox"
+              id="customSwitchSuccess"
+              className="mt-0.5"
+            />
             <label htmlFor="customSwitchSuccess" className="flex items-center">
               By registering you agree to the{" "}
               <Link to="#" className="ml-1 text-primary hover:underline">
@@ -203,7 +231,10 @@ function Register() {
 
         <div className="text-center mt-6 text-sm text-gray-600">
           Already have an account?
-          <Link to="/login" className="ml-2 text-primary font-medium hover:underline">
+          <Link
+            to="/login"
+            className="ml-2 text-primary font-medium hover:underline"
+          >
             Log in
           </Link>
         </div>
