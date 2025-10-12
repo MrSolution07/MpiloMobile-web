@@ -913,14 +913,14 @@ const EnhancedInventoryManagement: React.FC = () => {
           <p className="text-gray-600 mt-1">Track and manage medical supplies with automated scanning </p>
         </div>
         <div className="flex flex-col gap-3 w-full sm:flex-row sm:w-auto sm:gap-3">
-          <Button 
+          {/* <Button 
             variant="outline" 
             onClick={() => setShowAPISettings(true)}
             className="flex items-center gap-2 w-full sm:w-auto"
           >
             <Settings size={16} />
             API Settings
-          </Button>
+          </Button> */}
           <Button 
             variant="outline" 
             onClick={() => setShowScanModal(true)}

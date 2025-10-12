@@ -208,9 +208,9 @@ const Doctors = () => {
 
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <span className="text-3xl sm:text-3xl text-black font-bold">Doctors</span>
-        <Button onClick={handleAddDoctor} className="w-full sm:w-auto">
+        {/* <Button onClick={handleAddDoctor} className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" /> Add Doctor
-        </Button>
+        </Button> */}
       </div>
 
       <Card className="w-full">
