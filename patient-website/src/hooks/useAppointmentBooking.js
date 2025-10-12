@@ -28,13 +28,47 @@ export const useAppointmentBooking = () => {
 
     try {
       // Check if patient exists by user_id (not id!)
-      const { data: existingPatient, error: checkError } = await supabase
+      let { data: existingPatient, error: checkError } = await supabase
         .from('patients')
         .select('id, patient_number, first_name, last_name')
         .eq('user_id', user.id)  // Use user_id instead of id
-        .single();
+        .maybeSingle();
 
-      if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows found
+      // If patient doesn't exist, create one automatically
+      if (!existingPatient && !checkError) {
+        console.log('Patient profile not found, creating one...');
+        
+        // Generate patient number
+        const patientNumber = `PAT${Date.now().toString().slice(-8)}`;
+        
+        // Extract name from display_name or email
+        const nameParts = user.display_name ? user.display_name.split(' ') : user.email?.split('@')[0].split('.');
+        const firstName = nameParts?.[0] || 'User';
+        const lastName = nameParts?.slice(1).join(' ') || 'Patient'; // Ensure last_name is never empty
+        
+        // Create patient record
+        const { data: newPatient, error: createError } = await supabase
+          .from('patients')
+          .insert({
+            user_id: user.id,
+            patient_number: patientNumber,
+            email: user.email || '',
+            first_name: firstName,
+            last_name: lastName,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+          .select('id, patient_number, first_name, last_name')
+          .single();
+
+        if (createError) {
+          console.error('Error creating patient profile:', createError);
+          return null;
+        }
+
+        existingPatient = newPatient;
+        console.log('✅ Patient profile created successfully:', existingPatient);
+      } else if (checkError) {
         throw checkError;
       }
 
