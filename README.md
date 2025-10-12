@@ -7,15 +7,17 @@ A comprehensive healthcare platform split into three independent applications fo
 This project is divided into three separate applications that can be hosted independently:
 
 ### 1. **Patient Website** (`/patient-website`)
+
 - **Purpose**: Public-facing website and patient dashboard
 - **Users**: Patients and general public
-- **Features**: 
+- **Features**:
   - Public website (Home, Services, About, etc.)
   - Patient registration and login
   - Patient dashboard
   - Contact and information pages
 
 ### 2. **Admin Dashboard** (`/admin-dashboard`)
+
 - **Purpose**: Administrative control panel
 - **Users**: System administrators
 - **Features**:
@@ -25,6 +27,7 @@ This project is divided into three separate applications that can be hosted inde
   - Analytics and reporting
 
 ### 3. **Doctor Dashboard** (`/doctor-dashboard`)
+
 - **Purpose**: Medical professional interface
 - **Users**: Healthcare practitioners
 - **Features**:
@@ -39,6 +42,7 @@ This project is divided into three separate applications that can be hosted inde
 Each application can be run independently:
 
 ### Patient Website
+
 ```bash
 cd patient-website
 npm install
@@ -47,6 +51,7 @@ npm run dev
 ```
 
 ### Admin Dashboard
+
 ```bash
 cd admin-dashboard
 npm install
@@ -55,6 +60,7 @@ npm run dev
 ```
 
 ### Doctor Dashboard
+
 ```bash
 cd doctor-dashboard
 npm install
@@ -74,23 +80,23 @@ npm run dev
 
 ## 📁 Project Structure
 
-```
+```bash
 MpiloMobile-web/
-├── patient-website/          # Patient-facing application
+├── patient-website/         # Patient-facing application
 │   ├── src/
-│   │   ├── components/       # Patient-specific components
+│   │   ├── components/      # Patient-specific components
 │   │   ├── pages/           # Public pages + UserDashboard
 │   │   └── ...
 │   └── package.json
-├── admin-dashboard/          # Admin application
+├── admin-dashboard/         # Admin application
 │   ├── src/
-│   │   ├── components/       # Admin-specific components
+│   │   ├── components/      # Admin-specific components
 │   │   ├── pages/           # Admin pages only
 │   │   └── ...
 │   └── package.json
-├── doctor-dashboard/         # Doctor application
+├── doctor-dashboard/        # Doctor application
 │   ├── src/
-│   │   ├── components/       # Doctor-specific components
+│   │   ├── components/      # Doctor-specific components
 │   │   └── ...
 │   └── package.json
 └── README.md
@@ -112,6 +118,7 @@ Each application can be deployed independently to different domains or subdomain
 - **Doctor Dashboard**: `https://doctor.mpilo.com`
 
 ### Deployment Options
+
 - Vercel
 - Netlify
 - AWS S3 + CloudFront
@@ -120,11 +127,13 @@ Each application can be deployed independently to different domains or subdomain
 ## 🛠️ Development
 
 ### Prerequisites
+
 - Node.js (v16 or higher)
 - npm or yarn
 - Supabase account
 
 ### Environment Setup
+
 Create `.env` files in each application directory:
 
 ```env
@@ -135,6 +144,7 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ## 📝 Features by Application
 
 ### Patient Website
+
 - ✅ Public website pages
 - ✅ Patient registration/login
 - ✅ Patient dashboard
@@ -142,6 +152,7 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 - ✅ Gallery and information pages
 
 ### Admin Dashboard
+
 - ✅ Admin authentication
 - ✅ User management
 - ✅ System administration
@@ -149,6 +160,7 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 - ✅ Analytics dashboard
 
 ### Doctor Dashboard
+
 - ✅ Doctor authentication
 - ✅ Patient management
 - ✅ Appointment scheduling
