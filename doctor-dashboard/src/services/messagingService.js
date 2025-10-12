@@ -693,21 +693,36 @@ export const getAllDoctors = async () => {
  */
 export const getAdminUser = async () => {
   try {
-    // Get users with admin role
-    const { data, error } = await supabase
-      .from('users')
-      .select(`
-        *,
-        user_roles!inner(
-          role:roles!inner(name)
-        )
-      `)
-      .eq('user_roles.role.name', 'admin')
+    // First, get the admin role ID
+    const { data: roleData, error: roleError } = await supabase
+      .from('roles')
+      .select('id')
+      .eq('name', 'admin')
+      .single();
+
+    if (roleError) throw roleError;
+    if (!roleData) return null;
+
+    // Then get user with that role
+    const { data: userRoleData, error: userRoleError } = await supabase
+      .from('user_roles')
+      .select('user_id')
+      .eq('role_id', roleData.id)
       .limit(1)
       .single();
 
-    if (error) throw error;
-    return data;
+    if (userRoleError) throw userRoleError;
+    if (!userRoleData) return null;
+
+    // Finally get the user details
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', userRoleData.user_id)
+      .single();
+
+    if (userError) throw userError;
+    return userData;
   } catch (error) {
     console.error('Error fetching admin user:', error);
     return null;

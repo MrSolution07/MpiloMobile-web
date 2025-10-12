@@ -7,6 +7,7 @@ import {
   FileText,
   Heart,
   LogOut,
+  MessageSquare,
   TrendingDown,
   TrendingUp,
   User,
@@ -33,6 +34,7 @@ import {
 } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import profile from "../../public/assets/images/profileImg.png";
+import { PatientMessages } from "../components/messages";
 import { RecordPdf } from "../components/records/RecordPdf";
 import { RecordPreviewModal } from "../components/records/RecordPreviewModal";
 import { useAuth } from "../context/AuthProvider";
@@ -172,6 +174,7 @@ function PatientDashboard() {
     { id: "overview", label: "Overview", icon: User },
     { id: "appointments", label: "Appointments", icon: Calendar },
     { id: "doctors", label: "Find Doctors", icon: UserCircle },
+    { id: "messages", label: "Messages", icon: MessageSquare },
     { id: "history", label: "Medical History", icon: Clock },
   ];
   const statsCards = [
@@ -1160,6 +1163,13 @@ function PatientDashboard() {
                 )}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Messages Tab */}
+        {activeTab === "messages" && (
+          <div className="h-[calc(100vh-200px)] overflow-hidden">
+            <PatientMessages />
           </div>
         )}
 

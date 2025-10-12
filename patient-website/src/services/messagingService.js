@@ -75,7 +75,7 @@ export const getUserConversations = async (userId) => {
         participant: otherUser,
         lastMessage: lastMessage ? {
           ...lastMessage,
-          content: lastMessage.content // Will be decrypted in component
+          content: decryptMessage(lastMessage.content)
         } : null,
         updatedAt: conv.updated_at
       };
@@ -319,6 +319,53 @@ export const getPatientDoctors = async (patientId) => {
   } catch (error) {
     console.error('Error fetching patient doctors:', error);
     return [];
+  }
+};
+/**
+ * Gets all doctors for patients to message
+ * @returns {Promise<Array>} - Array of doctors with user accounts
+ */
+export const getAllDoctors = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('doctors')
+      .select('id, user_id, first_name, last_name, email, specialization, profile_image_url, is_available')
+      .eq('is_available', true)
+      .not('user_id', 'is', null) // Only get doctors with user accounts
+      .order('first_name');
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching doctors:', error);
+    return [];
+  }
+};
+
+/**
+ * Gets admin user for patients to message
+ * @returns {Promise<Object>} - Admin user object
+ */
+export const getAdminUser = async () => {
+  try {
+    // Get users with admin role
+    const { data, error } = await supabase
+      .from('users')
+      .select(`
+        *,
+        user_roles!inner(
+          role:roles!inner(name)
+        )
+      `)
+      .eq('user_roles.role.name', 'admin')
+      .limit(1)
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error('Error fetching admin user:', error);
+    return null;
   }
 };
 

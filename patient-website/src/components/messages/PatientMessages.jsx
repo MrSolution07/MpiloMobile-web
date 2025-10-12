@@ -1,6 +1,3 @@
-
-
-
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
   MessageSquare,
@@ -23,7 +20,6 @@ import {
   markMessagesAsRead,
   getOrCreateConversation,
   getAdminUser,
-  getDoctorPatients,
   getAllDoctors,
   subscribeToMessages,
   decryptMessage,
@@ -137,7 +133,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
   );
 };
 
-function DoctorMessages() {
+function PatientMessages() {
   const { user } = useAuth();
   
   // Core state
@@ -155,7 +151,7 @@ function DoctorMessages() {
   const [selectedRecipient, setSelectedRecipient] = useState(null);
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentDoctorId, setCurrentDoctorId] = useState(null);
+  const [currentPatientId, setCurrentPatientId] = useState(null);
   const [contactSearchQuery, setContactSearchQuery] = useState("");
 
   // Mobile state
@@ -181,36 +177,36 @@ function DoctorMessages() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Get current doctor ID from user
+  // Get current patient ID from user
   useEffect(() => {
-    const fetchDoctorId = async () => {
+    const fetchPatientId = async () => {
       if (!user?.id) return;
       
       try {
-        console.log('👨‍⚕️ Fetching doctor ID for user:', user.id);
+        console.log('👤 Fetching patient ID for user:', user.id);
         const { data, error } = await supabase
-          .from('doctors')
+          .from('patients')
           .select('id')
           .eq('user_id', user.id)
           .single();
         
         if (error) {
-          console.error('❌ Error fetching doctor ID:', error);
+          console.error('❌ Error fetching patient ID:', error);
           return;
         }
         
         if (data) {
-          console.log('✅ Doctor ID found:', data.id);
-          setCurrentDoctorId(data.id);
+          console.log('✅ Patient ID found:', data.id);
+          setCurrentPatientId(data.id);
         } else {
-          console.log('⚠️ No doctor record found for user');
+          console.log('⚠️ No patient record found for user');
         }
       } catch (error) {
-        console.error("Error fetching doctor ID:", error);
+        console.error("Error fetching patient ID:", error);
       }
     };
 
-    fetchDoctorId();
+    fetchPatientId();
   }, [user]);
 
   // Load initial data
@@ -225,7 +221,7 @@ function DoctorMessages() {
         const convs = await getUserConversations(user.id);
         setConversations(convs);
         
-        // Load contacts (admin + patients)
+        // Load contacts (admin + doctors)
         const contactsList = [];
         
         // Get admin
@@ -248,36 +244,15 @@ function DoctorMessages() {
         console.log('Doctors found:', allDoctors.length);
         
         allDoctors.forEach(doctor => {
-          // Don't show the current doctor in the list
-          if (doctor.id !== currentDoctorId) {
-            contactsList.push({
-              id: doctor.user_id,
-              display_name: `Dr. ${doctor.first_name} ${doctor.last_name}`,
-              avatar_url: doctor.profile_image_url,
-              email: doctor.email,
-              type: 'doctor',
-              specialization: doctor.specialization
-            });
-          }
-        });
-        
-        // Get patients if doctor ID is available
-        if (currentDoctorId) {
-          console.log('Fetching patients for doctor ID:', currentDoctorId);
-          const patients = await getDoctorPatients(currentDoctorId);
-          console.log('Patients found:', patients.length);
-          patients.forEach(patient => {
-            contactsList.push({
-              id: patient.user_id || patient.id,
-              display_name: `${patient.first_name} ${patient.last_name}`,
-              avatar_url: null,
-              email: patient.email,
-              type: 'patient'
-            });
+          contactsList.push({
+            id: doctor.user_id,
+            display_name: `Dr. ${doctor.first_name} ${doctor.last_name}`,
+            avatar_url: doctor.profile_image_url,
+            email: doctor.email,
+            type: 'doctor',
+            specialization: doctor.specialization
           });
-        } else {
-          console.log('No doctor ID available, skipping patient fetch');
-        }
+        });
         
         console.log('Total contacts loaded:', contactsList.length);
         setContacts(contactsList);
@@ -289,7 +264,7 @@ function DoctorMessages() {
     };
 
     loadData();
-  }, [user, currentDoctorId]);
+  }, [user, currentPatientId]);
 
   // Refresh conversations function
   const refreshConversations = async () => {
@@ -1132,9 +1107,6 @@ function DoctorMessages() {
                     <h3 className="text-lg font-semibold text-gray-900 mt-4">
                       Select a conversation
                     </h3>
-                    <p className="text-gray-500 mt-2">
-                      Choose a conversation from the list to view messages
-                    </p>
                   </div>
                 </div>
               )}
@@ -1298,5 +1270,4 @@ function DoctorMessages() {
   );
 }
 
-export default DoctorMessages;
-
+export default PatientMessages;
