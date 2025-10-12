@@ -20,11 +20,16 @@ export const AuthProvider = ({ children }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const register = async (email, password) => {
+  const register = async (email, password, displayName = "New User") => {
     email = email.trim().toLowerCase();
     const { data: newSession, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          display_name: displayName,
+        },
+      },
     });
 
     if (error) throw error;
