@@ -521,27 +521,27 @@ function PatientDashboard() {
       try {
         setLoading(true);
 
-        // // get current user
-        // const {
-        //   data: { user },
-        // } = await supabase.auth.getUser();
+        // get current user
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
-        // if (!user) {
-        //   alert("You must be logged in to download your records.");
-        //   setLoading(false);
-        //   return;
-        // }
+        if (!user) {
+          alert("You must be logged in to download your records.");
+          setLoading(false);
+          return;
+        }
 
-        // const { error } = await supabase.auth.signInWithPassword({
-        //   email: user.email,
-        //   password,
-        // });
+        const { error } = await supabase.auth.signInWithPassword({
+          email: user.email,
+          password,
+        });
 
-        // if (error) {
-        //   alert("Incorrect password. Please try again.");
-        //   setLoading(false);
-        //   return;
-        // }
+        if (error) {
+          alert("Incorrect password. Please try again.");
+          setLoading(false);
+          return;
+        }
 
         // verified - generate password & PDF
         const generatedPassword = generatePassword();
