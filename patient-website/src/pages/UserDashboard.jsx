@@ -12,6 +12,7 @@ import {
   User,
   UserCircle,
 } from "lucide-react";
+import { PDFDocument } from "pdf-lib-with-encrypt";
 import { useEffect, useState } from "react";
 import {
   FaCalendarAlt,
@@ -39,7 +40,7 @@ import { useAppointmentBooking } from "../hooks/useAppointmentBooking";
 import { useBookings } from "../hooks/useBookings";
 import { useDoctors } from "../hooks/useDoctors";
 import { useSpecialties } from "../hooks/useSpecialties";
-import { supabase } from "../services/supabaseClient";
+import { supabase, supabaseAnonKey } from "../services/supabaseClient";
 
 function PatientDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -506,44 +507,94 @@ function PatientDashboard() {
 
     const patientRecordData = formatMedicalRecordsForPdf();
 
+    // generate random password
+    const generatePassword = (length = 12) => {
+      const array = new Uint8Array(length);
+      crypto.getRandomValues(array);
+      return Array.from(array, (b) => (b % 36).toString(36)).join("");
+    };
+
     const handleVerifyAndDownload = async () => {
       try {
         setLoading(true);
 
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+        // // get current user
+        // const {
+        //   data: { user },
+        // } = await supabase.auth.getUser();
 
-        if (!user) {
-          alert("You must be logged in to download your records.");
-          setLoading(false);
-          return;
-        }
+        // if (!user) {
+        //   alert("You must be logged in to download your records.");
+        //   setLoading(false);
+        //   return;
+        // }
 
-        const { error } = await supabase.auth.signInWithPassword({
-          email: user.email,
-          password,
-        });
+        // const { error } = await supabase.auth.signInWithPassword({
+        //   email: user.email,
+        //   password,
+        // });
 
-        if (error) {
-          alert("Incorrect password. Please try again.");
-          setLoading(false);
-          return;
-        }
+        // if (error) {
+        //   alert("Incorrect password. Please try again.");
+        //   setLoading(false);
+        //   return;
+        // }
 
-        // verified - generate PDF
+        // verified - generate password & PDF
+        const generatedPassword = generatePassword();
         const blob = await pdf(<RecordPdf data={patientRecordData} />).toBlob();
+        const arrayBuffer = await blob.arrayBuffer();
+
+        // encrypt PDF
+        const pdfDoc = await PDFDocument.load(arrayBuffer);
+        pdfDoc.encrypt({
+          userPassword: generatedPassword,
+          ownerPassword: generatedPassword,
+          permissions: {
+            printing: "highResolution",
+            modifying: false,
+            copying: false,
+          },
+        });
+        const encryptedBytes = await pdfDoc.save();
 
         const fileName = `medical_record_${patientRecordData.patientName}_${
           new Date().toISOString().split("T")[0]
         }.pdf`;
 
-        // Trigger download
+        // send password email (Edge Function call)
+        const res = await fetch(
+          `${import.meta.env.VITE_SUPABASE_FUNCTIONS_URL}/send-password-email`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${supabaseAnonKey}`,
+            },
+            body: JSON.stringify({
+              to: user.email,
+              password: generatedPassword,
+            }),
+          }
+        );
+
+        if (!res.ok) {
+          const err = await res.json();
+          console.error("Email send failed:", err);
+          alert("Failed to send password email. PDF download canceled.");
+          return;
+        }
+
+        // email sent successfulyy -> trigger download
+        const encryptedBlob = new Blob([encryptedBytes], {
+          type: "application/pdf",
+        });
         const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
+        link.href = URL.createObjectURL(encryptedBlob);
         link.download = fileName;
         link.click();
         URL.revokeObjectURL(link.href);
+        alert("PDF downloaded and password sent to your email.");
 
         // cleanup
         setPassword("");
@@ -551,7 +602,8 @@ function PatientDashboard() {
         setLoading(false);
       } catch (err) {
         console.error(err);
-        alert("Something went wrong during verification.");
+        alert("Something went wrong.", err.message);
+      } finally {
         setLoading(false);
       }
     };
@@ -585,7 +637,7 @@ function PatientDashboard() {
         {/* Password Modal */}
         {showModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white rounded-lg shadow-lg p-6 w-[22rem]">
+            <div className="bg-white rounded-lg shadow-lg p-6 w-md">
               <h2 className="text-lg font-semibold mb-4 text-gray-800">
                 Confirm Your Password
               </h2>
