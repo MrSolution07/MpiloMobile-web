@@ -3,7 +3,7 @@ import { Toaster } from "./components/admin/ui/toaster";
 import { Toaster as Sonner } from "./components/admin/ui/sonner";
 import { TooltipProvider } from "./components/admin/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "./context";
+import { AuthProvider, CallProvider } from "./context";
 
 // Main site pages
 import {
@@ -21,6 +21,8 @@ import {
 import DoctorProfile from "./components/doctorProfile/DoctorProfile";
 import AppointmentDetails from "./components/appointments/AppointmentDetails";
 import UserAppointment from "./components/appointments/UserAppointment";
+import { MessagesList } from "./components/messages";
+import { CallHandler } from "./components/video-call";
 
 import { Register, Login, ForgotPassword } from "./components/auth";
 
@@ -80,6 +82,10 @@ const router = createBrowserRouter([
     path: "/Userappointment",
     element: <UserAppointment />, // Make sure to import this component too
   },
+  {
+    path: "/messages",
+    element: <MessagesList />,
+  },
 
   // Catch-all
   { 
@@ -91,13 +97,16 @@ const router = createBrowserRouter([
 function App() {
   return (
     <AuthProvider>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <RouterProvider router={router} />
-        </TooltipProvider>
-      </QueryClientProvider>
+      <CallProvider>
+        <CallHandler />
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <RouterProvider router={router} />
+          </TooltipProvider>
+        </QueryClientProvider>
+      </CallProvider>
     </AuthProvider>
   );
 }

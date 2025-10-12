@@ -11,6 +11,7 @@ import {
   TrendingUp,
   User,
   UserCircle,
+  MessageSquare,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
@@ -40,6 +41,7 @@ import { useBookings } from "../hooks/useBookings";
 import { useDoctors } from "../hooks/useDoctors";
 import { useSpecialties } from "../hooks/useSpecialties";
 import { supabase } from "../services/supabaseClient";
+import { PatientMessages } from "../components/messages";
 
 function PatientDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -171,6 +173,7 @@ function PatientDashboard() {
     { id: "overview", label: "Overview", icon: User },
     { id: "appointments", label: "Appointments", icon: Calendar },
     { id: "doctors", label: "Find Doctors", icon: UserCircle },
+    { id: "messages", label: "Messages", icon: MessageSquare },
     { id: "history", label: "Medical History", icon: Clock },
   ];
   const statsCards = [
@@ -1108,6 +1111,13 @@ function PatientDashboard() {
                 )}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Messages Tab */}
+        {activeTab === "messages" && (
+          <div className="h-[calc(100vh-200px)] overflow-hidden">
+            <PatientMessages />
           </div>
         )}
 
