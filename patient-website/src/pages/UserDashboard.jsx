@@ -87,6 +87,128 @@ function PatientDashboard() {
   const [recordsLoading, setRecordsLoading] = useState(false);
   const [recordsError, setRecordsError] = useState(null);
 
+  // State for stats data
+  const [statsData, setStatsData] = useState({
+    totalAppointments: 0,
+    completedVisits: 0,
+    medicalRecords: 0,
+    prescriptions: 0
+  });
+  const [statsLoading, setStatsLoading] = useState(false);
+
+  // State for health metrics with sliders
+  const [healthMetrics, setHealthMetrics] = useState([
+    {
+      label: "Heart Rate",
+      value: "72 bpm",
+      currentValue: 72,
+      min: 50,
+      max: 120,
+      unit: "bpm",
+      icon: FaHeart,
+      color: "text-red-500",
+    },
+    {
+      label: "Blood Pressure",
+      value: "120/80",
+      systolic: 120,
+      diastolic: 80,
+      min: 80,
+      max: 180,
+      unit: "",
+      icon: FaTint,
+      color: "text-blue-500",
+    },
+    {
+      label: "Temperature",
+      value: "37.6°C",
+      currentValue: 37.6,
+      min: 35,
+      max: 42,
+      unit: "°C",
+      icon: FaThermometerHalf,
+      color: "text-orange-500",
+    },
+    {
+      label: "Weight",
+      value: "74 kg",
+      currentValue: 74,
+      min: 40,
+      max: 150,
+      unit: "kg",
+      icon: FaWeight,
+      color: "text-green-500",
+    },
+  ]);
+
+  // Fetch stats data
+  const fetchStatsData = async () => {
+    if (!user) return;
+
+    try {
+      setStatsLoading(true);
+
+      // Get user's patient_id from the appointments table
+      const { data: patientData, error: patientError } = await supabase
+        .from("appointments")
+        .select("patient_id")
+        .eq("patient_id", user.id)
+        .limit(1)
+        .single();
+
+      if (patientError && patientError.code !== 'PGRST116') {
+        console.error("Error fetching patient data:", patientError);
+      }
+
+      const patientId = patientData?.patient_id || user.id;
+
+      // Fetch total appointments
+      const { count: totalAppointments, error: appointmentsError } = await supabase
+        .from("appointments")
+        .select("*", { count: 'exact', head: true })
+        .eq("patient_id", patientId);
+
+      if (appointmentsError) throw appointmentsError;
+
+      // Fetch completed visits
+      const { count: completedVisits, error: completedError } = await supabase
+        .from("appointments")
+        .select("*", { count: 'exact', head: true })
+        .eq("patient_id", patientId)
+        .eq("status", "completed");
+
+      if (completedError) throw completedError;
+
+      // Fetch medical records count
+      const { count: medicalRecordsCount, error: recordsError } = await supabase
+        .from("medical_records")
+        .select("*", { count: 'exact', head: true })
+        .eq("patient_id", patientId);
+
+      if (recordsError) throw recordsError;
+
+      // Fetch prescriptions count
+      const { count: prescriptionsCount, error: prescriptionsError } = await supabase
+        .from("prescriptions")
+        .select("*", { count: 'exact', head: true })
+        .eq("patient_id", patientId);
+
+      if (prescriptionsError) throw prescriptionsError;
+
+      setStatsData({
+        totalAppointments: totalAppointments || 0,
+        completedVisits: completedVisits || 0,
+        medicalRecords: medicalRecordsCount || 0,
+        prescriptions: prescriptionsCount || 0
+      });
+
+    } catch (err) {
+      console.error("Error fetching stats data:", err);
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
   // Fetch medical records from medical_records table
   const fetchMedicalRecords = async () => {
     if (!user) return;
@@ -95,10 +217,24 @@ function PatientDashboard() {
       setRecordsLoading(true);
       setRecordsError(null);
 
+      // Get user's patient_id from appointments table first
+      const { data: patientData, error: patientError } = await supabase
+        .from("appointments")
+        .select("patient_id")
+        .eq("patient_id", user.id)
+        .limit(1)
+        .single();
+
+      if (patientError && patientError.code !== 'PGRST116') {
+        console.error("Error fetching patient data:", patientError);
+      }
+
+      const patientId = patientData?.patient_id || user.id;
+
       const { data, error } = await supabase
         .from("medical_records")
         .select("*")
-        .eq("patient_id", user.id)
+        .eq("patient_id", patientId)
         .order("date", { ascending: false });
 
       if (error) throw error;
@@ -112,10 +248,13 @@ function PatientDashboard() {
     }
   };
 
-  // Fetch medical records when user is available and medical history tab is active
+  // Fetch stats and medical records when user is available
   useEffect(() => {
-    if (user && activeTab === "history") {
-      fetchMedicalRecords();
+    if (user) {
+      fetchStatsData();
+      if (activeTab === "history") {
+        fetchMedicalRecords();
+      }
     }
   }, [user, activeTab]);
 
@@ -168,6 +307,26 @@ function PatientDashboard() {
     }
   }, [activeTab, searchTerm, selectedSpecialty]);
 
+  // Handle health metric slider changes
+  const handleHealthMetricChange = (index, newValue, type = 'single') => {
+    setHealthMetrics(prev => {
+      const updated = [...prev];
+      
+      if (type === 'systolic') {
+        updated[index].systolic = newValue;
+        updated[index].value = `${newValue}/${updated[index].diastolic}`;
+      } else if (type === 'diastolic') {
+        updated[index].diastolic = newValue;
+        updated[index].value = `${updated[index].systolic}/${newValue}`;
+      } else {
+        updated[index].currentValue = newValue;
+        updated[index].value = `${newValue} ${updated[index].unit}`;
+      }
+      
+      return updated;
+    });
+  };
+
   const tabs = [
     { id: "overview", label: "Overview", icon: User },
     { id: "appointments", label: "Appointments", icon: Calendar },
@@ -175,10 +334,11 @@ function PatientDashboard() {
     { id: "messages", label: "Messages", icon: MessageSquare },
     { id: "history", label: "Medical History", icon: Clock },
   ];
+
   const statsCards = [
     {
       title: "Total Appointments",
-      value: "27",
+      value: statsData.totalAppointments.toString(),
       change: "+0.8%",
       isPositive: true,
       icon: Calendar,
@@ -187,7 +347,7 @@ function PatientDashboard() {
     },
     {
       title: "Completed Visits",
-      value: "15",
+      value: statsData.completedVisits.toString(),
       change: "+2.1%",
       isPositive: true,
       icon: Activity,
@@ -196,7 +356,7 @@ function PatientDashboard() {
     },
     {
       title: "Medical Records",
-      value: "7",
+      value: statsData.medicalRecords.toString(),
       change: "+1.5%",
       isPositive: true,
       icon: FileText,
@@ -205,7 +365,7 @@ function PatientDashboard() {
     },
     {
       title: "Prescriptions",
-      value: "7",
+      value: statsData.prescriptions.toString(),
       change: "-0.2%",
       isPositive: false,
       icon: Heart,
@@ -213,6 +373,7 @@ function PatientDashboard() {
       iconColor: "text-[#274D60]",
     },
   ];
+
   // Handle view doctor profile
   const handleViewDoctorProfile = (doctor) => {
     navigate("/doctor-profile", {
@@ -239,7 +400,6 @@ function PatientDashboard() {
   };
 
   // Handle view medical record details
-
   const handleViewMedicalRecord = (record) => {
     const params = new URLSearchParams(location.search);
     params.set("record", String(record.id));
@@ -248,6 +408,7 @@ function PatientDashboard() {
       { state: { record } }
     );
   };
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const idFromUrl = params.get("record");
@@ -358,8 +519,7 @@ function PatientDashboard() {
   const todaysAppointmentsUI = todaysAppointments.map(mapAppointmentToUI);
 
   // Map upcoming appointments (all future appointments)
-  const upcomingAppointmentsUI =
-    upcomingAppointments.map(mapAppointmentToUI);
+  const upcomingAppointmentsUI = upcomingAppointments.map(mapAppointmentToUI);
 
   // Map past appointments to UI format
   const pastAppointmentsUI = pastBookings.map(mapAppointmentToUI);
@@ -421,33 +581,38 @@ function PatientDashboard() {
     })),
   ];
 
-  // Sample health metrics (would typically come from health metrics hook)
-  const healthMetrics = [
-    {
-      label: "Heart Rate",
-      value: "72 bpm",
-      icon: FaHeart,
-      color: "text-red-500",
-    },
-    {
-      label: "Blood Pressure",
-      value: "120/80",
-      icon: FaTint,
-      color: "text-blue-500",
-    },
-    {
-      label: "Temperature",
-      value: "37.6°C",
-      icon: FaThermometerHalf,
-      color: "text-orange-500",
-    },
-    {
-      label: "Weight",
-      value: "74 kg",
-      icon: FaWeight,
-      color: "text-green-500",
-    },
-  ];
+  // Calculate progress percentage for health metrics
+  const calculateProgress = (metric, value) => {
+    if (metric.label === "Blood Pressure") {
+      // For blood pressure, we'll use systolic value for progress
+      return ((value - metric.min) / (metric.max - metric.min)) * 100;
+    }
+    return ((value - metric.min) / (metric.max - metric.min)) * 100;
+  };
+
+  // Get progress color based on value
+  const getProgressColor = (metric, value) => {
+    if (metric.label === "Heart Rate") {
+      if (value < 60) return "bg-blue-500";
+      if (value <= 100) return "bg-green-500";
+      return "bg-red-500";
+    }
+    if (metric.label === "Blood Pressure") {
+      if (value < 120) return "bg-green-500";
+      if (value <= 139) return "bg-yellow-500";
+      return "bg-red-500";
+    }
+    if (metric.label === "Temperature") {
+      if (value < 38) return "bg-green-500";
+      return "bg-red-500";
+    }
+    if (metric.label === "Weight") {
+      // This would ideally be based on BMI, but for simplicity:
+      if (value >= 60 && value <= 80) return "bg-green-500";
+      return "bg-yellow-500";
+    }
+    return "bg-blue-500";
+  };
 
   // DownloadRecordsButton component
   const DownloadRecordsButton = ({ medicalRecords }) => {
@@ -839,26 +1004,69 @@ function PatientDashboard() {
                           <p className="text-lg font-semibold text-gray-800">
                             {metric.value}
                           </p>
-                          <p
-                            className={`text-xs ${
-                              metric.trendUp ? "text-green-600" : "text-red-600"
-                            }`}
-                          >
-                            {metric.trend}
-                          </p>
                         </div>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      
+                      {/* Slider for health metrics */}
+                      {metric.label === "Blood Pressure" ? (
+                        <div className="space-y-2">
+                          <div>
+                            <label className="text-xs text-gray-500 mb-1 block">
+                              Systolic: {metric.systolic}
+                            </label>
+                            <input
+                              type="range"
+                              min={metric.min}
+                              max={metric.max}
+                              value={metric.systolic}
+                              onChange={(e) => handleHealthMetricChange(index, parseInt(e.target.value), 'systolic')}
+                              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs text-gray-500 mb-1 block">
+                              Diastolic: {metric.diastolic}
+                            </label>
+                            <input
+                              type="range"
+                              min={60}
+                              max={120}
+                              value={metric.diastolic}
+                              onChange={(e) => handleHealthMetricChange(index, parseInt(e.target.value), 'diastolic')}
+                              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <input
+                            type="range"
+                            min={metric.min}
+                            max={metric.max}
+                            value={metric.currentValue}
+                            onChange={(e) => handleHealthMetricChange(index, parseFloat(e.target.value))}
+                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                          />
+                          <div className="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>{metric.min}{metric.unit}</span>
+                            <span>{metric.max}{metric.unit}</span>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Progress bar visualization */}
+                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                         <div
-                          className={`h-2 rounded-full ${
-                            index === 0
-                              ? "bg-red-500 w-[75%]"
-                              : index === 1
-                              ? "bg-blue-500 w-[85%]"
-                              : index === 2
-                              ? "bg-purple-500 w-[65%]"
-                              : "bg-green-500 w-[95%]"
-                          }`}
+                          className={`h-2 rounded-full ${getProgressColor(
+                            metric, 
+                            metric.label === "Blood Pressure" ? metric.systolic : metric.currentValue
+                          )}`}
+                          style={{
+                            width: `${Math.min(100, calculateProgress(
+                              metric,
+                              metric.label === "Blood Pressure" ? metric.systolic : metric.currentValue
+                            ))}%`
+                          }}
                         ></div>
                       </div>
                     </div>
@@ -1524,9 +1732,9 @@ function PatientDashboard() {
                             </p>
                           </div>
                           <div className="text-right sm:text-left">
-                            <button className="text-[#DC2626] hover:text-red-700 text-sm font-medium mt-1 whitespace-nowrap">
+                            {/* <button className="text-[#DC2626] hover:text-red-700 text-sm font-medium mt-1 whitespace-nowrap">
                               Request Refill
-                            </button>
+                            </button> */}
                           </div>
                         </div>
                       ))}
