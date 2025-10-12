@@ -1,5 +1,5 @@
 // hooks/useBookings.js
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../services/supabaseClient';
 import { useAuth } from '../context/AuthProvider';
 
@@ -9,7 +9,7 @@ export const useBookings = () => {
   const [error, setError] = useState(null);
   const { user } = useAuth();
 
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
     if (!user) {
       setError('User not authenticated');
       setLoading(false);
@@ -23,15 +23,49 @@ export const useBookings = () => {
       console.log('Fetching bookings for user:', user.id);
 
       // First, get the patient ID from the patients table
-      const { data: patientData, error: patientError } = await supabase
+      let { data: patientData, error: patientError } = await supabase
         .from('patients')
         .select('id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (patientError) {
-        console.error('Error fetching patient:', patientError);
-        throw new Error('Patient profile not found');
+      // If patient doesn't exist, create one automatically
+      if (!patientData && !patientError) {
+        console.log('Patient profile not found, creating one...');
+        
+        // Generate patient number
+        const patientNumber = `PAT${Date.now().toString().slice(-8)}`;
+        
+        // Extract name from display_name or email
+        const nameParts = user.display_name ? user.display_name.split(' ') : user.email?.split('@')[0].split('.');
+        const firstName = nameParts?.[0] || 'User';
+        const lastName = nameParts?.slice(1).join(' ') || 'Patient'; // Ensure last_name is never empty
+        
+        // Create patient record
+        const { data: newPatient, error: createError } = await supabase
+          .from('patients')
+          .insert({
+            user_id: user.id,
+            patient_number: patientNumber,
+            email: user.email || '',
+            first_name: firstName,
+            last_name: lastName,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+          .select('id')
+          .single();
+
+        if (createError) {
+          console.error('Error creating patient profile:', createError);
+          setError('Could not create patient profile. Please try again.');
+          return;
+        }
+
+        patientData = newPatient;
+        console.log('✅ Patient profile created successfully');
+      } else if (patientError) {
+        throw patientError;
       }
 
       if (!patientData) {
@@ -70,7 +104,7 @@ export const useBookings = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -78,7 +112,7 @@ export const useBookings = () => {
     } else {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, fetchBookings]);
 
   const refetch = () => {
     fetchBookings();

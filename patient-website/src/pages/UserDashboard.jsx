@@ -121,7 +121,7 @@ function PatientDashboard() {
 
   // State for filtered appointments
   const [todaysAppointments, setTodaysAppointments] = useState([]);
-  const [upcomingWeekAppointments, setUpcomingWeekAppointments] = useState([]);
+  const [upcomingAppointments, setUpcomingAppointments] = useState([]);
 
   // Filter appointments when bookings change
   useEffect(() => {
@@ -129,9 +129,8 @@ function PatientDashboard() {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      const endOfWeek = new Date();
-      endOfWeek.setDate(today.getDate() + 7);
-      endOfWeek.setHours(23, 59, 59, 999);
+      const endOfToday = new Date();
+      endOfToday.setHours(23, 59, 59, 999);
 
       // Filter today's appointments
       const todayAppts = bookings.filter((appt) => {
@@ -143,19 +142,18 @@ function PatientDashboard() {
         );
       });
 
-      // Filter upcoming week appointments (excluding today)
-      const weekAppts = bookings.filter((appt) => {
+      // Filter ALL upcoming appointments (excluding today) - no time limit!
+      const futureAppts = bookings.filter((appt) => {
         const apptDate = new Date(appt.scheduled_datetime);
         return (
-          apptDate > today &&
-          apptDate <= endOfWeek &&
+          apptDate > endOfToday &&
           appt.status !== "cancelled" &&
           appt.status !== "completed"
         );
       });
 
       setTodaysAppointments(todayAppts);
-      setUpcomingWeekAppointments(weekAppts);
+      setUpcomingAppointments(futureAppts);
     }
   }, [bookings]);
 
@@ -359,9 +357,9 @@ function PatientDashboard() {
   // Map today's appointments
   const todaysAppointmentsUI = todaysAppointments.map(mapAppointmentToUI);
 
-  // Map upcoming week appointments
-  const upcomingWeekAppointmentsUI =
-    upcomingWeekAppointments.map(mapAppointmentToUI);
+  // Map upcoming appointments (all future appointments)
+  const upcomingAppointmentsUI =
+    upcomingAppointments.map(mapAppointmentToUI);
 
   // Map past appointments to UI format
   const pastAppointmentsUI = pastBookings.map(mapAppointmentToUI);
@@ -409,7 +407,7 @@ function PatientDashboard() {
       type: "today",
       icon: FaCalendarAlt,
     })),
-    ...upcomingWeekAppointmentsUI.slice(0, 1).map((appt) => ({
+    ...upcomingAppointmentsUI.slice(0, 1).map((appt) => ({
       date: appt.date,
       action: `Upcoming appointment with ${appt.doctor}`,
       type: "upcoming",
@@ -958,7 +956,7 @@ function PatientDashboard() {
           <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-3">
               <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-                My Appointments
+                My Appointments ({bookings.length})
               </h2>
             </div>
 
@@ -970,65 +968,233 @@ function PatientDashboard() {
               <div className="text-center py-8 text-red-500">
                 Error loading appointments: {bookingsError}
               </div>
+            ) : bookings.length === 0 ? (
+              <div className="text-center py-12">
+                <Calendar className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500 text-lg mb-2">No appointments yet</p>
+                <p className="text-gray-400 text-sm mb-6">Book your first appointment with a doctor</p>
+                <button
+                  onClick={() => setActiveTab('doctors')}
+                  className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                >
+                  Find Doctors
+                </button>
+              </div>
             ) : (
-              <div className="grid gap-4">
-                {todaysAppointmentsUI.map((appointment) => (
-                  <div
-                    key={appointment.id}
-                    className="border border-gray-200 rounded-lg p-4 sm:p-6 hover:shadow-md transition"
-                  >
-                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-                      <div className="flex items-center space-x-4">
-                        <img
-                          src={appointment.avatar}
-                          alt={appointment.doctor}
-                          className="w-12 h-12 rounded-full"
-                        />
-                        <div>
-                          <h3 className="font-semibold text-gray-800">
-                            {appointment.doctor}
-                          </h3>
-                          <p className="text-gray-600">
-                            {appointment.specialty}
-                          </p>
-                          <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-gray-500">
-                            <div className="flex items-center">
-                              <FaClock className="h-4 w-4 mr-1" />
-                              <span>
-                                {appointment.date} at {appointment.time}
-                              </span>
+              <div className="space-y-6">
+                {/* Today's Appointments */}
+                {todaysAppointmentsUI.length > 0 && (
+                  <div>
+                    <h3 className="text-md font-medium text-gray-700 mb-3 flex items-center gap-2">
+                      <Calendar className="h-5 w-5 text-green-600" />
+                      Today's Appointments ({todaysAppointmentsUI.length})
+                    </h3>
+                    <div className="grid gap-4">
+                      {todaysAppointmentsUI.map((appointment) => (
+                        <div
+                          key={appointment.id}
+                          className="border-l-4 border-green-500 border border-gray-200 rounded-lg p-4 sm:p-6 hover:shadow-md transition bg-green-50"
+                        >
+                          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                            <div className="flex items-center space-x-4">
+                              <img
+                                src={appointment.avatar}
+                                alt={appointment.doctor}
+                                className="w-12 h-12 rounded-full"
+                              />
+                              <div>
+                                <h3 className="font-semibold text-gray-800">
+                                  {appointment.doctor}
+                                </h3>
+                                <p className="text-gray-600">
+                                  {appointment.specialty}
+                                </p>
+                                <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-gray-500">
+                                  <div className="flex items-center">
+                                    <FaClock className="h-4 w-4 mr-1" />
+                                    <span className="font-medium text-green-700">
+                                      Today at {appointment.time}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center">
+                                    {appointment.type === "Video Call" && (
+                                      <FaVideo className="h-4 w-4 mr-1" />
+                                    )}
+                                    {appointment.type === "Phone Call" && (
+                                      <FaPhone className="h-4 w-4 mr-1" />
+                                    )}
+                                    {appointment.type === "In-Person" && (
+                                      <FaMapMarkerAlt className="h-4 w-4 mr-1" />
+                                    )}
+                                    <span>{appointment.type}</span>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
-                            <div className="flex items-center">
-                              {appointment.type === "Video Call" && (
-                                <FaVideo className="h-4 w-4 mr-1" />
-                              )}
-                              {appointment.type === "Phone Call" && (
-                                <FaPhone className="h-4 w-4 mr-1" />
-                              )}
-                              {appointment.type === "In-Person" && (
-                                <FaMapMarkerAlt className="h-4 w-4 mr-1" />
-                              )}
-                              <span>{appointment.type}</span>
+
+                            <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+                              <button
+                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition w-full sm:w-auto"
+                                onClick={() =>
+                                  handleViewAppointmentDetails(appointment)
+                                }
+                              >
+                                Join Now
+                              </button>
                             </div>
                           </div>
                         </div>
-                      </div>
-
-                      <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
-                        <button
-                          className="px-4 py-2 border border-[#D7261E] text-[#D7261E] rounded-lg hover:bg-red-50 transition w-full sm:w-auto"
-                          onClick={() =>
-                            handleViewAppointmentDetails(appointment)
-                          }
-                        >
-                          {appointment.date === "Today"
-                            ? "Join Now"
-                            : "View Details"}
-                        </button>
-                      </div>
+                      ))}
                     </div>
                   </div>
-                ))}
+                )}
+
+                {/* Upcoming Appointments */}
+                {upcomingAppointmentsUI.length > 0 && (
+                  <div>
+                    <h3 className="text-md font-medium text-gray-700 mb-3 flex items-center gap-2">
+                      <Clock className="h-5 w-5 text-blue-600" />
+                      Upcoming Appointments ({upcomingAppointmentsUI.length})
+                    </h3>
+                    <div className="grid gap-4">
+                      {upcomingAppointmentsUI.map((appointment) => (
+                        <div
+                          key={appointment.id}
+                          className="border-l-4 border-blue-500 border border-gray-200 rounded-lg p-4 sm:p-6 hover:shadow-md transition"
+                        >
+                          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                            <div className="flex items-center space-x-4">
+                              <img
+                                src={appointment.avatar}
+                                alt={appointment.doctor}
+                                className="w-12 h-12 rounded-full"
+                              />
+                              <div>
+                                <h3 className="font-semibold text-gray-800">
+                                  {appointment.doctor}
+                                </h3>
+                                <p className="text-gray-600">
+                                  {appointment.specialty}
+                                </p>
+                                <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-gray-500">
+                                  <div className="flex items-center">
+                                    <FaClock className="h-4 w-4 mr-1" />
+                                    <span>
+                                      {appointment.date} at {appointment.time}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center">
+                                    {appointment.type === "Video Call" && (
+                                      <FaVideo className="h-4 w-4 mr-1" />
+                                    )}
+                                    {appointment.type === "Phone Call" && (
+                                      <FaPhone className="h-4 w-4 mr-1" />
+                                    )}
+                                    {appointment.type === "In-Person" && (
+                                      <FaMapMarkerAlt className="h-4 w-4 mr-1" />
+                                    )}
+                                    <span>{appointment.type}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+                              <button
+                                className="px-4 py-2 border border-[#D7261E] text-[#D7261E] rounded-lg hover:bg-red-50 transition w-full sm:w-auto"
+                                onClick={() =>
+                                  handleViewAppointmentDetails(appointment)
+                                }
+                              >
+                                View Details
+                              </button>
+                              <button
+                                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition w-full sm:w-auto"
+                                onClick={() => handleCancelAppointment(appointment.id)}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Past Appointments */}
+                {pastAppointmentsUI.length > 0 && (
+                  <div>
+                    <h3 className="text-md font-medium text-gray-700 mb-3 flex items-center gap-2">
+                      <FileText className="h-5 w-5 text-gray-600" />
+                      Past Appointments ({pastAppointmentsUI.length})
+                    </h3>
+                    <div className="grid gap-4">
+                      {pastAppointmentsUI.map((appointment) => (
+                        <div
+                          key={appointment.id}
+                          className="border border-gray-200 rounded-lg p-4 sm:p-6 hover:shadow-md transition opacity-75"
+                        >
+                          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                            <div className="flex items-center space-x-4">
+                              <img
+                                src={appointment.avatar}
+                                alt={appointment.doctor}
+                                className="w-12 h-12 rounded-full grayscale"
+                              />
+                              <div>
+                                <h3 className="font-semibold text-gray-800">
+                                  {appointment.doctor}
+                                </h3>
+                                <p className="text-gray-600">
+                                  {appointment.specialty}
+                                </p>
+                                <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-gray-500">
+                                  <div className="flex items-center">
+                                    <FaClock className="h-4 w-4 mr-1" />
+                                    <span>
+                                      {appointment.date} at {appointment.time}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center">
+                                    {appointment.type === "Video Call" && (
+                                      <FaVideo className="h-4 w-4 mr-1" />
+                                    )}
+                                    {appointment.type === "Phone Call" && (
+                                      <FaPhone className="h-4 w-4 mr-1" />
+                                    )}
+                                    {appointment.type === "In-Person" && (
+                                      <FaMapMarkerAlt className="h-4 w-4 mr-1" />
+                                    )}
+                                    <span>{appointment.type}</span>
+                                  </div>
+                                  <span className={`px-2 py-1 rounded-full text-xs ${
+                                    appointment.status === 'completed' 
+                                      ? 'bg-green-100 text-green-700'
+                                      : 'bg-gray-100 text-gray-700'
+                                  }`}>
+                                    {appointment.status}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+                              <button
+                                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition w-full sm:w-auto"
+                                onClick={() =>
+                                  handleViewAppointmentDetails(appointment)
+                                }
+                              >
+                                View Details
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
