@@ -18,8 +18,10 @@ export const CallProvider = ({ children }) => {
   React.useEffect(() => {
     if (!myUserId) return;
 
+    console.log('👂 Setting up incoming calls listener for user:', myUserId);
+
     const channel = supabase
-      .channel("incoming_calls")
+      .channel(`incoming_calls_${myUserId}`)
       .on(
         "postgres_changes",
         {
@@ -32,13 +34,14 @@ export const CallProvider = ({ children }) => {
           const call = payload.new;
 
           if (call.status === "ringing") {
-            console.log("Incoming call payload for user", myUserId, payload);
+            console.log("📞 Incoming call payload for user", myUserId, payload);
             setIncomingCall(call);
           }
         }
       )
-
-      .subscribe();
+      .subscribe((status) => {
+        console.log('🔔 Incoming calls subscription status:', status);
+      });
 
     return () => supabase.removeChannel(channel);
   }, [myUserId]);
@@ -47,8 +50,10 @@ export const CallProvider = ({ children }) => {
   React.useEffect(() => {
     if (!myUserId) return;
 
+    console.log('👂 Setting up call updates listener for user:', myUserId);
+
     const channel = supabase
-      .channel("call_updates")
+      .channel(`call_updates_${myUserId}`)
       .on(
         "postgres_changes",
         {
@@ -59,25 +64,35 @@ export const CallProvider = ({ children }) => {
         },
         (payload) => {
           const call = payload.new;
+          console.log('📞 Call status updated. Status:', call.status, 'Full call:', call);
 
           if (call.status === "accepted") {
+            console.log('✅ Call accepted! Setting activeCall');
             setActiveCall(call);
             setCalling(false);
-          }
-
-          if (["declined", "ended"].includes(call.status)) {
+          } else if (["declined", "ended"].includes(call.status)) {
+            console.log('❌ Call ended or declined. Status was:', call.status);
             setActiveCall(null);
             setCalling(false);
+          } else {
+            console.log('⚠️ Unknown call status:', call.status);
           }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('🔔 Call updates subscription status:', status);
+      });
 
-    return () => supabase.removeChannel(channel);
+    return () => {
+      console.log('🔌 Removing call updates channel');
+      supabase.removeChannel(channel);
+    };
   }, [myUserId]);
 
   const startCall = async (calleeId) => {
     const channelName = `call_${crypto.randomUUID()}`;
+    console.log('📱 Starting call:', { caller: myUserId, callee: calleeId, channel: channelName });
+    
     const { error } = await supabase.from("calls").insert([
       {
         caller_id: myUserId,
@@ -88,13 +103,16 @@ export const CallProvider = ({ children }) => {
     ]);
 
     if (error) {
-      console.error(error);
+      console.error('❌ Error starting call:', error);
     } else {
+      console.log('✅ Call created, setting calling state to true');
       setCalling(true);
     }
   };
 
   const answerCall = async (callId, accept) => {
+    console.log('📞 Answering call:', { callId, accept });
+    
     await supabase
       .from("calls")
       .update({ status: accept ? "accepted" : "declined" })
@@ -108,6 +126,7 @@ export const CallProvider = ({ children }) => {
         .select()
         .eq("id", callId)
         .single();
+      console.log('✅ Call accepted, setting activeCall:', data);
       setActiveCall(data);
     }
   };

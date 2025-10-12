@@ -15,6 +15,7 @@ import {
   Shield,
 } from "lucide-react";
 import { useAuth } from "@/context";
+import { supabase } from "../../services/supabaseClient";
 import {
   getUserConversations,
   getConversationMessages,
@@ -23,6 +24,7 @@ import {
   getOrCreateConversation,
   getAdminUser,
   getDoctorPatients,
+  getAllDoctors,
   subscribeToMessages,
   decryptMessage,
   subscribeToConversations,
@@ -154,6 +156,7 @@ function DoctorMessages() {
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentDoctorId, setCurrentDoctorId] = useState(null);
+  const [contactSearchQuery, setContactSearchQuery] = useState("");
 
   // Mobile state
   const [isMobile, setIsMobile] = useState(false);
@@ -184,14 +187,23 @@ function DoctorMessages() {
       if (!user?.id) return;
       
       try {
-        const { data, error } = await window.supabase
+        console.log('👨‍⚕️ Fetching doctor ID for user:', user.id);
+        const { data, error } = await supabase
           .from('doctors')
           .select('id')
           .eq('user_id', user.id)
           .single();
         
-        if (!error && data) {
+        if (error) {
+          console.error('❌ Error fetching doctor ID:', error);
+          return;
+        }
+        
+        if (data) {
+          console.log('✅ Doctor ID found:', data.id);
           setCurrentDoctorId(data.id);
+        } else {
+          console.log('⚠️ No doctor record found for user');
         }
       } catch (error) {
         console.error("Error fetching doctor ID:", error);
@@ -217,8 +229,10 @@ function DoctorMessages() {
         const contactsList = [];
         
         // Get admin
+        console.log('Loading contacts...');
         const admin = await getAdminUser();
         if (admin) {
+          console.log('Admin found:', admin.display_name || admin.email);
           contactsList.push({
             id: admin.id,
             display_name: admin.display_name || 'Admin',
@@ -228,9 +242,30 @@ function DoctorMessages() {
           });
         }
         
+        // Get all doctors
+        console.log('Fetching all doctors...');
+        const allDoctors = await getAllDoctors();
+        console.log('Doctors found:', allDoctors.length);
+        
+        allDoctors.forEach(doctor => {
+          // Don't show the current doctor in the list
+          if (doctor.id !== currentDoctorId) {
+            contactsList.push({
+              id: doctor.user_id,
+              display_name: `Dr. ${doctor.first_name} ${doctor.last_name}`,
+              avatar_url: doctor.profile_image_url,
+              email: doctor.email,
+              type: 'doctor',
+              specialization: doctor.specialization
+            });
+          }
+        });
+        
         // Get patients if doctor ID is available
         if (currentDoctorId) {
+          console.log('Fetching patients for doctor ID:', currentDoctorId);
           const patients = await getDoctorPatients(currentDoctorId);
+          console.log('Patients found:', patients.length);
           patients.forEach(patient => {
             contactsList.push({
               id: patient.user_id || patient.id,
@@ -240,8 +275,11 @@ function DoctorMessages() {
               type: 'patient'
             });
           });
+        } else {
+          console.log('No doctor ID available, skipping patient fetch');
         }
         
+        console.log('Total contacts loaded:', contactsList.length);
         setContacts(contactsList);
       } catch (error) {
         console.error("Error loading data:", error);
@@ -301,19 +339,25 @@ function DoctorMessages() {
         messageSubscription.current = subscribeToMessages(
           selectedConversation.id,
           (newMsg) => {
-            console.log('New message received via subscription:', newMsg.id);
+            console.log('📨 New message received via subscription:', newMsg.id);
             
             // Prevent duplicates - check if message already exists
             setMessages(prev => {
               const existing = prev[selectedConversation.id] || [];
-              const messageExists = existing.some(msg => msg.id === newMsg.id);
+              
+              // Check for duplicate by ID or by temp ID replacement
+              const messageExists = existing.some(msg => 
+                msg.id === newMsg.id || 
+                (msg.id.startsWith('temp-') && msg.content === newMsg.content && 
+                 Math.abs(new Date(msg.created_at) - new Date(newMsg.created_at)) < 2000)
+              );
               
               if (messageExists) {
-                console.log('Message already exists, skipping duplicate');
+                console.log('✋ Message already exists, skipping duplicate');
                 return prev;
               }
               
-              console.log('Adding new message to state');
+              console.log('✅ Adding new message to state');
               return {
                 ...prev,
                 [selectedConversation.id]: [...existing, newMsg]
@@ -1105,53 +1149,137 @@ function DoctorMessages() {
         onClose={() => {
           setNewMessageModalOpen(false);
           setSelectedRecipient(null);
+          setContactSearchQuery("");
         }}
         title="New Message"
       >
         <div className="space-y-4">
+          {/* Contact Search */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Select recipient
+              Search Contacts
             </label>
-            <div className="space-y-2 max-h-60 overflow-y-auto">
-              {contacts.map((contact) => (
-                <label
-                  key={contact.id}
-                  className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-md cursor-pointer"
-                >
-                  <input
-                    type="radio"
-                    name="recipient"
-                    checked={selectedRecipient?.id === contact.id}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedRecipient(contact);
-                      }
-                    }}
-                    className="border-gray-300 text-red-600 focus:ring-red-500"
-                  />
-                  <Avatar 
-                    src={contact.avatar_url || profile} 
-                    alt={contact.display_name} 
-                    size="sm" 
-                  />
-                  <div>
-                    <p className="font-medium text-gray-900">{contact.display_name}</p>
-                    <p className="text-sm text-gray-500 capitalize">{contact.type}</p>
-                  </div>
-                </label>
-              ))}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search by name, email, or type..."
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm"
+                value={contactSearchQuery}
+                onChange={(e) => setContactSearchQuery(e.target.value)}
+              />
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
+          {/* Recipients List */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Select Recipient ({contacts.filter((contact) => {
+                const searchLower = contactSearchQuery.toLowerCase();
+                return (
+                  contact.display_name.toLowerCase().includes(searchLower) ||
+                  contact.email?.toLowerCase().includes(searchLower) ||
+                  contact.type.toLowerCase().includes(searchLower)
+                );
+              }).length} {contacts.length !== contacts.filter((contact) => {
+                const searchLower = contactSearchQuery.toLowerCase();
+                return (
+                  contact.display_name.toLowerCase().includes(searchLower) ||
+                  contact.email?.toLowerCase().includes(searchLower) ||
+                  contact.type.toLowerCase().includes(searchLower)
+                );
+              }).length ? `of ${contacts.length}` : ''})
+            </label>
+            <div className="space-y-1 max-h-80 overflow-y-auto border border-gray-200 rounded-lg p-2 bg-gray-50">
+              {contacts
+                .filter((contact) => {
+                  const searchLower = contactSearchQuery.toLowerCase();
+                  return (
+                    contact.display_name.toLowerCase().includes(searchLower) ||
+                    contact.email?.toLowerCase().includes(searchLower) ||
+                    contact.type.toLowerCase().includes(searchLower)
+                  );
+                })
+                .map((contact) => (
+                  <label
+                    key={contact.id}
+                    className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-all min-h-[72px] ${
+                      selectedRecipient?.id === contact.id
+                        ? "bg-red-50 border-2 border-red-300"
+                        : "bg-white border-2 border-transparent hover:bg-gray-50 hover:border-gray-200"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="recipient"
+                      checked={selectedRecipient?.id === contact.id}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedRecipient(contact);
+                        }
+                      }}
+                      className="w-4 h-4 border-gray-300 text-red-600 focus:ring-red-500 flex-shrink-0"
+                    />
+                    <Avatar 
+                      src={contact.avatar_url || profile} 
+                      alt={contact.display_name} 
+                      size="sm"
+                      className="flex-shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-900 truncate">{contact.display_name}</p>
+                      <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                        <p className="text-xs text-gray-500 truncate max-w-[200px]">
+                          {contact.email}
+                          {contact.specialization && ` • ${contact.specialization}`}
+                        </p>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${
+                          contact.type === 'admin' 
+                            ? 'bg-purple-100 text-purple-700' 
+                            : contact.type === 'doctor'
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-blue-100 text-blue-700'
+                        }`}>
+                          {contact.type}
+                        </span>
+                      </div>
+                    </div>
+                  </label>
+                ))}
+              
+              {contacts.filter((contact) => {
+                const searchLower = contactSearchQuery.toLowerCase();
+                return (
+                  contact.display_name.toLowerCase().includes(searchLower) ||
+                  contact.email?.toLowerCase().includes(searchLower) ||
+                  contact.type.toLowerCase().includes(searchLower)
+                );
+              }).length === 0 && (
+                <div className="text-center py-8">
+                  <p className="text-gray-500 text-sm">No contacts found</p>
+                  {contactSearchQuery && (
+                    <button
+                      onClick={() => setContactSearchQuery("")}
+                      className="text-red-600 text-sm mt-2 hover:underline"
+                    >
+                      Clear search
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Action Buttons - Cancel on left, Start on right */}
+          <div className="flex justify-between items-center pt-2 border-t border-gray-200">
             <Button
               variant="secondary"
               onClick={() => {
                 setNewMessageModalOpen(false);
                 setSelectedRecipient(null);
+                setContactSearchQuery("");
               }}
-              className="w-full sm:w-auto"
+              className="px-6"
             >
               Cancel
             </Button>
@@ -1159,7 +1287,7 @@ function DoctorMessages() {
               variant="primary"
               onClick={handleCreateConversation}
               disabled={!selectedRecipient}
-              className="w-full sm:w-auto"
+              className="px-6"
             >
               Start Conversation
             </Button>

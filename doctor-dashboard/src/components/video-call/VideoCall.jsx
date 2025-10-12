@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import { Button } from "../ui";
 
 const APP_ID = import.meta.env.VITE_AGORA_APP_ID;
+
 
 const VideoPlayer = ({ user, isLocal }) => {
   const ref = useRef();
@@ -36,19 +37,25 @@ export const VideoCall = ({ channelName = "testChannel", onLeave }) => {
 
   const clientRef = useRef(null);
   const localTracksRef = useRef({ audioTrack: null, videoTrack: null });
-  const isInitializedRef = useRef(false);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
-    if (isInitializedRef.current) return;
-    isInitializedRef.current = true;
+    mountedRef.current = true;
+    let client = null;
+    let localTracks = { audioTrack: null, videoTrack: null };
 
     const init = async () => {
       try {
-        clientRef.current = AgoraRTC.createClient({
+        if (!mountedRef.current) return;
+
+        console.log('🎬 Initializing Agora with App ID:', APP_ID);
+        console.log('📺 Channel:', channelName);
+
+        client = AgoraRTC.createClient({
           mode: "rtc",
           codec: "vp8",
         });
-        const client = clientRef.current;
+        clientRef.current = client;
 
         // listen for remote streams
         client.on("user-published", async (remoteUser, mediaType) => {
@@ -134,30 +141,59 @@ export const VideoCall = ({ channelName = "testChannel", onLeave }) => {
         });
 
         client.on("user-left", (remoteUser) => {
-          setUsers((prev) => prev.filter((u) => u.uid !== remoteUser.uid));
+          if (mountedRef.current) {
+            setUsers((prev) => prev.filter((u) => u.uid !== remoteUser.uid));
+          }
         });
 
+        if (!mountedRef.current) return;
+
         // join the channel
+        console.log('🚪 Joining channel...');
         const uid = await client.join(APP_ID, channelName, null, null);
+        console.log('✅ Joined with UID:', uid);
+        
+        if (!mountedRef.current) {
+          await client.leave();
+          return;
+        }
+
         setLocalUid(uid);
 
         // create local tracks
+        console.log('🎥 Creating camera and microphone tracks...');
         const [audioTrack, videoTrack] =
           await AgoraRTC.createMicrophoneAndCameraTracks();
-        localTracksRef.current = { audioTrack, videoTrack };
+        
+        if (!mountedRef.current) {
+          audioTrack.close();
+          videoTrack.close();
+          await client.leave();
+          return;
+        }
+
+        localTracks = { audioTrack, videoTrack };
+        localTracksRef.current = localTracks;
 
         // add local user to users array
         setUsers((prev) => [
-          ...prev.filter((u) => u.uid !== uid), // remove if exists
+          ...prev.filter((u) => u.uid !== uid),
           { uid, audioTrack, videoTrack },
         ]);
 
         // publish local tracks
+        console.log('📤 Publishing tracks...');
         await client.publish([audioTrack, videoTrack]);
+        console.log('✅ Video call connected!');
+        
         setJoined(true);
         setLoading(false);
       } catch (error) {
-        console.error("Failed to initialize video call:", error);
+        if (!mountedRef.current || error.code === 'OPERATION_ABORTED') {
+          console.log("Video call initialization cancelled (component unmounted)");
+          return;
+        }
+        console.error("❌ Failed to initialize video call:", error);
         setError(error.message);
         setLoading(false);
       }
@@ -165,39 +201,47 @@ export const VideoCall = ({ channelName = "testChannel", onLeave }) => {
 
     init();
 
-    // cleanup function
     return () => {
-      leaveCall();
+      mountedRef.current = false;
+      
+      // Cleanup (don't call onLeave here - that's only for user-initiated end)
+      const cleanup = async () => {
+        try {
+          if (localTracks.audioTrack) {
+            localTracks.audioTrack.close();
+          }
+          if (localTracks.videoTrack) {
+            localTracks.videoTrack.close();
+          }
+          if (client) {
+            await client.leave();
+          }
+        } catch (e) {
+          console.log('Cleanup error (safe to ignore):', e.message);
+        }
+      };
+      
+      cleanup();
     };
-  }, []);
+  }, [channelName]);
 
-  const leaveCall = async () => {
+  const handleEndCall = useCallback(async () => {
+    mountedRef.current = false;
+    const client = clientRef.current;
+    const { audioTrack, videoTrack } = localTracksRef.current;
+
     try {
-      const client = clientRef.current;
-      const { audioTrack, videoTrack } = localTracksRef.current;
-
-      // stop and close local tracks
-      if (audioTrack) {
-        audioTrack.stop();
-        audioTrack.close();
-      }
-
-      if (videoTrack) {
-        videoTrack.stop();
-        videoTrack.close();
-      }
-
-      // leave channel and reset client
-      if (client) {
-        await client.leave();
-        clientRef.current = null;
-      }
-
-      onLeave?.();
-    } catch (error) {
-      console.error("Error leaving call:", error);
+      if (audioTrack) audioTrack.close();
+      if (videoTrack) videoTrack.close();
+      if (client) await client.leave();
+    } catch (e) {
+      console.log('Error during end call:', e.message);
     }
-  };
+
+    if (onLeave) {
+      onLeave();
+    }
+  }, [onLeave]);
 
   const localUser = users.find((u) => u.uid === localUid);
   const remoteUsers = users.filter((u) => u.uid !== localUid);
@@ -253,7 +297,7 @@ export const VideoCall = ({ channelName = "testChannel", onLeave }) => {
 
         <Button
           className="absolute z-10 top-4 right-4 rounded-sm"
-          onClick={leaveCall}
+          onClick={handleEndCall}
         >
           End Call
         </Button>
