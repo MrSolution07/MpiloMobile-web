@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthProvider';
 import { supabase } from '../../services/supabaseClient';
 
 export default function DoctorSettings() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [form, setForm] = useState({
     fullName: '',
@@ -229,6 +231,10 @@ export default function DoctorSettings() {
     }
   };
 
+  const handleCancel = () => {
+    navigate('/dashboard');
+  };
+
   if (isLoading) {
     return (
       <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow">
@@ -361,6 +367,7 @@ export default function DoctorSettings() {
         <div className="flex justify-between pt-6">
           <button
             type="button"
+            onClick={handleCancel}
             className="px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-100 whitespace-nowrap min-w-0 flex items-center justify-center text-center"
             disabled={loading}
           >
