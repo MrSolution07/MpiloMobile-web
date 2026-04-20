@@ -43,7 +43,9 @@ const DoctorProfile = lazy(() =>
   import("./components/profile/DoctorProfile.jsx")
 );
 const CallHandler = lazy(() =>
-  import("./components/video-call/CallHandler.jsx")
+  import("./components/video-call/CallHandler.jsx").then((m) => ({
+    default: m.CallHandler,
+  }))
 );
 
 const fallback = (

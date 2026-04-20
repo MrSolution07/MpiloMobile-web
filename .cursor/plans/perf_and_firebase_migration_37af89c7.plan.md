@@ -7,37 +7,37 @@ todos:
     status: completed
   - id: optimize-static-images
     content: Compress/resize images (WebP/AVIF, thumbs vs full); fix LCP hero; ship on current host/CDN—decouple from Firebase DB cutover
-    status: in_progress
+    status: completed
   - id: lazy-responsive-cls-fonts-3p
     content: Lazy/decoding/fetchpriority + srcset; CLS checklist; font strategy (display, subset, self-host); inventory third-party scripts (maps, analytics, video)
-    status: pending
+    status: completed
   - id: code-split-analyze-chunks
     content: React.lazy routes; rollup-plugin-visualizer baseline; only then optional manualChunks with acceptance criteria
-    status: pending
+    status: completed
   - id: audit-css-bundle
     content: Reduce render-blocking CSS in index.html; scope Swiper CSS; split listener-driven vs query-driven TanStack Query policies (post-realtime strategy)
-    status: pending
+    status: completed
   - id: phase-b0-decisions
     content: ADR for document IDs + cutover model (maintenance window vs dual-system) + auth continuity (OAuth, MFA, email verification); sign-off
-    status: pending
+    status: completed
   - id: firestore-query-map
     content: Per-feature query/access-pattern inventory (joins, filters, sorts, counts) → Firestore shapes, indexes, denormalization, Functions
-    status: pending
+    status: completed
   - id: firestore-model-rules-tests
     content: Collections/subcollections; rules + emulator tests; staging rules parity; PHI/compliance review if applicable
-    status: pending
+    status: completed
   - id: auth-migration-plan
     content: Supabase→Firebase Auth (hashes, session cutover, provider mapping); legal/compliance on password reset vs import
-    status: pending
+    status: completed
   - id: etl-service-layer
     content: ETL with batch limits; domain services replacing supabase; onSnapshot replacing channels; listener leak checks
-    status: pending
+    status: completed
   - id: ops-monitoring-runbook
     content: RPO/RTO, backups, quotas/alerts, feature flag or canary, instant rollback steps, decommission criteria
-    status: pending
+    status: completed
   - id: testing-migration-pyramid
     content: Contract tests for service layer; e2e on non-negotiable flows; rules tests; optional listener soak/load
-    status: pending
+    status: completed
 isProject: false
 ---
 
