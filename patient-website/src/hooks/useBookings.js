@@ -1,6 +1,8 @@
 // hooks/useBookings.js
 import { useState, useEffect } from 'react';
 import { supabase } from '../services/supabaseClient';
+import { isFirebaseBackend } from '../services/backendConfig';
+import { fetchBookingsForUser } from '../services/firebase/bookingsFirestore';
 import { useAuth } from '../context/AuthProvider';
 
 export const useBookings = () => {
@@ -8,6 +10,7 @@ export const useBookings = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user } = useAuth();
+  const useFirebase = isFirebaseBackend();
 
   const fetchBookings = async () => {
     if (!user) {
@@ -20,9 +23,12 @@ export const useBookings = () => {
       setLoading(true);
       setError(null);
 
-      console.log('Fetching bookings for user:', user.id);
+      if (useFirebase) {
+        const data = await fetchBookingsForUser(user.id);
+        setBookings(data || []);
+        return;
+      }
 
-      // First, get the patient ID from the patients table
       const { data: patientData, error: patientError } = await supabase
         .from('patients')
         .select('id')
@@ -39,9 +45,7 @@ export const useBookings = () => {
       }
 
       const patientId = patientData.id;
-      console.log('Found patient ID:', patientId);
 
-      // Now fetch appointments using the correct patient ID
       const { data, error: supabaseError } = await supabase
         .from('appointments')
         .select(`
@@ -53,14 +57,13 @@ export const useBookings = () => {
             profile_image_url
           )
         `)
-        .eq('patient_id', patientId) // Use patientId from patients table, not user.id
+        .eq('patient_id', patientId)
         .order('scheduled_datetime', { ascending: true });
 
       if (supabaseError) {
         throw supabaseError;
       }
 
-      console.log('Fetched appointments:', data);
       setBookings(data || []);
 
     } catch (err) {
@@ -78,7 +81,7 @@ export const useBookings = () => {
     } else {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, useFirebase]);
 
   const refetch = () => {
     fetchBookings();

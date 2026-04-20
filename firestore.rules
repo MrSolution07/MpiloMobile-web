@@ -1,0 +1,69 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // Example: patients — tighten to match product roles (patient/doctor/admin).
+    match /patients/{patientId} {
+      allow read: if signedIn() && resource.data.user_id == request.auth.uid;
+      allow write: if signedIn() && request.resource.data.user_id == request.auth.uid;
+    }
+
+    match /appointments/{apptId} {
+      allow read, write: if signedIn();
+    }
+
+    match /doctors/{docId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    match /messages/{msgId} {
+      allow read, write: if signedIn();
+    }
+
+    match /conversations/{convId} {
+      allow read, write: if signedIn();
+    }
+
+    match /triage_cases/{id} {
+      allow read, write: if signedIn();
+    }
+
+    match /medical_records/{id} {
+      allow read, write: if signedIn();
+    }
+
+    match /calls/{id} {
+      allow read, write: if signedIn();
+    }
+
+    match /admins/{id} {
+      allow read, write: if signedIn();
+    }
+
+    match /places/{id} {
+      allow read, write: if signedIn();
+    }
+
+    match /routes/{id} {
+      allow read, write: if signedIn();
+    }
+
+    match /users/{id} {
+      allow read, write: if signedIn();
+    }
+
+    match /roles/{id} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    match /user_roles/{id} {
+      allow read, write: if signedIn();
+    }
+  }
+}

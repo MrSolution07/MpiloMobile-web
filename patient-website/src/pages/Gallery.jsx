@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { GalleryCard } from "../components/cards";
 import { Preloader } from "../components/preloader";
 import { Header } from "../components/header";
 import { Footer } from "../components/footer";
 import { Banner } from "../components/banner";
 import { GotoTop } from "../components/goto-top";
+
+const GALLERY_COUNT = 12;
 
 function Gallery() {
   const [isLoading, setIsLoading] = useState(true);
@@ -15,20 +16,14 @@ function Gallery() {
     setIsLoading(false);
   }, [isLoading]);
 
-  const images = [
-    "/assets/images/gallery/gallery1.png",
-    "/assets/images/gallery/gallery2.png",
-    "/assets/images/gallery/gallery3.png",
-    "/assets/images/gallery/gallery4.png",
-    "/assets/images/gallery/gallery5.png",
-    "/assets/images/gallery/gallery6.png",
-    "/assets/images/gallery/gallery7.png",
-    "/assets/images/gallery/gallery8.png",
-    "/assets/images/gallery/gallery9.png",
-    "/assets/images/gallery/gallery10.png",
-    "/assets/images/gallery/gallery11.png",
-    "/assets/images/gallery/gallery12.png",
-  ];
+  const images = Array.from({ length: GALLERY_COUNT }, (_, i) => {
+    const n = i + 1;
+    return {
+      thumb: `/assets/images/gallery/gallery${n}-thumb.webp`,
+      full: `/assets/images/gallery/gallery${n}.webp`,
+      pngFallback: `/assets/images/gallery/gallery${n}.png`,
+    };
+  });
 
   const openModal = (img) => {
     setSelectedImage(img);
@@ -45,11 +40,10 @@ function Gallery() {
   return (
     <>
       <Header logo="assets/images/mpiloLogo.png" joinBtn={true} />
-      <Banner title="Gallery" background="assets/images/galleryBanner.jpg" />
+      <Banner title="Gallery" background="assets/images/galleryBanner.webp" />
 
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Section Header */}
           <div className="text-center mb-16">
             <h2 className="text-5xl font-bold mb-4 text-[#274D60] relative inline-block">
               Our Gallery
@@ -60,20 +54,34 @@ function Gallery() {
             </p>
           </div>
 
-          {/* Gallery Grid */}
           <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
             {images.map((src, i) => (
               <div
                 key={i}
                 className="break-inside-avoid group cursor-pointer"
                 onClick={() => openModal(src)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    openModal(src);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
               >
                 <div className="relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
-                  <img
-                    src={src}
-                    alt={`Gallery ${i + 1}`}
-                    className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
+                  <picture>
+                    <source type="image/webp" srcSet={src.thumb} />
+                    <img
+                      src={src.pngFallback}
+                      alt={`Gallery ${i + 1}`}
+                      width={480}
+                      height={360}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  </picture>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   <div className="absolute inset-0 bg-gradient-to-br from-[#274D60]/20 to-[#D7261E]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
@@ -103,7 +111,7 @@ function Gallery() {
       <Footer getStart={true} />
       <GotoTop />
 
-      {modalOpen && (
+      {modalOpen && selectedImage && (
         <div
           className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-[10000]"
           onClick={closeModal}
@@ -120,11 +128,15 @@ function Gallery() {
                 &times;
             </button>
 
-            <img
-              src={selectedImage}
-              alt="Preview"
-              className="max-h-[80vh] w-full object-contain rounded-md"
-            />
+            <picture>
+              <source type="image/webp" srcSet={selectedImage.full} />
+              <img
+                src={selectedImage.pngFallback}
+                alt="Preview"
+                className="max-h-[80vh] w-full object-contain rounded-md"
+                decoding="async"
+              />
+            </picture>
           </div>
         </div>
       )}

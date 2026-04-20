@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* Prefer system fonts; legacy CSS may load webfonts — use font-display: swap there if added explicitly. */
 * {
   box-sizing: border-box;
 }

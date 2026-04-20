@@ -1,0 +1,20 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "appointments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "patient_id", "order": "ASCENDING" },
+        { "fieldPath": "scheduled_datetime", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "patients",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "user_id", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

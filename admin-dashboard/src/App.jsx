@@ -1,115 +1,75 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "./components/admin/ui/toaster";
 import { Toaster as Sonner } from "./components/admin/ui/sonner";
 import { TooltipProvider } from "./components/admin/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./context";
+import { queryClient } from "./queryClient";
 
-// Admin pages
-import { Error } from "./pages";
-import { AdminLogin, ForgotPassword } from "./components/auth";
+const AdminLogin = lazy(() => import("./components/auth/AdminLogin.jsx"));
+const ForgotPassword = lazy(() => import("./components/auth/ForgotPassword.jsx"));
+const Error = lazy(() => import("./pages/Error.jsx"));
+const AdminLayout = lazy(() =>
+  import("./components/layout/admin/AdminLayout.jsx")
+);
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard.jsx"));
+const AdminPatients = lazy(() => import("./pages/admin/AdminPatients.jsx"));
+const AdminDoctors = lazy(() => import("./pages/admin/AdminDoctors.jsx"));
+const AdminRecords = lazy(() => import("./pages/admin/AdminRecords.jsx"));
+const AdminNotFound = lazy(() => import("./pages/admin/AdminNotFound.jsx"));
+const AdminAddPatient = lazy(() =>
+  import("./pages/admin/AdminAddPatient.jsx")
+);
+const AdminAddDoctor = lazy(() => import("./pages/admin/AdminAddDoctor.jsx"));
+const AdminAddRecord = lazy(() => import("./pages/admin/AdminAddRecord.jsx"));
+const AdminMessages = lazy(() => import("./pages/admin/AdminMessages.jsx"));
+const AdminSettings = lazy(() => import("./pages/admin/AdminSettings.jsx"));
+const AdminProfile = lazy(() => import("./pages/admin/AdminProfile.jsx"));
+const AdminInventory = lazy(() => import("./pages/admin/AdminInventory.tsx"));
+const Routes = lazy(() => import("./pages/admin/AdminRoutes.jsx"));
 
-// Admin dashboard layout and pages
-import { AdminLayout } from "./components/layout";
-import {
-  AdminDashboard,
-  AdminPatients,
-  AdminDoctors,
-  AdminRecords,
-  AdminNotFound,
-  AdminAddPatient,
-  AdminAddDoctor,
-  AdminAddRecord,
-  AdminMessages,
-  AdminSettings,
-  AdminProfile,
-  AdminInventory,
-  Routes
-} from "./pages/admin";
+const fallback = (
+  <div className="flex min-h-screen items-center justify-center bg-slate-50 text-slate-600">
+    Loading…
+  </div>
+);
 
-const queryClient = new QueryClient();
+const withSuspense = (node) => <Suspense fallback={fallback}>{node}</Suspense>;
 
 const router = createBrowserRouter([
-  // Admin login
   {
     path: "/",
-    element: <AdminLogin />,
+    element: withSuspense(<AdminLogin />),
   },
   {
     path: "/login",
-    element: <AdminLogin />,
+    element: withSuspense(<AdminLogin />),
   },
   {
     path: "/forgot-password",
-    element: <ForgotPassword />,
+    element: withSuspense(<ForgotPassword />),
   },
-
-  // Admin dashboard
   {
     path: "/admin",
-    element: <AdminLayout />,
+    element: withSuspense(<AdminLayout />),
     children: [
-      { 
-        path: "",
-        element: <AdminDashboard />,
-      },
-      {
-        path: "patients",
-        element: <AdminPatients />,
-      },
-      {
-        path: "doctors",
-        element: <AdminDoctors />,
-      },
-      {
-        path: "adminmessages",
-        element: <AdminMessages />,
-      },
-      {
-        path: "records",
-        element: <AdminRecords />,
-      },
-      {
-        path: "*",
-        element: <AdminNotFound />,
-      },
-      {
-        path: "adminaddpatient",
-        element: <AdminAddPatient />,
-      },
-      {
-        path: "routes",
-        element: <Routes />,
-      },
-      {
-        path: "adminadddoctor",
-        element: <AdminAddDoctor />,
-      },
-      {
-        path: "adminaddpatient",
-        element: <AdminAddPatient />,
-      },
-      {
-        path: "adminaddrecord",
-        element: <AdminAddRecord />,
-      },
-      {
-        path: "adminsettings",
-        element: <AdminSettings />,
-      },
-      {
-        path: "adminprofile",
-        element: <AdminProfile />,
-      },
-      {
-        path: "admininventory",
-        element: <AdminInventory />,
-      },
+      { path: "", element: withSuspense(<AdminDashboard />) },
+      { path: "patients", element: withSuspense(<AdminPatients />) },
+      { path: "doctors", element: withSuspense(<AdminDoctors />) },
+      { path: "adminmessages", element: withSuspense(<AdminMessages />) },
+      { path: "records", element: withSuspense(<AdminRecords />) },
+      { path: "adminaddpatient", element: withSuspense(<AdminAddPatient />) },
+      { path: "routes", element: withSuspense(<Routes />) },
+      { path: "adminadddoctor", element: withSuspense(<AdminAddDoctor />) },
+      { path: "adminaddrecord", element: withSuspense(<AdminAddRecord />) },
+      { path: "adminsettings", element: withSuspense(<AdminSettings />) },
+      { path: "adminprofile", element: withSuspense(<AdminProfile />) },
+      { path: "admininventory", element: withSuspense(<AdminInventory />) },
+      { path: "*", element: withSuspense(<AdminNotFound />) },
     ],
   },
-
-  // Catch-all
-  { path: "*", element: <Error /> },
+  { path: "*", element: withSuspense(<Error />) },
 ]);
 
 function App() {

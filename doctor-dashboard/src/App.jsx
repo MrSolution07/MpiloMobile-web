@@ -1,116 +1,101 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "./components/admin/ui/toaster";
 import { Toaster as Sonner } from "./components/admin/ui/sonner";
 import { TooltipProvider } from "./components/admin/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, CallProvider } from "./context";
+import { queryClient } from "./queryClient";
 
-// Doctor pages
-import { Error } from "./pages";
-import { DoctorLogin, ForgotPassword } from "./components/auth";
+const DoctorLogin = lazy(() => import("./components/auth/DoctorLogin.jsx"));
+const ForgotPassword = lazy(() => import("./components/auth/ForgotPassword.jsx"));
+const Error = lazy(() => import("./pages/Error.jsx"));
+const Layout = lazy(() => import("./components/layout/Layout.jsx"));
+const Dashboard = lazy(() =>
+  import("./components/DoctorDashboard/Dashboard.jsx")
+);
+const AppointmentsList = lazy(() =>
+  import("./components/appointments/AppointmentsList.jsx")
+);
+const NewAppointment = lazy(() =>
+  import("./components/appointments/NewAppointment.jsx")
+);
+const MessagesList = lazy(() =>
+  import("./components/messages/MessagesList.jsx")
+);
+const PatientsList = lazy(() =>
+  import("./components/patients/PatientsList.jsx")
+);
+const PatientDetails = lazy(() =>
+  import("./components/patients/PatientDetails.jsx")
+);
+const AddPatient = lazy(() => import("./components/patients/AddPatient.jsx"));
+const TriageList = lazy(() => import("./components/triage/TriageList.jsx"));
+const NewTriage = lazy(() => import("./components/triage/NewTriage.jsx"));
+const MedicalRecordsList = lazy(() =>
+  import("./components/records/MedicalRecordsList.jsx")
+);
+const NewRecord = lazy(() => import("./components/records/NewRecord.jsx"));
+const DoctorSettings = lazy(() =>
+  import("./components/settings/DoctorSettings.jsx")
+);
+const DoctorProfile = lazy(() =>
+  import("./components/profile/DoctorProfile.jsx")
+);
+const CallHandler = lazy(() =>
+  import("./components/video-call/CallHandler.jsx")
+);
 
-// Dashboard layout and pages
-import { Layout } from "./components/layout";
-import { Dashboard } from "./components/DoctorDashboard";
-import { AppointmentsList, NewAppointment } from "./components/appointments";
-import { MessagesList } from "./components/messages";
-import {
-  PatientsList,
-  PatientDetails,
-  AddPatient,
-} from "./components/patients";
-import { TriageList, NewTriage } from "./components/triage";
-import { MedicalRecordsList, NewRecord } from "./components/records";
-import { DoctorSettings } from "./components/settings";
-import { DoctorProfile } from "./components/profile";
-import { CallHandler } from "./components/video-call";
+const fallback = (
+  <div className="flex min-h-screen items-center justify-center bg-slate-50 text-slate-600">
+    Loading…
+  </div>
+);
 
-const queryClient = new QueryClient();
+const withSuspense = (node) => <Suspense fallback={fallback}>{node}</Suspense>;
 
 const router = createBrowserRouter([
-  // Doctor login
   {
     path: "/",
-    element: <DoctorLogin />,
+    element: withSuspense(<DoctorLogin />),
   },
   {
     path: "/login",
-    element: <DoctorLogin />,
+    element: withSuspense(<DoctorLogin />),
   },
   {
     path: "/forgot-password",
-    element: <ForgotPassword />,
+    element: withSuspense(<ForgotPassword />),
   },
-
-  // Dashboard routes (nested under /dashboard path)
   {
     path: "/dashboard",
-    element: <Layout />,
+    element: withSuspense(<Layout />),
     children: [
-      {
-        path: "",
-        element: <Dashboard />,
-      },
-      {
-        path: "appointments",
-        element: <AppointmentsList />,
-      },
-      {
-        path: "appointments/new",
-        element: <NewAppointment />,
-      },
-      {
-        path: "messages",
-        element: <MessagesList />,
-      },
-      {
-        path: "patients",
-        element: <PatientsList />,
-      },
-      {
-        path: "patients/:id",
-        element: <PatientDetails />,
-      },
-      {
-        path: "patients/add",
-        element: <AddPatient />,
-      },
-      {
-        path: "triage",
-        element: <TriageList />,
-      },
-      {
-        path: "triage/new",
-        element: <NewTriage />,
-      },
-      {
-        path: "records",
-        element: <MedicalRecordsList />,
-      },
-      {
-        path: "records/new",
-        element: <NewRecord />,
-      },
-      {
-        path: "settings",
-        element: <DoctorSettings />,
-      },
-      {
-        path: "profile",
-        element: <DoctorProfile />,
-      },
+      { path: "", element: withSuspense(<Dashboard />) },
+      { path: "appointments", element: withSuspense(<AppointmentsList />) },
+      { path: "appointments/new", element: withSuspense(<NewAppointment />) },
+      { path: "messages", element: withSuspense(<MessagesList />) },
+      { path: "patients", element: withSuspense(<PatientsList />) },
+      { path: "patients/:id", element: withSuspense(<PatientDetails />) },
+      { path: "patients/add", element: withSuspense(<AddPatient />) },
+      { path: "triage", element: withSuspense(<TriageList />) },
+      { path: "triage/new", element: withSuspense(<NewTriage />) },
+      { path: "records", element: withSuspense(<MedicalRecordsList />) },
+      { path: "records/new", element: withSuspense(<NewRecord />) },
+      { path: "settings", element: withSuspense(<DoctorSettings />) },
+      { path: "profile", element: withSuspense(<DoctorProfile />) },
     ],
   },
-
-  // Catch-all
-  { path: "*", element: <Error /> },
+  { path: "*", element: withSuspense(<Error />) },
 ]);
 
 function App() {
   return (
     <AuthProvider>
       <CallProvider>
-        <CallHandler />
+        <Suspense fallback={null}>
+          <CallHandler />
+        </Suspense>
         <QueryClientProvider client={queryClient}>
           <TooltipProvider>
             <Toaster />
